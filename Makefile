@@ -6,6 +6,9 @@ appname := meatball
 # Compiler
 CXX := clang++
 
+# Compiler flags
+# CXXFLAGS = 
+
 # C PreProcessor flags
 CPPFLAGS := -g -fdiagnostics-color=always -std=c++17
 
@@ -16,7 +19,7 @@ CPPFLAGS := -g -fdiagnostics-color=always -std=c++17
 # Link to libraries
 # LDLIBS := 
 
-# Link the google test library found in /usr/local/lib
+# Link the google test library
 GOOGLETEST := -L/usr/local/lib -lgtest -lgtest_main
 
 # -------------------------------------- #
@@ -26,29 +29,27 @@ PROJECT_DIR=.
 SOURCE_DIR=$(PROJECT_DIR)/src
 TEST_DIR=$(PROJECT_DIR)/test
 BUILD_DIR=$(PROJECT_DIR)/build
+BIN_DIR=$(PROJECT_DIR)/bin
 
 # -------------------------------------- #
 # Executables
 # -------------------------------------- #
-EXECUTABLE=$(appname).app
-TEST_EXECUTABLE=$(TEST_DIR)/tests.out
+EXECUTABLE=$(BIN_DIR)/$(appname)
+TEST_EXECUTABLE=$(BIN_DIR)/tests
 
 # -------------------------------------- #
 # Paths
 # -------------------------------------- #
 sourcefiles := $(shell find $(SOURCE_DIR) -name "*.cpp")
-objectfiles := $(patsubst %.cpp, %.o, $(sourcefiles))
+objectfiles := $(sourcefiles:%=$(BUILD_DIR)/%.o)
 
 test_sourcefiles := $(shell find $(TEST_DIR) -name "test_*.cpp")
-test_objectfiles := $(patsubst %.cpp, %.o, $(test_sourcefiles))
-
-all_sourcefiles := $(sourcefiles) $(test_sourcefiles)
-all_objectfiles := $(objectfiles) $(test_objectfiles)
+test_objectfiles := $(test_sourcefiles:%=$(BUILD_DIR)/%.o)
 
 # -------------------------------------- #
 # Misc
 # -------------------------------------- #
-.PHONY: all clean distclean
+.PHONY: all clean distclean $(BIN_DIR) $(BUILD_DIR)
 
 all: $(appname)
 
@@ -61,18 +62,37 @@ depend: .depend
 # -------------------------------------- #
 # Targets
 # -------------------------------------- #
-$(appname): $(objectfiles)
+$(appname): $(EXECUTABLE)
+
+# Build the source code executable
+$(EXECUTABLE): $(objectfiles) | $(BIN_DIR)
 	$(CXX) $(CPPFLAGS) $(LDFLAGS) $(objectfiles) -o $(EXECUTABLE) $(LDLIBS)
 
-tests: $(test_objectfiles)
+# Compile and link the object files to the .cpp files
+$(BUILD_DIR)/%.cpp.o: %.cpp
+	mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+# Build the test code executable
+tests: $(test_objectfiles) | $(BIN_DIR)
 	$(CXX) $(CPPFLAGS) $(test_objectfiles) -o $(TEST_EXECUTABLE) $(GOOGLETEST)
+
+# -------------------------------------- #
+# Folders
+# -------------------------------------- #
+
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
+
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
 # -------------------------------------- #
 # Clean
 # -------------------------------------- #
-
 clean:
-	$(RM) $(all_objectfiles) $(EXECUTABLE) $(TEST_EXECUTABLE)
+	$(RM) -r $(BUILD_DIR)
+	$(RM) -r $(BIN_DIR)
 
 distclean:
 	$(RM) *~ .depend
