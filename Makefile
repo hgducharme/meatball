@@ -9,15 +9,14 @@ CXX := clang++
 # C PreProcessor flags
 CPPFLAGS := -g -fdiagnostics-color=always -std=c++17
 
-# Tell the linker to look inside these directories for the libraries
-# passed into LDLIBS
-LDFLAGS := -L/usr/local/lib
+# Tell the linker to look inside these directories to find the libraries passed into LDLIBS
+# flags should look like: "-L/path/to/lib/dir"
+# LDFLAGS := 
 
-# Link to libraries. These will be found as 'lib<xyz>.<extension>' inside
-# one of the directories in LDFLAGS.
-# for example, lgtest is found as /usr/local/lib/libgtest.a
-LDLIBS := 
+# Link to libraries
+# LDLIBS := 
 
+# Link the google test library found in /usr/local/lib
 GOOGLETEST := -L/usr/local/lib -lgtest -lgtest_main
 
 # -------------------------------------- #
@@ -31,8 +30,8 @@ BUILD_DIR=$(PROJECT_DIR)/build
 # -------------------------------------- #
 # Executables
 # -------------------------------------- #
-EXECUTABLE=$(appname)
-TEST_EXECUTABLE=$(TEST_DIR)/tests
+EXECUTABLE=$(appname).app
+TEST_EXECUTABLE=$(TEST_DIR)/tests.out
 
 # -------------------------------------- #
 # Paths
