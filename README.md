@@ -23,7 +23,7 @@ Build the project
 make
 ```
 
-If successful, you should see the executable as `meatball.app` in the root directory.
+If successful, you should see the executable `/bin/meatball`
 
 # Tests
 
