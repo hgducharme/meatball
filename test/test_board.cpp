@@ -38,12 +38,8 @@ class BoardTest : public ::testing::Test {
 
 TEST_F(BoardTest, MethodXDoesY) {
   Board board;
+  ASSERT_EQ(0,1);
 }
 
 }  // namespace
 }  // namespace meatball
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
