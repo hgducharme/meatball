@@ -1,3 +1,7 @@
+# directories with build artifacts
+bin/
+build/
+
 # Build artifacts
 .depend
 
