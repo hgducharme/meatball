@@ -48,9 +48,9 @@ all_objectfiles := $(objectfiles) $(test_objectfiles)
 # -------------------------------------- #
 # Misc
 # -------------------------------------- #
-.PHONY: all clean tests distclean
+.PHONY: all clean distclean
 
-all: $(appname) tests
+all: $(appname)
 
 depend: .depend
 
