@@ -1,6 +1,6 @@
 # meatball
 
-This is a hobbyist's attempt at machine learning by creating a chess engine
+This is a hobbyist's attempt at machine learning by creating a chess engine.
 
 The brains of the chess engine can be broken up into three distinct categories:
 
@@ -20,16 +20,16 @@ cd meatball/
 Build the project
 
 ```
-make
+make meatball
 ```
 
 If successful, you should see the executable `/bin/meatball`
 
 # Tests
 
-To run the tests make sure you have [googletest 1.13.0](https://github.com/google/googletest/releases/tag/v1.13.0) installed on your system and `cmake` installed, then edit the Makefile to point to your installation of `googletest`.
+To run the tests make sure you have [googletest 1.13.0](https://github.com/google/googletest/releases/tag/v1.13.0) and `cmake` installed on your system.
 
-To install `googletest`, download the zip file and unzip it, then
+To install `googletest`, download the zip file, unzip it, then
 
 ```
 cd /path/to/googletest/
@@ -50,4 +50,10 @@ Build the tests using
 
 ```
 make tests
+```
+
+and run the tests
+
+```
+./bin/tests
 ```
