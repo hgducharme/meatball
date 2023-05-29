@@ -1,6 +1,15 @@
 appname := meatball
 
 # -------------------------------------- #
+# Folders
+# -------------------------------------- #
+PROJECT_DIR=.
+SOURCE_DIR=$(PROJECT_DIR)/src
+TEST_DIR=$(PROJECT_DIR)/test
+BUILD_DIR=$(PROJECT_DIR)/build
+BIN_DIR=$(PROJECT_DIR)/bin
+
+# -------------------------------------- #
 # Compiling and Linking Configuration
 # -------------------------------------- #
 # Compiler
@@ -10,26 +19,17 @@ CXX := clang++
 # CXXFLAGS = 
 
 # C PreProcessor flags
-CPPFLAGS := -g -fdiagnostics-color=always -std=c++17
+CPPFLAGS := --debug -fdiagnostics-color=always -std=c++17
 
 # Tell the linker to look inside these directories to find the libraries passed into LDLIBS
 # flags should look like: "-L/path/to/lib/dir"
-# LDFLAGS := 
+# LDFLAGS :=
 
 # Link to libraries
 # LDLIBS := 
 
 # Link the google test library
-GOOGLETEST := -L/usr/local/lib -lgtest -lgtest_main
-
-# -------------------------------------- #
-# Folders
-# -------------------------------------- #
-PROJECT_DIR=.
-SOURCE_DIR=$(PROJECT_DIR)/src
-TEST_DIR=$(PROJECT_DIR)/test
-BUILD_DIR=$(PROJECT_DIR)/build
-BIN_DIR=$(PROJECT_DIR)/bin
+GOOGLETEST := --library-directory /usr/local/lib -lgtest -lgtest_main
 
 # -------------------------------------- #
 # Executables
@@ -71,11 +71,11 @@ $(EXECUTABLE): $(objectfiles) | $(BIN_DIR)
 # Compile and link the object files to the .cpp files
 $(BUILD_DIR)/%.cpp.o: %.cpp
 	mkdir -p $(dir $@)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -c $< -o $@
 
 # Build the test code executable
 tests: $(test_objectfiles) | $(BIN_DIR)
-	$(CXX) $(CPPFLAGS) $(test_objectfiles) -o $(TEST_EXECUTABLE) $(GOOGLETEST)
+	$(CXX) $(CPPFLAGS) $(LDFLAGS) $(test_objectfiles) -o $(TEST_EXECUTABLE) $(GOOGLETEST)
 
 # -------------------------------------- #
 # Folders
