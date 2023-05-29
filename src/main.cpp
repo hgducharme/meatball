@@ -1,8 +1,8 @@
-#include "board.h"
+#include "bitboard.h"
 
 int main () {
-  Board board;
-  board.init();
+  Bitboard bitboard;
+  bitboard.init();
 
   return 0;
 }

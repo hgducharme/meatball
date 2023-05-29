@@ -1,6 +1,6 @@
 #pragma once
 
-class Board {
+class Bitboard {
     public:
         void init();
 };

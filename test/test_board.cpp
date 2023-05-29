@@ -1,4 +1,4 @@
-#include "../src/board.h"
+#include "../src/bitboard.h"
 
 #include "gtest/gtest.h"
 
@@ -6,16 +6,16 @@ namespace meatball {
 namespace {
 
 // The fixture for testing class Foo.
-class BoardTest : public ::testing::Test {
+class BitboardTest : public ::testing::Test {
  protected:
   // You can remove any or all of the following functions if their bodies would
   // be empty.
 
-  BoardTest() {
+  BitboardTest() {
      // You can do set-up work for each test here.
   }
 
-  ~BoardTest() override {
+  ~BitboardTest() override {
      // You can do clean-up work that doesn't throw exceptions here.
   }
 
@@ -36,8 +36,8 @@ class BoardTest : public ::testing::Test {
   // for Foo.
 };
 
-TEST_F(BoardTest, MethodXDoesY) {
-  Board board;
+TEST_F(BitboardTest, MethodXDoesY) {
+  Bitboard bitboard;
   ASSERT_EQ(0,1);
 }
 

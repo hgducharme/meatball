@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "board.h"
+#include "bitboard.h"
 
-void Board::init() {
+void Bitboard::init() {
     std::cout << "Hello world" << std::endl;
 }
