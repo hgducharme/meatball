@@ -47,18 +47,21 @@ objectfiles := $(sourcefiles:%=$(BUILD_DIR)/%.o)
 test_sourcefiles := $(shell find $(TEST_DIR) -name "test_*.cpp")
 test_objectfiles := $(test_sourcefiles:%=$(BUILD_DIR)/%.o)
 
+all_sourcefiles := $(sourcefiles) $(test_sourcefiles)
+all_objectfiles := $(objectfiles) $(all_objectfiles)
+
 # -------------------------------------- #
 # Misc
 # -------------------------------------- #
-.PHONY: all clean distclean $(BIN_DIR) $(BUILD_DIR)
+.PHONY: all clean depend distclean $(BIN_DIR) $(BUILD_DIR)
 
 all: $(appname)
 
 depend: .depend
 
-.depend: $(sourcefiles)
+.depend: $(all_sourcefiles)
 	$(RM) ./.depend
-	$(CXX) $(CPPFLAGS) -MM $^>>./.depend;
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM $^>>./.depend;
 
 # -------------------------------------- #
 # Targets
