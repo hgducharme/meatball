@@ -40,9 +40,8 @@ class BitboardTest : public ::testing::Test {
 
 TEST_F(BitboardTest, getBoardReturnsProperBoard) {
    Bitboard bitboard;
-   bitboard.init();
-   // uint64_t board = bitboard.getBoard();
-   // std::cout << board << std::endl;
+   uint64_t board = bitboard.getBoard();
+   std::cout << board << std::endl;
    ASSERT_EQ(true, false);
 }
 
