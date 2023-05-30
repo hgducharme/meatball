@@ -2,12 +2,12 @@
 
 #include <iostream>
 
-void Bitboard::init()
+Bitboard::Bitboard(u64 boardState)
 {
-    std::cout << "Hello world" << std::endl;
+    this->setBoard(boardState);
 }
 
-uint64_t Bitboard::getBoard()
+void Bitboard::setBit(Square s)
 {
-    return _board;
+    board_ |= (1ULL << s);
 }

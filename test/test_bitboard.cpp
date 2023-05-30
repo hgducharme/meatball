@@ -1,13 +1,11 @@
 #include "../src/bitboard.h"
 
-#include <cstdint>
-
 #include "gtest/gtest.h"
 
 namespace meatball {
 namespace {
 
-// The fixture for testing class Foo.
+// The fixture for testing the class.
 class BitboardTest : public ::testing::Test {
  protected:
   // You can remove any or all of the following functions if their bodies would
@@ -34,15 +32,31 @@ class BitboardTest : public ::testing::Test {
      // before the destructor).
   }
 
-  // Class members declared here can be used by all tests in the test suite
-  // for Foo.
+  // Class members declared here can be used by all tests in the test suite.
 };
 
-TEST_F(BitboardTest, getBoardReturnsProperBoard) {
+TEST_F(BitboardTest, defaultBitboardStateShouldBeZero) {
+   u64 DEFAULT_BOARD_STATE = 0;
+
    Bitboard bitboard;
-   uint64_t board = bitboard.getBoard();
-   std::cout << board << std::endl;
-   ASSERT_EQ(true, false);
+
+   ASSERT_EQ(bitboard.getBoard(), DEFAULT_BOARD_STATE);
+}
+
+TEST_F(BitboardTest, constructorShouldBeAbleToInitializeBoardWithAState) {
+   Bitboard bitboard(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
+   u64 board = bitboard.getBoard();
+
+   ASSERT_EQ(board, constants::DEFAULT_BLACK_PAWN_STRUCTURE);
+}
+
+TEST_F(BitboardTest, setSquareSetsCorrectSquare) {
+   Bitboard bitboard;
+
+   bitboard.setBit(g3);
+   
+   u64 EXPECTED_BITBOARD = 0x0000000000000400;
+   ASSERT_EQ(bitboard.getBoard(), EXPECTED_BITBOARD);
 }
 
 }  // namespace

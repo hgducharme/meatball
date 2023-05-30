@@ -1,13 +1,15 @@
 #pragma once
 
-#include <cstdint>
+#include "types.h"
 
 class Bitboard {
     private:
-        uint64_t _board;
+        u64 board_ = 0;
 
     public:
         Bitboard() = default;
-        void init();
-        uint64_t getBoard();
+        Bitboard(u64 boardState);
+        inline u64 getBoard() { return board_; }
+        inline void setBoard(const u64 boardState) { board_ = boardState; };
+        void setBit(Square s);
 };

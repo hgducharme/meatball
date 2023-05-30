@@ -1,8 +1,10 @@
+#include <iostream>
+
 #include "bitboard.h"
 
 int main () {
   Bitboard bitboard;
-  bitboard.init();
+  std::cout << "Board: " << bitboard.getBoard() << std::endl;
 
   return 0;
 }
