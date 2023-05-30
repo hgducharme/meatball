@@ -66,16 +66,16 @@ $(appname): $(EXECUTABLE)
 
 # Build the source code executable
 $(EXECUTABLE): $(objectfiles) | $(BIN_DIR)
-	$(CXX) $(CPPFLAGS) $(LDFLAGS) $(objectfiles) -o $(EXECUTABLE) $(LDLIBS)
+	$(CXX) $(CPPFLAGS) $(LDFLAGS) $(objectfiles) --output $(EXECUTABLE) $(LDLIBS)
 
 # Compile and link the object files to the .cpp files
 $(BUILD_DIR)/%.cpp.o: %.cpp
 	mkdir -p $(dir $@)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) --compile $< --output $@
 
 # Build the test code executable
 tests: $(test_objectfiles) | $(BIN_DIR)
-	$(CXX) $(CPPFLAGS) $(LDFLAGS) $(test_objectfiles) -o $(TEST_EXECUTABLE) $(GOOGLETEST)
+	$(CXX) $(CPPFLAGS) $(LDFLAGS) $(test_objectfiles) --output $(TEST_EXECUTABLE) $(GOOGLETEST)
 
 # -------------------------------------- #
 # Folders
