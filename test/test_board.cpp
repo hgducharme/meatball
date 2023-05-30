@@ -1,5 +1,7 @@
 #include "../src/bitboard.h"
 
+#include <cstdint>
+
 #include "gtest/gtest.h"
 
 namespace meatball {
@@ -36,9 +38,12 @@ class BitboardTest : public ::testing::Test {
   // for Foo.
 };
 
-TEST_F(BitboardTest, MethodXDoesY) {
-  Bitboard bitboard;
-  ASSERT_EQ(0,1);
+TEST_F(BitboardTest, getBoardReturnsProperBoard) {
+   Bitboard bitboard;
+   bitboard.init();
+   // uint64_t board = bitboard.getBoard();
+   // std::cout << board << std::endl;
+   ASSERT_EQ(true, false);
 }
 
 }  // namespace
