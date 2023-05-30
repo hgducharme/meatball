@@ -16,10 +16,11 @@ BIN_DIR=$(PROJECT_DIR)/bin
 CXX := clang++
 
 # Compiler flags
-# CXXFLAGS = 
+CXXFLAGS = -Wall -Wextra --debug -fdiagnostics-color=always -std=c++17
 
 # C PreProcessor flags
-CPPFLAGS := --debug -fdiagnostics-color=always -std=c++17
+# Generally used for path management, dependency file generation, and dumping preprocessor state
+# CPPFLAGS := 
 
 # Tell the linker to look inside these directories to find the libraries passed into LDLIBS
 # flags should look like: "-L/path/to/lib/dir"
