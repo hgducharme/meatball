@@ -60,8 +60,6 @@ test_objectfiles := $(test_sourcefiles:%.cpp=$(BUILD_DIR)/%.o)
 all_sourcefiles := $(sourcefiles) $(test_sourcefiles)
 all_objectfiles := $(objectfiles) $(all_objectfiles)
 
-MAIN_FILE := $(shell find $(BUILD_DIR)/./src/main.o)
-
 # -------------------------------------- #
 # Targets
 # -------------------------------------- #
@@ -80,7 +78,7 @@ $(EXECUTABLE): $(objectfiles) | $(BIN_DIR)
 	@echo
 
 # Build the test executable by linking source objects (without main.o) and test objects
-tests: $(filter-out $(MAIN_FILE), $(objectfiles)) $(test_objectfiles) | $(BIN_DIR)
+tests: $(filter-out $(BUILD_DIR)/./src/main.o, $(objectfiles)) $(test_objectfiles) | $(BIN_DIR)
 	@echo
 	@echo "Building: $@"
 	@echo "Linking file(s): $^"
