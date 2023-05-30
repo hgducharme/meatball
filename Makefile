@@ -108,6 +108,9 @@ $(BUILD_DIR):
 clean:
 	$(RM) -r $(BIN_DIR) $(BUILD_DIR)
 
+clean-tests:
+	$(RM) -r $(TEST_EXECUTABLE) $(BUILD_DIR)/test
+
 # -------------------------------------- #
 # Dependencies
 # -------------------------------------- #
