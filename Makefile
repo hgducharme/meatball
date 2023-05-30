@@ -60,15 +60,12 @@ all_sourcefiles := $(sourcefiles) $(test_sourcefiles)
 all_objectfiles := $(objectfiles) $(all_objectfiles)
 
 # -------------------------------------- #
-# Misc
+# Targets
 # -------------------------------------- #
 .PHONY: all clean $(BIN_DIR) $(BUILD_DIR)
 
 all: $(appname)
 
-# -------------------------------------- #
-# Targets
-# -------------------------------------- #
 $(appname): $(EXECUTABLE)
 
 # Link the object files together and build the source code executable
@@ -85,9 +82,8 @@ $(BUILD_DIR)/%.cpp.o: %.cpp
 	$(COMPILE.cpp) $< --output $@
 
 # -------------------------------------- #
-# Folders
+# Folder targets
 # -------------------------------------- #
-
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
@@ -101,6 +97,9 @@ clean:
 	$(RM) -r $(BUILD_DIR)
 	$(RM) -r $(BIN_DIR)
 
-# Create dependency files and include them
+# -------------------------------------- #
+# Dependencies
+# -------------------------------------- #
 dependencies := $(all_objectfiles:.o=.d)
+
 -include $(dependencies)
