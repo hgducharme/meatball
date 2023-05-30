@@ -1,27 +1,37 @@
 appname := meatball
 
 # -------------------------------------- #
-# Folders
+# Paths and executables
 # -------------------------------------- #
-PROJECT_DIR=.
-SOURCE_DIR=$(PROJECT_DIR)/src
-TEST_DIR=$(PROJECT_DIR)/test
-BUILD_DIR=$(PROJECT_DIR)/build
-BIN_DIR=$(PROJECT_DIR)/bin
+PROJECT_DIR := .
+SOURCE_DIR := $(PROJECT_DIR)/src
+TEST_DIR := $(PROJECT_DIR)/test
+BUILD_DIR := $(PROJECT_DIR)/build
+BIN_DIR := $(PROJECT_DIR)/bin
+source_subdirectories := $(shell find $(SOURCE_DIR) -type d)
+
+EXECUTABLE = $(BIN_DIR)/$(appname)
+TEST_EXECUTABLE = $(BIN_DIR)/tests
 
 # -------------------------------------- #
-# Compiling and Linking Configuration
+# Compiling configuration
 # -------------------------------------- #
 # Compiler
 CXX := clang++
 
 # Compiler flags
-CXXFLAGS = -Wall -Wextra --debug -fdiagnostics-color=always -std=c++17
+CXXFLAGS := -Wall -Wextra -g -fdiagnostics-color=always -std=c++17
 
-# C PreProcessor flags
-# Generally used for path management, dependency file generation, and dumping preprocessor state
-# CPPFLAGS := 
+# C PreProcessor flags, generally used for path management, dependency file generation, and dumping preprocessor state
+# Include source subdirectories and generate dependency files during compilation
+include_source_subdirectories := $(addprefix --include-directory=, $(source_subdirectories))
+CPPFLAGS := $(include_source_subdirectories) --write-user-dependencies -MP
 
+COMPILE.cpp := $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) --compile
+
+# -------------------------------------- #
+# Linking configuration
+# -------------------------------------- #
 # Tell the linker to look inside these directories to find the libraries passed into LDLIBS
 # flags should look like: "-L/path/to/lib/dir"
 # LDFLAGS :=
@@ -29,17 +39,16 @@ CXXFLAGS = -Wall -Wextra --debug -fdiagnostics-color=always -std=c++17
 # Link to libraries
 # LDLIBS := 
 
+LINK.cpp := $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
+
+# -------------------------------------- #
+# Libraries
+# -------------------------------------- #
 # Link the google test library
 GOOGLETEST := --library-directory /usr/local/lib -lgtest -lgtest_main
 
 # -------------------------------------- #
-# Executables
-# -------------------------------------- #
-EXECUTABLE=$(BIN_DIR)/$(appname)
-TEST_EXECUTABLE=$(BIN_DIR)/tests
-
-# -------------------------------------- #
-# Paths
+# Files
 # -------------------------------------- #
 sourcefiles := $(shell find $(SOURCE_DIR) -name "*.cpp")
 objectfiles := $(sourcefiles:%=$(BUILD_DIR)/%.o)
@@ -53,33 +62,27 @@ all_objectfiles := $(objectfiles) $(all_objectfiles)
 # -------------------------------------- #
 # Misc
 # -------------------------------------- #
-.PHONY: all clean depend distclean $(BIN_DIR) $(BUILD_DIR)
+.PHONY: all clean $(BIN_DIR) $(BUILD_DIR)
 
 all: $(appname)
-
-depend: .depend
-
-.depend: $(all_sourcefiles)
-	$(RM) ./.depend
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM $^>>./.depend;
 
 # -------------------------------------- #
 # Targets
 # -------------------------------------- #
 $(appname): $(EXECUTABLE)
 
-# Build the source code executable
+# Link the object files together and build the source code executable
 $(EXECUTABLE): $(objectfiles) | $(BIN_DIR)
-	$(CXX) $(CPPFLAGS) $(LDFLAGS) $(objectfiles) --output $(EXECUTABLE) $(LDLIBS)
+	$(LINK.cpp) $^ --output $@ $(LDLIBS)
 
-# Compile and link the object files to the .cpp files
+# Link the object files together and build the test executable
+tests: $(test_objectfiles) | $(BIN_DIR)
+	$(LINK.cpp) $^ --output $(TEST_EXECUTABLE) $(GOOGLETEST)
+
+# Compile the source code files into .o files
 $(BUILD_DIR)/%.cpp.o: %.cpp
 	mkdir -p $(dir $@)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) --compile $< --output $@
-
-# Build the test code executable
-tests: $(test_objectfiles) | $(BIN_DIR)
-	$(CXX) $(CPPFLAGS) $(LDFLAGS) $(test_objectfiles) --output $(TEST_EXECUTABLE) $(GOOGLETEST)
+	$(COMPILE.cpp) $< --output $@
 
 # -------------------------------------- #
 # Folders
@@ -98,7 +101,6 @@ clean:
 	$(RM) -r $(BUILD_DIR)
 	$(RM) -r $(BIN_DIR)
 
-distclean:
-	$(RM) *~ .depend
-
-include .depend
+# Create dependency files and include them
+dependencies := $(all_objectfiles:.o=.d)
+-include $(dependencies)
