@@ -60,8 +60,7 @@ test_objectfiles := $(test_sourcefiles:%.cpp=$(BUILD_DIR)/%.o)
 all_sourcefiles := $(sourcefiles) $(test_sourcefiles)
 all_objectfiles := $(objectfiles) $(all_objectfiles)
 
-# MAIN_FILE := $(shell find $(BUILD_DIR)/./src/main.o)
-MAIN_FILE := $(BUILD_DIR)/./src/main.o
+MAIN_FILE := $(shell find $(BUILD_DIR)/./src/main.o)
 
 # -------------------------------------- #
 # Targets
