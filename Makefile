@@ -1,4 +1,5 @@
 appname := meatball
+SHELL = /bin/sh
 
 # -------------------------------------- #
 # Paths and executables
@@ -51,13 +52,16 @@ GOOGLETEST := --library-directory /usr/local/lib -lgtest -lgtest_main
 # Files
 # -------------------------------------- #
 sourcefiles := $(shell find $(SOURCE_DIR) -name "*.cpp")
-objectfiles := $(sourcefiles:%=$(BUILD_DIR)/%.o)
+objectfiles := $(sourcefiles:%.cpp=$(BUILD_DIR)/%.o)
 
 test_sourcefiles := $(shell find $(TEST_DIR) -name "test_*.cpp")
-test_objectfiles := $(test_sourcefiles:%=$(BUILD_DIR)/%.o)
+test_objectfiles := $(test_sourcefiles:%.cpp=$(BUILD_DIR)/%.o)
 
 all_sourcefiles := $(sourcefiles) $(test_sourcefiles)
 all_objectfiles := $(objectfiles) $(all_objectfiles)
+
+# MAIN_FILE := $(shell find $(BUILD_DIR)/./src/main.o)
+MAIN_FILE := $(BUILD_DIR)/./src/main.o
 
 # -------------------------------------- #
 # Targets
@@ -68,18 +72,29 @@ all: $(appname)
 
 $(appname): $(EXECUTABLE)
 
-# Link the object files together and build the source code executable
+# Build the source code executable
 $(EXECUTABLE): $(objectfiles) | $(BIN_DIR)
+	@echo
+	@echo "Building: $@"
+	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(LDLIBS) --output $@
+	@echo
 
-# Link the object files together and build the test executable
-tests: $(test_objectfiles) | $(BIN_DIR)
+# Build the test executable by linking source objects (without main.o) and test objects
+tests: $(filter-out $(MAIN_FILE), $(objectfiles)) $(test_objectfiles) | $(BIN_DIR)
+	@echo
+	@echo "Building: $@"
+	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(GOOGLETEST) --output $(TEST_EXECUTABLE)
+	@echo
 
-# Compile the source code files into .o files
-$(BUILD_DIR)/%.cpp.o: %.cpp
+# Compile .cpp into .o
+$(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
+	@echo
+	@echo "Compiling: '$<'"
 	mkdir -p $(dir $@)
 	$(COMPILE.cpp) $< --output $@
+	@echo ""
 
 # -------------------------------------- #
 # Folder targets
@@ -94,8 +109,7 @@ $(BUILD_DIR):
 # Clean
 # -------------------------------------- #
 clean:
-	$(RM) -r $(BUILD_DIR)
-	$(RM) -r $(BIN_DIR)
+	$(RM) -r $(BIN_DIR) $(BUILD_DIR)
 
 # -------------------------------------- #
 # Dependencies
