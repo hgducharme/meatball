@@ -70,11 +70,11 @@ $(appname): $(EXECUTABLE)
 
 # Link the object files together and build the source code executable
 $(EXECUTABLE): $(objectfiles) | $(BIN_DIR)
-	$(LINK.cpp) $^ --output $@ $(LDLIBS)
+	$(LINK.cpp) $^ $(LDLIBS) --output $@
 
 # Link the object files together and build the test executable
 tests: $(test_objectfiles) | $(BIN_DIR)
-	$(LINK.cpp) $^ --output $(TEST_EXECUTABLE) $(GOOGLETEST)
+	$(LINK.cpp) $^ $(GOOGLETEST) --output $(TEST_EXECUTABLE)
 
 # Compile the source code files into .o files
 $(BUILD_DIR)/%.cpp.o: %.cpp
