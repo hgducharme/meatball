@@ -5,10 +5,12 @@
 
 using u64 = std::uint64_t;
 
-namespace constants {
+namespace bitboard {
 constexpr u64 DEFAULT_BLACK_PAWN_STRUCTURE = 0xFF000000000000;
-constexpr u64 ONE = 1ULL;
-} // namespace constants
+constexpr u64 ONE = 1;
+constexpr u64 EMPTY_BOARD = 0;
+constexpr u64 FULL_BOARD = 0xFFFFFFFFFFFFFFFF;
+} // namespace bitboard
 
 enum Pieces {
     PAWN,
