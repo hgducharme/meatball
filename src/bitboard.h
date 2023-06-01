@@ -11,5 +11,5 @@ class Bitboard {
         Bitboard(u64 boardState);
         inline u64 getBoard() { return board_; }
         inline void setBoard(const u64 boardState) { board_ = boardState; };
-        void setBit(Square s);
+        void setBit(int n);
 };

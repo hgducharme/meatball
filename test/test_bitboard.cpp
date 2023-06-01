@@ -55,7 +55,7 @@ TEST_F(BitboardTest, setSquareSetsCorrectSquare) {
 
    bitboard.setBit(g3);
    
-   u64 EXPECTED_BITBOARD = 0x0000000000000400;
+   u64 EXPECTED_BITBOARD = 0x0000000000400000;
    ASSERT_EQ(bitboard.getBoard(), EXPECTED_BITBOARD);
 }
 
