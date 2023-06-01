@@ -2,7 +2,8 @@
 
 #include "bitboard.h"
 
-int main () {
+int main ()
+{
   Bitboard bitboard;
   std::cout << "Board: " << bitboard.getBoard() << std::endl;
 
