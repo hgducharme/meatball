@@ -100,5 +100,14 @@ TEST_F(BitboardTest, getBit2)
    ASSERT_EQ(bitboard.getBit(g3), 0);
 }
 
+TEST_F(BitboardTest, reset_ResetsBoardState)
+{
+   Bitboard bitboard(bitboard::FULL_BOARD);
+
+   bitboard.reset();
+
+   ASSERT_EQ(bitboard.getBoard(), bitboard::EMPTY_BOARD);
+}
+
 }  // namespace
 }  // namespace meatball

@@ -14,4 +14,5 @@ class Bitboard {
         void setBit(int n);
         void clearBit(int n);
         int getBit(int n);
+        void reset();
 };

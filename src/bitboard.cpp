@@ -22,3 +22,8 @@ int Bitboard::getBit(int n)
     // Move the bit of interest to the least significant bit and compare it to 1
     return ( (board_ >> n) & bitboard::ONE );
 }
+
+void Bitboard::reset()
+{
+    this->setBoard(bitboard::EMPTY_BOARD);
+}
