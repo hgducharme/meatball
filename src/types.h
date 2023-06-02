@@ -64,6 +64,6 @@ enum Square
 
 enum Color
 {
-    WHITE = 0,
-    BLACK = 1
+    WHITE,
+    BLACK
 };
