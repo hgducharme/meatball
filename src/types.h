@@ -5,7 +5,8 @@
 
 using u64 = std::uint64_t;
 
-namespace bitboard {
+namespace bitboard
+{
 
 constexpr u64 ONE = 1;
 constexpr u64 EMPTY_BOARD = 0;
@@ -27,7 +28,8 @@ constexpr u64 DEFAULT_WHITE_KING_STRUCTURE =   0x0000000000000010;
 
 } // namespace bitboard
 
-enum Pieces {
+enum Piece
+{
     PAWN,
     KNIGHT,
     BISHOP,
@@ -36,7 +38,8 @@ enum Pieces {
     KING
 };
 
-enum Directions {
+enum Directions
+{
     NORTH = 1,
     SOUTH = -1,
     EAST = 2,
@@ -47,7 +50,8 @@ enum Directions {
     SOUTH_EAST = -4
 };
 
-enum Square {
+enum Square
+{
     a1, b1, c1, d1, e1, f1, g1, h1,
     a2, b2, c2, d2, e2, f2, g2, h2,
     a3, b3, c3, d3, e3, f3, g3, h3,
@@ -56,4 +60,10 @@ enum Square {
     a6, b6, c6, d6, e6, f6, g6, h6,
     a7, b7, c7, d7, e7, f7, g7, h7,
     a8, b8, c8, d8, e8, f8, g8, h8
+};
+
+enum Color
+{
+    WHITE = 0,
+    BLACK = 1
 };
