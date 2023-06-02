@@ -66,12 +66,12 @@ TEST_F(BitboardTest, setBit)
 
 TEST_F(BitboardTest, clearBit)
 {
-   Bitboard bitboard(bitboard::FULL_BOARD);
+   Bitboard bitboard(bitboard::UNIVERSE);
 
    bitboard.clearBit(g3);
 
-   u64 EXPECTED_BOARD = 0xFFFFFFFFFFBFFFFF;
-   ASSERT_EQ(bitboard.getBoard(), EXPECTED_BOARD);
+   u64 EXPECTED_BITBOARD = 0xFFFFFFFFFFBFFFFF;
+   ASSERT_EQ(bitboard.getBoard(), EXPECTED_BITBOARD);
 }
 
 TEST_F(BitboardTest, clearBit2)
@@ -94,7 +94,7 @@ TEST_F(BitboardTest, getBit)
 
 TEST_F(BitboardTest, getBit2)
 {
-   Bitboard bitboard(bitboard::FULL_BOARD);
+   Bitboard bitboard(bitboard::UNIVERSE);
    bitboard.clearBit(g3);
 
    ASSERT_EQ(bitboard.getBit(g3), 0);
@@ -102,7 +102,7 @@ TEST_F(BitboardTest, getBit2)
 
 TEST_F(BitboardTest, reset_ResetsBoardState)
 {
-   Bitboard bitboard(bitboard::FULL_BOARD);
+   Bitboard bitboard(bitboard::UNIVERSE);
 
    bitboard.reset();
 

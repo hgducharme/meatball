@@ -1,11 +1,11 @@
-#include <iostream>
-
 #include "bitboard.h"
+
+#include <iostream>
 
 int main ()
 {
   Bitboard bitboard;
-  std::cout << "Board: " << bitboard.getBoard() << std::endl;
+  std::cout << bitboard.getBoard() << std::endl;
 
   return 0;
 }
