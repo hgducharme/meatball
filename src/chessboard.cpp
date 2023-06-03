@@ -1,6 +1,6 @@
 #include "chessboard.h"
 
-void ChessBoard::init()
+ChessBoard::ChessBoard()
 {
     board[WHITE][0].setBoard(bitboard::DEFAULT_WHITE_PAWN_STRUCTURE);
     board[WHITE][1].setBoard(bitboard::DEFAULT_WHITE_KNIGHT_STRUCTURE);

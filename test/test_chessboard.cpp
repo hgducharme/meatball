@@ -41,11 +41,28 @@ class ChessBoardTest : public ::testing::Test
   // Class members declared here can be used by all tests in the test suite.
 };
 
-TEST_F(ChessBoardTest, init_correctlyPlacesAllPiecesOnTheBoard)
+TEST_F(ChessBoardTest, defaultConstructor_correctlyPlacesAllPiecesOnTheBoard)
 {
    ChessBoard board;
 
-   board.init();
+   ASSERT_EQ(board.getPieceBitboard(WHITE, PAWN).getBoard(), bitboard::DEFAULT_WHITE_PAWN_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(WHITE, KNIGHT).getBoard(), bitboard::DEFAULT_WHITE_KNIGHT_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(WHITE, BISHOP).getBoard(), bitboard::DEFAULT_WHITE_BISHOP_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(WHITE, ROOK).getBoard(), bitboard::DEFAULT_WHITE_ROOK_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(WHITE, QUEEN).getBoard(), bitboard::DEFAULT_WHITE_QUEEN_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(WHITE, KING).getBoard(), bitboard::DEFAULT_WHITE_KING_STRUCTURE);
+   
+   ASSERT_EQ(board.getPieceBitboard(BLACK, PAWN).getBoard(), bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(BLACK, KNIGHT).getBoard(), bitboard::DEFAULT_BLACK_KNIGHT_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(BLACK, BISHOP).getBoard(), bitboard::DEFAULT_BLACK_BISHOP_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(BLACK, ROOK).getBoard(), bitboard::DEFAULT_BLACK_ROOK_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(BLACK, QUEEN).getBoard(), bitboard::DEFAULT_BLACK_QUEEN_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(BLACK, KING).getBoard(), bitboard::DEFAULT_BLACK_KING_STRUCTURE);
+}
+
+TEST_F(ChessBoardTest, getPieceBitboard_returnsCorrectBitboard)
+{
+   ChessBoard board;
 
    ASSERT_EQ(board.getPieceBitboard(WHITE, PAWN).getBoard(), bitboard::DEFAULT_WHITE_PAWN_STRUCTURE);
    ASSERT_EQ(board.getPieceBitboard(WHITE, KNIGHT).getBoard(), bitboard::DEFAULT_WHITE_KNIGHT_STRUCTURE);

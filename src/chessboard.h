@@ -4,6 +4,6 @@
 struct ChessBoard {
     Bitboard board[2][6];
     
-    void init();
+    ChessBoard();
     Bitboard getPieceBitboard(Color color, PieceType piece);
 };
