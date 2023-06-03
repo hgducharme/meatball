@@ -6,7 +6,7 @@
 int main ()
 {
   ChessBoard chessboard;
-  std::cout << chessboard.getPieceBitboard(Color::WHITE, Piece::PAWN).getBoard() << std::endl;
+  std::cout << chessboard.getPieceBitboard(WHITE, PAWN).getBoard() << std::endl;
 
   return 0;
 }

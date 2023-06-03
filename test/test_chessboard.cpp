@@ -47,19 +47,19 @@ TEST_F(ChessBoardTest, init_correctlyPlacesAllPiecesOnTheBoard)
 
    board.init();
 
-   ASSERT_EQ(board.getPieceBitboard(Color::WHITE, Piece::PAWN).getBoard(), bitboard::DEFAULT_WHITE_PAWN_STRUCTURE);
-   ASSERT_EQ(board.getPieceBitboard(Color::WHITE, Piece::KNIGHT).getBoard(), bitboard::DEFAULT_WHITE_KNIGHT_STRUCTURE);
-   ASSERT_EQ(board.getPieceBitboard(Color::WHITE, Piece::BISHOP).getBoard(), bitboard::DEFAULT_WHITE_BISHOP_STRUCTURE);
-   ASSERT_EQ(board.getPieceBitboard(Color::WHITE, Piece::ROOK).getBoard(), bitboard::DEFAULT_WHITE_ROOK_STRUCTURE);
-   ASSERT_EQ(board.getPieceBitboard(Color::WHITE, Piece::QUEEN).getBoard(), bitboard::DEFAULT_WHITE_QUEEN_STRUCTURE);
-   ASSERT_EQ(board.getPieceBitboard(Color::WHITE, Piece::KING).getBoard(), bitboard::DEFAULT_WHITE_KING_STRUCTURE);
-
-   ASSERT_EQ(board.getPieceBitboard(Color::BLACK, Piece::PAWN).getBoard(), bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
-   ASSERT_EQ(board.getPieceBitboard(Color::BLACK, Piece::KNIGHT).getBoard(), bitboard::DEFAULT_BLACK_KNIGHT_STRUCTURE);
-   ASSERT_EQ(board.getPieceBitboard(Color::BLACK, Piece::BISHOP).getBoard(), bitboard::DEFAULT_BLACK_BISHOP_STRUCTURE);
-   ASSERT_EQ(board.getPieceBitboard(Color::BLACK, Piece::ROOK).getBoard(), bitboard::DEFAULT_BLACK_ROOK_STRUCTURE);
-   ASSERT_EQ(board.getPieceBitboard(Color::BLACK, Piece::QUEEN).getBoard(), bitboard::DEFAULT_BLACK_QUEEN_STRUCTURE);
-   ASSERT_EQ(board.getPieceBitboard(Color::BLACK, Piece::KING).getBoard(), bitboard::DEFAULT_BLACK_KING_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(WHITE, PAWN).getBoard(), bitboard::DEFAULT_WHITE_PAWN_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(WHITE, KNIGHT).getBoard(), bitboard::DEFAULT_WHITE_KNIGHT_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(WHITE, BISHOP).getBoard(), bitboard::DEFAULT_WHITE_BISHOP_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(WHITE, ROOK).getBoard(), bitboard::DEFAULT_WHITE_ROOK_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(WHITE, QUEEN).getBoard(), bitboard::DEFAULT_WHITE_QUEEN_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(WHITE, KING).getBoard(), bitboard::DEFAULT_WHITE_KING_STRUCTURE);
+   
+   ASSERT_EQ(board.getPieceBitboard(BLACK, PAWN).getBoard(), bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(BLACK, KNIGHT).getBoard(), bitboard::DEFAULT_BLACK_KNIGHT_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(BLACK, BISHOP).getBoard(), bitboard::DEFAULT_BLACK_BISHOP_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(BLACK, ROOK).getBoard(), bitboard::DEFAULT_BLACK_ROOK_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(BLACK, QUEEN).getBoard(), bitboard::DEFAULT_BLACK_QUEEN_STRUCTURE);
+   ASSERT_EQ(board.getPieceBitboard(BLACK, KING).getBoard(), bitboard::DEFAULT_BLACK_KING_STRUCTURE);
 }
 
 }  // namespace

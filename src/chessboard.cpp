@@ -2,25 +2,22 @@
 
 void ChessBoard::init()
 {
-    // board[0][1].setBoard(bitboard::DEFAULT_WHITE_PAWN_STRUCTURE);
+    board[0][0].setBoard(bitboard::DEFAULT_WHITE_PAWN_STRUCTURE);
+    board[0][1].setBoard(bitboard::DEFAULT_WHITE_KNIGHT_STRUCTURE);
+    board[0][2].setBoard(bitboard::DEFAULT_WHITE_BISHOP_STRUCTURE);
+    board[0][3].setBoard(bitboard::DEFAULT_WHITE_ROOK_STRUCTURE);
+    board[0][4].setBoard(bitboard::DEFAULT_WHITE_QUEEN_STRUCTURE);
+    board[0][5].setBoard(bitboard::DEFAULT_WHITE_KING_STRUCTURE);
+
+    board[1][0].setBoard(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+    board[1][1].setBoard(bitboard::DEFAULT_BLACK_KNIGHT_STRUCTURE);
+    board[1][2].setBoard(bitboard::DEFAULT_BLACK_BISHOP_STRUCTURE);
+    board[1][3].setBoard(bitboard::DEFAULT_BLACK_ROOK_STRUCTURE);
+    board[1][4].setBoard(bitboard::DEFAULT_BLACK_QUEEN_STRUCTURE);
+    board[1][5].setBoard(bitboard::DEFAULT_BLACK_KING_STRUCTURE);
 }
 
-Bitboard ChessBoard::getPieceBitboard(Color color, Piece piece)
+Bitboard ChessBoard::getPieceBitboard(Color color, PieceType piece)
 {
-    /*
-    Find a rule to map:
-    bb[0][0] = white pawns
-    bb[0][1] = white knights
-    bb[0][2] = white bishops
-    bb[0][3] = white rooks
-    
-    ...
-
-    bb[1][0] = black pawns
-    bb[1][1] = black knights
-
-    ...
-    */
-
-    // return
+    return board[color][piece];
 }
