@@ -1,10 +1,12 @@
+#include "bitboard.h"
+#include "chessboard.h"
+
 #include <iostream>
 
-#include "bitboard.h"
-
-int main () {
-  Bitboard bitboard;
-  std::cout << "Board: " << bitboard.getBoard() << std::endl;
+int main ()
+{
+  ChessBoard chessboard;
+  std::cout << chessboard.getPieceBitboard(WHITE, PAWN).getBoard() << std::endl;
 
   return 0;
 }

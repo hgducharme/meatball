@@ -65,7 +65,7 @@ all_objectfiles := $(objectfiles) $(all_objectfiles)
 # -------------------------------------- #
 .PHONY: all clean $(BIN_DIR) $(BUILD_DIR)
 
-all: $(appname)
+all: $(appname) tests
 
 $(appname): $(EXECUTABLE)
 
