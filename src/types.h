@@ -28,7 +28,7 @@ constexpr u64 DEFAULT_WHITE_KING_STRUCTURE =   0x0000000000000010;
 
 } // namespace bitboard
 
-enum Piece
+enum PieceType
 {
     PAWN,
     KNIGHT,
