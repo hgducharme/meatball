@@ -9,10 +9,15 @@ SOURCE_DIR := $(PROJECT_DIR)/src
 TEST_DIR := $(PROJECT_DIR)/test
 BUILD_DIR := $(PROJECT_DIR)/build
 BIN_DIR := $(PROJECT_DIR)/bin
+COVERAGE_DIR := $(PROJECT_DIR)/coverage
 source_subdirectories := $(shell find $(SOURCE_DIR) -type d)
 
 EXECUTABLE = $(BIN_DIR)/$(appname)
 TEST_EXECUTABLE = $(BIN_DIR)/tests
+
+# In order for gcov to output to the specified directory,
+# we have to set the environment variable "GCOV_PREFIX" to the dir we want
+export GCOV_PREFIX := $(GCOV_DIR)
 
 # -------------------------------------- #
 # Compiling configuration
@@ -22,6 +27,9 @@ CXX := clang++
 
 # Compiler flags
 CXXFLAGS := -Wall -Wextra -g -fdiagnostics-color=always -std=c++17
+
+# Add test coverage flags
+CXXFLAGS += -fPIC -fprofile-arcs -ftest-coverage 
 
 # C PreProcessor flags, generally used for path management, dependency file generation, and dumping preprocessor state
 # Include source subdirectories and generate dependency files during compilation
@@ -60,6 +68,8 @@ test_objectfiles := $(test_sourcefiles:%.cpp=$(BUILD_DIR)/%.o)
 all_sourcefiles := $(sourcefiles) $(test_sourcefiles)
 all_objectfiles := $(objectfiles) $(all_objectfiles)
 
+gcov_files = $(shell find $(BUILD_DIR) -name "*.gcno")
+
 # -------------------------------------- #
 # Targets
 # -------------------------------------- #
@@ -93,6 +103,11 @@ $(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
 	$(COMPILE.cpp) $< --output $@
 	@echo ""
 
+coverage: $(appname) | $(GCOV_DIR)
+	./$(EXECUTABLE)
+	cd $(GCOV_DIR)
+	gcov --color $(sourcefiles) -o=$(BUILD_DIR)/src
+
 # -------------------------------------- #
 # Folder targets
 # -------------------------------------- #
@@ -102,11 +117,14 @@ $(BIN_DIR):
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
+$(GCOV_DIR):
+	mkdir -p $(GCOV_DIR)
+
 # -------------------------------------- #
 # Clean
 # -------------------------------------- #
 clean:
-	$(RM) -r $(BIN_DIR) $(BUILD_DIR)
+	$(RM) -r $(BIN_DIR) $(BUILD_DIR) $(GCOV_DIR)
 
 clean-tests:
 	$(RM) -r $(TEST_EXECUTABLE) $(BUILD_DIR)/test
