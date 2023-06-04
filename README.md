@@ -58,7 +58,7 @@ and run the tests
 ./bin/tests
 ```
 
-## Coverage reports
+## Test coverage
 
 Make sure you have `gcov` and `gcovr` installed on your system.
 
