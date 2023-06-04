@@ -57,3 +57,19 @@ and run the tests
 ```
 ./bin/tests
 ```
+
+## Coverage reports
+
+Make sure you have `gcov` and `gcovr` installed on your system.
+
+Run `gcov` coverage statistics:
+
+```
+make coverage
+```
+
+Run a `gcovr` coverage report:
+
+```
+make coverage-report
+```
