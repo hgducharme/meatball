@@ -21,3 +21,9 @@ Bitboard ChessBoard::getPieceBitboard(Color color, PieceType piece)
 {
     return board[color][piece];
 }
+
+void ChessBoard::movePiece(Color color, PieceType piece, Square startingSquare, Square endingSquare)
+{
+    board[color][piece].clearBit(startingSquare);
+    board[color][piece].setBit(endingSquare);
+}

@@ -6,4 +6,8 @@ struct ChessBoard {
     
     ChessBoard();
     Bitboard getPieceBitboard(Color color, PieceType piece);
+    void movePiece(Color color, PieceType piece, Square startingSquare, Square endingSquare);
+    /*
+    movePiece(Color, Piece, a1, a2)
+    */
 };
