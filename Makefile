@@ -9,7 +9,7 @@ SOURCE_DIR := $(PROJECT_DIR)/src
 TEST_DIR := $(PROJECT_DIR)/test
 BUILD_DIR := $(PROJECT_DIR)/build
 BIN_DIR := $(PROJECT_DIR)/bin
-COVERAGE_DIR := $(PROJECT_DIR)/coverage
+COVERAGE_DIR := $(PROJECT_DIR)/test_coverage
 
 EXECUTABLE = $(BIN_DIR)/$(appname)
 TEST_EXECUTABLE = $(BIN_DIR)/tests
@@ -22,7 +22,7 @@ CXX := clang++
 
 # Compiler flags
 DEBUG = -g
-COVERAGE := -O0 -fPIC --coverage # (--coverage is a synonym for: -fprofile-arcs -ftest-coverage)
+COVERAGE := -O1 -fPIC --coverage # (--coverage is a synonym for: -fprofile-arcs -ftest-coverage)
 CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -std=c++17 $(DEBUG) $(COVERAGE)
 
 # C PreProcessor flags, generally used for path management, dependency file generation, and dumping preprocessor state
@@ -86,7 +86,6 @@ $(EXECUTABLE): $(objectfiles) | $(BIN_DIR)
 	@echo "Building: $@"
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(LDLIBS) --output $@
-	@echo
 
 # Build the test executable by linking source objects (without main.o) and test objects
 tests: $(objectfiles_without_main) $(test_objectfiles) | $(BIN_DIR)
@@ -94,7 +93,6 @@ tests: $(objectfiles_without_main) $(test_objectfiles) | $(BIN_DIR)
 	@echo "Building: $@"
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(GOOGLETEST) --output $(TEST_EXECUTABLE)
-	@echo
 
 # Compile .cpp into .o
 $(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
@@ -102,15 +100,16 @@ $(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
 	@echo "Compiling: '$<'"
 	mkdir -p $(dir $@)
 	$(COMPILE.cpp) $< --output $@
-	@echo
 
-gcov: tests | $(COVERAGE_DIR)
+coverage: tests | $(COVERAGE_DIR)
 	@echo
-	@echo "Running test executable and computing test coverage..."
+	@echo "Running test executable..."
 	./$(TEST_EXECUTABLE)
+	@echo
+	@echo "Generating test coverage data..."
 	gcov --color $(sourcefiles_without_main) -o=$(BUILD_DIR)/src
 	mv *.gcov $(COVERAGE_DIR)/
-	@echo
+	gcovr --html-details $(COVERAGE_DIR)/coverage.html $(BUILD_DIR)/src
 
 # -------------------------------------- #
 # Folder targets
@@ -132,6 +131,9 @@ clean:
 
 clean-tests:
 	$(RM) -r $(TEST_EXECUTABLE) $(BUILD_DIR)/test
+
+clean-coverage:
+	$(RM) -r $(COVERAGE_DIR)
 
 # -------------------------------------- #
 # Dependencies

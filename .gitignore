@@ -1,7 +1,7 @@
 # directories with build artifacts
 bin/
 build/
-coverage/
+test_coverage/
 
 # Build artifacts
 .depend
