@@ -76,6 +76,12 @@ TEST_F(TypesTest, defaultBlackKingStructure)
    ASSERT_EQ(bitboard::DEFAULT_BLACK_KING_STRUCTURE, EXPECTED);
 }
 
+TEST_F(TypesTest, defaultBlackStructure)
+{
+   u64 EXPECTED = 0xFFFF000000000000;
+   ASSERT_EQ(bitboard::DEFAULT_BLACK_STRUCTURE, EXPECTED);
+}
+
 TEST_F(TypesTest, defaultWhitePawnStructure)
 {
    u64 EXPECTED = 0xFF00;
@@ -110,6 +116,12 @@ TEST_F(TypesTest, defaultWhiteKingStructure)
 {
    u64 EXPECTED = 0x10;
    ASSERT_EQ(bitboard::DEFAULT_WHITE_KING_STRUCTURE, EXPECTED);
+}
+
+TEST_F(TypesTest, defaultWhiteStructure)
+{
+   u64 EXPECTED = 0xFFFF;
+   ASSERT_EQ(bitboard::DEFAULT_WHITE_STRUCTURE, EXPECTED);
 }
 
 }  // namespace
