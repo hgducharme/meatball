@@ -93,6 +93,7 @@ tests: $(objectfiles_without_main) $(test_objectfiles) | $(BIN_DIR)
 	@echo "Building: $@"
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(GOOGLETEST) --output $(TEST_EXECUTABLE)
+	./$(TEST_EXECUTABLE)
 
 # Compile .cpp into .o
 $(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
