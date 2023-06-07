@@ -15,4 +15,18 @@ class Bitboard {
         void clearBit(int n);
         int getBit(int n);
         void reset();
+
+        // Combine the states of this board and a different board
+        Bitboard & operator |= (const Bitboard& rhs) { 
+            u64 combinedBoard = this->board_ | rhs.getBoard();
+            this->setBoard(combinedBoard);
+            return *this;
+        }
+
+        friend Bitboard operator | (Bitboard & a, const Bitboard & b) { 
+            a |= b;
+            return a;
+        }
+
+
 };
