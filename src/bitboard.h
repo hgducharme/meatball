@@ -9,7 +9,7 @@ class Bitboard {
     public:
         Bitboard() = default;
         Bitboard(u64 boardState);
-        inline u64 getBoard() { return board_; }
+        inline u64 getBoard() const { return board_; }
         inline void setBoard(const u64 boardState) { board_ = boardState; };
         void setBit(int n);
         void clearBit(int n);
