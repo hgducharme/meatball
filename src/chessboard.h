@@ -3,17 +3,17 @@
 
 struct Chessboard {
     private:
-        Bitboard board_[2][6];
+        Bitboard pieceBitboards_[NUMBER_OF_PIECES];
         Bitboard whiteOccupied_;
         Bitboard blackOccupied_;
-        Bitboard occupiedSquares_;
         Color sideToMove_ = WHITE;
 
     public:
         Chessboard();
-        const Bitboard & getOccupiedSquares() const { return occupiedSquares_; }
-        Bitboard & getPieceBitboard(Color color, PieceType piece);
-        Bitboard & getColorBitboard(Color color);
+        const Bitboard & getOccupiedSquares();
+        Bitboard & getBitboard(PieceType piece);
+        Bitboard & getBitboard(Color color);
+        const Bitboard & getBitboard(Color color, PieceType piece);
         void movePiece(Color color, PieceType piece, Square startingSquare, Square endingSquare);
         void generateMoves();
 };

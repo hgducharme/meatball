@@ -2,34 +2,28 @@
 
 Chessboard::Chessboard()
 {
-    // Initialize the bitboards for each piece of each color
-    board_[WHITE][PAWN].setBoard(bitboard::DEFAULT_WHITE_PAWN_STRUCTURE);
-    board_[WHITE][KNIGHT].setBoard(bitboard::DEFAULT_WHITE_KNIGHT_STRUCTURE);
-    board_[WHITE][BISHOP].setBoard(bitboard::DEFAULT_WHITE_BISHOP_STRUCTURE);
-    board_[WHITE][ROOK].setBoard(bitboard::DEFAULT_WHITE_ROOK_STRUCTURE);
-    board_[WHITE][QUEEN].setBoard(bitboard::DEFAULT_WHITE_QUEEN_STRUCTURE);
-    board_[WHITE][KING].setBoard(bitboard::DEFAULT_WHITE_KING_STRUCTURE);
-    board_[BLACK][PAWN].setBoard(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
-    board_[BLACK][KNIGHT].setBoard(bitboard::DEFAULT_BLACK_KNIGHT_STRUCTURE);
-    board_[BLACK][BISHOP].setBoard(bitboard::DEFAULT_BLACK_BISHOP_STRUCTURE);
-    board_[BLACK][ROOK].setBoard(bitboard::DEFAULT_BLACK_ROOK_STRUCTURE);
-    board_[BLACK][QUEEN].setBoard(bitboard::DEFAULT_BLACK_QUEEN_STRUCTURE);
-    board_[BLACK][KING].setBoard(bitboard::DEFAULT_BLACK_KING_STRUCTURE);
+    // Initialize the bitboards for each piece type
+    pieceBitboards_[PAWN].setBoard(bitboard::DEFAULT_PAWN_STRUCTURE);
+    pieceBitboards_[KNIGHT].setBoard(bitboard::DEFAULT_KNIGHT_STRUCTURE);
+    pieceBitboards_[BISHOP].setBoard(bitboard::DEFAULT_BISHOP_STRUCTURE);
+    pieceBitboards_[ROOK].setBoard(bitboard::DEFAULT_ROOK_STRUCTURE);
+    pieceBitboards_[QUEEN].setBoard(bitboard::DEFAULT_QUEEN_STRUCTURE);
+    pieceBitboards_[KING].setBoard(bitboard::DEFAULT_KING_STRUCTURE);
 
     // Initialize the 'whitePieces' and 'blackPieces' bitboards
     whiteOccupied_ = bitboard::DEFAULT_WHITE_OCCUPIED;
     blackOccupied_ = bitboard::DEFAULT_BLACK_OCCUPIED;
 
-    // Initialize the occupiedSquares bitboard
-    occupiedSquares_ = bitboard::DEFAULT_WHITE_OCCUPIED | bitboard::DEFAULT_BLACK_OCCUPIED;
+    // TODO: Initialize the occupiedSquares bitboard
+    // occupiedSquares_ = bitboard::DEFAULT_WHITE_OCCUPIED | bitboard::DEFAULT_BLACK_OCCUPIED;
 }
 
-Bitboard & Chessboard::getPieceBitboard(Color color, PieceType piece)
+Bitboard & Chessboard::getBitboard(PieceType piece)
 {
-    return board_[color][piece];
+    return pieceBitboards_[piece];
 }
 
-Bitboard & Chessboard::getColorBitboard(Color color)
+Bitboard & Chessboard::getBitboard(Color color)
 {
     if (color == WHITE)
     {
@@ -41,21 +35,30 @@ Bitboard & Chessboard::getColorBitboard(Color color)
     }
 }
 
+// TODO: No idea why const works here. Remove it and we get an error.
+const Bitboard & Chessboard::getBitboard(Color color, PieceType piece)
+{
+    Bitboard newBitboard = pieceBitboards_[piece].getBoard() & getBitboard(color).getBoard();
+    return newBitboard;
+}
+
 void Chessboard::movePiece(Color color, PieceType piece, Square startingSquare, Square endingSquare)
 {
-    board_[color][piece].clearBit(startingSquare);
-    board_[color][piece].setBit(endingSquare);
+    Bitboard bitboard = getBitboard(color, piece);
+    bitboard.clearBit(startingSquare);
+    bitboard.setBit(endingSquare);
 }
 
 void Chessboard::generateMoves()
 {
-    // loop over the colors
-    for (const auto & bitboardArray : board_)
+    // loop over the bitboards
+    for (const auto & bitboard : pieceBitboards_)
     {
-        // loop over each piece's bitboard
-        for (const auto & bitboard : bitboardArray)
-        {
-            // std::cout << bitboard.getBoard() << std::endl;
-        }
+        // std::vector<Move> pawnMoves = this->getPawnMoves();
+        // std::vector<Move> knightMoves = this->getKnightMoves();
+        // std::vector<Move> bishopMoves = this->getBishopMoves();
+        // std::vector<Move> rookMoves = this->getRookMoves();
+        // std::vector<Move> queenMoves = this->getQueenMoves();
+        // std::vector<Move> kingMoves = this->getKingMoves();
     }
 }
