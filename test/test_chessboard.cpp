@@ -61,21 +61,11 @@ TEST_F(ChessboardTest, defaultConstructor_correctlyInitializesWhiteAndBlackBitbo
    ASSERT_EQ(chessboard.getBitboard(BLACK).getBoard(), bitboard::DEFAULT_BLACK_OCCUPIED);
 }
 
-// TODO: Fix this to represent the new design
-// TEST_F(ChessboardTest, defaultConstructor_correctlyInitializesOccupiedSquares)
-// {
-//    Chessboard chessboard;
-
-//    u64 EXPECTED = bitboard::DEFAULT_WHITE_OCCUPIED | bitboard::DEFAULT_BLACK_OCCUPIED;
-
-//    ASSERT_EQ(chessboard.getOccupiedSquares().getBoard(), EXPECTED);
-// }
-
 TEST_F(ChessboardTest, getBitboard_returnsBitboardByColor)
 {
    Chessboard chessboard;
 
-   Bitboard whiteBitboard = chessboard.getBitboard(WHITE);
+   Bitboard & whiteBitboard = chessboard.getBitboard(WHITE);
 
    ASSERT_EQ(whiteBitboard.getBoard(), bitboard::DEFAULT_WHITE_OCCUPIED);
 }
@@ -84,12 +74,12 @@ TEST_F(ChessboardTest, getBitboard_returnsBitboardByPiece)
 {
    Chessboard chessboard;
 
-   Bitboard pawnBitboard = chessboard.getBitboard(PAWN);
-   Bitboard knightBitboard = chessboard.getBitboard(KNIGHT);
-   Bitboard bishopBitboard = chessboard.getBitboard(BISHOP);
-   Bitboard rookBitboard = chessboard.getBitboard(ROOK);
-   Bitboard queenBitboard = chessboard.getBitboard(QUEEN);
-   Bitboard kingBitboard = chessboard.getBitboard(KING);
+   Bitboard & pawnBitboard = chessboard.getBitboard(PAWN);
+   Bitboard & knightBitboard = chessboard.getBitboard(KNIGHT);
+   Bitboard & bishopBitboard = chessboard.getBitboard(BISHOP);
+   Bitboard & rookBitboard = chessboard.getBitboard(ROOK);
+   Bitboard & queenBitboard = chessboard.getBitboard(QUEEN);
+   Bitboard & kingBitboard = chessboard.getBitboard(KING);
 
    ASSERT_EQ(pawnBitboard.getBoard(), bitboard::DEFAULT_PAWN_STRUCTURE);
    ASSERT_EQ(knightBitboard.getBoard(), bitboard::DEFAULT_KNIGHT_STRUCTURE);
@@ -103,25 +93,19 @@ TEST_F(ChessboardTest, getBitboard_returnsBitboardByColorAndPiece)
 {
    Chessboard chessboard;
 
-   Bitboard blackBishopBitboard = chessboard.getBitboard(BLACK, BISHOP);
+   Bitboard & blackBishopBitboard = chessboard.getBitboard(BLACK, BISHOP);
 
    ASSERT_EQ(blackBishopBitboard.getBoard(), bitboard::DEFAULT_BLACK_BISHOP_STRUCTURE);
 }
 
 TEST_F(ChessboardTest, movePiece_ShouldMoveWhitePawnToE4)
 {
-   // TODO: This test isn't working because of the 'const' in the getBitboard function.
-   // The clearBit() and setBit() functions aren't actually modifying the desired bitboard
    Chessboard chessboard;
 
    chessboard.movePiece(WHITE, PAWN, e2, e4);
 
    u64 EXPECTED = 0x1000EF00;
-   Bitboard bitboard = chessboard.getBitboard(WHITE, PAWN);
-
-   std::cout << "Exp: " << std::bitset<64>(EXPECTED) << std::endl;
-   std::cout << "Got: " << std::bitset<64>(bitboard.getBoard()) << std::endl;
-
+   Bitboard & bitboard = chessboard.getBitboard(WHITE, PAWN);
    ASSERT_EQ(bitboard.getBoard(), EXPECTED);
 }
 

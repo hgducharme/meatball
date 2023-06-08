@@ -13,7 +13,7 @@ struct Chessboard {
         const Bitboard & getOccupiedSquares();
         Bitboard & getBitboard(PieceType piece);
         Bitboard & getBitboard(Color color);
-        const Bitboard & getBitboard(Color color, PieceType piece);
+        Bitboard & getBitboard(Color color, PieceType piece);
         void movePiece(Color color, PieceType piece, Square startingSquare, Square endingSquare);
         void generateMoves();
 };

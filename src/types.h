@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <bitset>
 
 using u64 = std::uint64_t;
 

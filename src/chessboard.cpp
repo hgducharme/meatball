@@ -13,9 +13,6 @@ Chessboard::Chessboard()
     // Initialize the 'whitePieces' and 'blackPieces' bitboards
     whiteOccupied_ = bitboard::DEFAULT_WHITE_OCCUPIED;
     blackOccupied_ = bitboard::DEFAULT_BLACK_OCCUPIED;
-
-    // TODO: Initialize the occupiedSquares bitboard
-    // occupiedSquares_ = bitboard::DEFAULT_WHITE_OCCUPIED | bitboard::DEFAULT_BLACK_OCCUPIED;
 }
 
 Bitboard & Chessboard::getBitboard(PieceType piece)
@@ -35,18 +32,23 @@ Bitboard & Chessboard::getBitboard(Color color)
     }
 }
 
-// TODO: No idea why const works here. Remove it and we get an error.
-const Bitboard & Chessboard::getBitboard(Color color, PieceType piece)
+Bitboard & Chessboard::getBitboard(Color color, PieceType piece)
 {
-    Bitboard newBitboard = pieceBitboards_[piece].getBoard() & getBitboard(color).getBoard();
-    return newBitboard;
+    u64 bitwiseANDResult = pieceBitboards_[piece].getBoard() & getBitboard(color).getBoard();
+    Bitboard b(bitwiseANDResult);
+    return b;
 }
 
 void Chessboard::movePiece(Color color, PieceType piece, Square startingSquare, Square endingSquare)
 {
-    Bitboard bitboard = getBitboard(color, piece);
-    bitboard.clearBit(startingSquare);
-    bitboard.setBit(endingSquare);
+    // Update the piece bitboard
+    pieceBitboards_[piece].clearBit(startingSquare);
+    pieceBitboards_[piece].setBit(endingSquare);
+
+    // Update the occupiedSquares bitboard corresponding to the specified color
+    Bitboard & colorBoard = getBitboard(color);
+    colorBoard.clearBit(startingSquare);
+    colorBoard.setBit(endingSquare);
 }
 
 void Chessboard::generateMoves()
