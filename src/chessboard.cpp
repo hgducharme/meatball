@@ -1,5 +1,4 @@
 #include "chessboard.h"
-#include <iostream>
 
 Chessboard::Chessboard()
 {
@@ -18,12 +17,18 @@ Chessboard::Chessboard()
     board_[BLACK][KING].setBoard(bitboard::DEFAULT_BLACK_KING_STRUCTURE);
 
     // Initialize the 'whitePieces' and 'blackPieces' bitboards
-    for (int color = 0; color < sizeof(board_)/sizeof(board_[0]); color++)
+    for (int color = 0; color < static_cast<int>(sizeof(board_)/sizeof(board_[0])); color++)
     {
-        for (int piece = 0; piece < sizeof(board_[color]); piece++)
+        for (int piece = 0; piece < static_cast<int>(sizeof(board_[color])/sizeof(board_[color][0])); piece++)
         {
-            if (color == WHITE) { whiteOccupied_ |= board_[color][piece]; }
-            if (color == BLACK) { blackOccupied_ |= board_[color][piece]; }
+            if (color == WHITE)
+            {
+                whiteOccupied_ |= board_[color][piece];
+            }
+            if (color == BLACK)
+            { 
+                blackOccupied_ |= board_[color][piece];
+            }
         }
     }
 
@@ -38,9 +43,14 @@ Bitboard & Chessboard::getPieceBitboard(Color color, PieceType piece)
 
 Bitboard & Chessboard::getColorBitboard(Color color)
 {
-    if (color == WHITE) { return whiteOccupied_; }
-    if (color == BLACK) { return blackOccupied_; }
-
+    if (color == WHITE)
+    {
+        return whiteOccupied_;
+    }
+    else
+    {
+        return blackOccupied_;
+    }
 }
 
 void Chessboard::movePiece(Color color, PieceType piece, Square startingSquare, Square endingSquare)
