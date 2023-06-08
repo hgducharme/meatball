@@ -72,7 +72,8 @@ TEST_F(ChessboardTest, defaultConstructor_correctlyInitializesOccupiedSquares)
 {
    Chessboard chessboard;
 
-   u64 EXPECTED = bitboard::DEFAULT_WHITE_STRUCTURE & bitboard::DEFAULT_BLACK_STRUCTURE;
+   u64 EXPECTED = bitboard::DEFAULT_WHITE_STRUCTURE | bitboard::DEFAULT_BLACK_STRUCTURE;
+
    ASSERT_EQ(chessboard.getOccupiedSquares().getBoard(), EXPECTED);
 }
 
