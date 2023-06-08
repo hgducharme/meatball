@@ -145,5 +145,25 @@ TEST_F(BitboardTest, shorthandBitwiseOrOperator_correctlySetsNewBoardState)
    ASSERT_EQ(b.getBoard(), bitboard::DEFAULT_BLACK_QUEEN_STRUCTURE);
 }
 
+TEST_F(BitboardTest, bitwiseAndOperator_returnsNewBitboardWithCorrectResult)
+{
+   Bitboard universe(bitboard::UNIVERSE);
+   Bitboard whitePawns(bitboard::DEFAULT_WHITE_PAWN_STRUCTURE);
+
+   Bitboard result = universe & whitePawns;
+
+   ASSERT_EQ(result.getBoard(), bitboard::DEFAULT_WHITE_PAWN_STRUCTURE);
+}
+
+TEST_F(BitboardTest, shorthandBitwiseAndOperator_correctlySetsNewBoardState)
+{
+   Bitboard universe(bitboard::UNIVERSE);
+   Bitboard pawns(bitboard::DEFAULT_PAWN_STRUCTURE);
+
+   universe &= pawns;
+
+   ASSERT_EQ(universe.getBoard(), bitboard::DEFAULT_PAWN_STRUCTURE);
+}
+
 }  // namespace
 }  // namespace meatball
