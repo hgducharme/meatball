@@ -18,30 +18,26 @@ class Bitboard {
 
         // Shorthand union between this bitboard and another bitboard
         Bitboard & operator |= (const Bitboard & rhs) { 
-            u64 bitwiseORResult = this->board_ | rhs.getBoard();
-            this->setBoard(bitwiseORResult);
+            this->setBoard(this->board_ | rhs.getBoard());
             return *this;
         }
 
         // Union between two bitboards
-        friend Bitboard operator | (Bitboard & a, const Bitboard & b) {
-            Bitboard bitwiseORResult = a.getBoard() | b.getBoard();
-            return bitwiseORResult;
+        friend Bitboard operator | (const Bitboard & a, const Bitboard & b) {
+            return Bitboard(a.getBoard() | b.getBoard());
         }
 
         // Shorthand intersection between this bitboard and another bitboard
         Bitboard & operator &= (const Bitboard & rhs)
         {
-            u64 bitwiseANDResult = this->board_ & rhs.getBoard();
-            this->setBoard(bitwiseANDResult);
+            this->setBoard(this->board_ & rhs.getBoard());
             return *this;
         }
 
         // Intersection between two bitboards
-        friend Bitboard operator & (Bitboard & a, const Bitboard & b)
+        friend Bitboard operator & (const Bitboard & a, const Bitboard & b)
         {
-            Bitboard bitwiseANDResult = a.getBoard() & b.getBoard();
-            return bitwiseANDResult;
+            return Bitboard(a.getBoard() & b.getBoard());
         }
 
 };
