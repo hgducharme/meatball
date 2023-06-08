@@ -16,18 +16,20 @@ class Bitboard {
         int getBit(int n);
         void reset();
 
-        // Combine the states of this board and a different board
+        // Shorthand union between this bitboard and another bitboard
         Bitboard & operator |= (const Bitboard & rhs) { 
             u64 bitwiseORResult = this->board_ | rhs.getBoard();
             this->setBoard(bitwiseORResult);
             return *this;
         }
 
+        // Union between two bitboards
         friend Bitboard operator | (Bitboard & a, const Bitboard & b) {
             Bitboard bitwiseORResult = a.getBoard() | b.getBoard();
             return bitwiseORResult;
         }
 
+        // Shorthand intersection between this bitboard and another bitboard
         Bitboard & operator &= (const Bitboard & rhs)
         {
             u64 bitwiseANDResult = this->board_ & rhs.getBoard();
@@ -35,6 +37,7 @@ class Bitboard {
             return *this;
         }
 
+        // Intersection between two bitboards
         friend Bitboard operator & (Bitboard & a, const Bitboard & b)
         {
             Bitboard bitwiseANDResult = a.getBoard() & b.getBoard();
