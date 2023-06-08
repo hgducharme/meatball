@@ -17,16 +17,28 @@ class Bitboard {
         void reset();
 
         // Combine the states of this board and a different board
-        Bitboard & operator |= (const Bitboard& rhs) { 
-            u64 combinedBoard = this->board_ | rhs.getBoard();
-            this->setBoard(combinedBoard);
+        Bitboard & operator |= (const Bitboard & rhs) { 
+            u64 bitwiseORResult = this->board_ | rhs.getBoard();
+            this->setBoard(bitwiseORResult);
             return *this;
         }
 
         friend Bitboard operator | (Bitboard & a, const Bitboard & b) {
-            Bitboard combinedBoard = a.getBoard() | b.getBoard();
-            return combinedBoard;
+            Bitboard bitwiseORResult = a.getBoard() | b.getBoard();
+            return bitwiseORResult;
         }
 
+        Bitboard & operator &= (const Bitboard & rhs)
+        {
+            u64 bitwiseANDResult = this->board_ & rhs.getBoard();
+            this->setBoard(bitwiseANDResult);
+            return *this;
+        }
+
+        friend Bitboard operator & (Bitboard & a, const Bitboard & b)
+        {
+            Bitboard bitwiseANDResult = a.getBoard() & b.getBoard();
+            return bitwiseANDResult;
+        }
 
 };
