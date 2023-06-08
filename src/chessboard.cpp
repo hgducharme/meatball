@@ -25,11 +25,9 @@ const Bitboard & Chessboard::getBitboard(const Color color) const
     return colorBitboards_[color];
 }
 
-const Bitboard & Chessboard::getBitboard(const Color color, const PieceType piece) const
+Bitboard Chessboard::getBitboard(const Color color, const PieceType piece) const
 {
-    u64 bitwiseANDResult = pieceBitboards_[piece].getBoard() & getBitboard(color).getBoard();
-    Bitboard b(bitwiseANDResult);
-    return b;
+    return pieceBitboards_[piece] & colorBitboards_[color];
 }
 
 void Chessboard::movePiece(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare)
