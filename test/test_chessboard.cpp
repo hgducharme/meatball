@@ -65,7 +65,7 @@ TEST_F(ChessboardTest, getBitboard_returnsBitboardByColor)
 {
    Chessboard chessboard;
 
-   Bitboard & whiteBitboard = chessboard.getBitboard(WHITE);
+   const Bitboard & whiteBitboard = chessboard.getBitboard(WHITE);
 
    ASSERT_EQ(whiteBitboard.getBoard(), bitboard::DEFAULT_WHITE_OCCUPIED);
 }
@@ -74,12 +74,12 @@ TEST_F(ChessboardTest, getBitboard_returnsBitboardByPiece)
 {
    Chessboard chessboard;
 
-   Bitboard & pawnBitboard = chessboard.getBitboard(PAWN);
-   Bitboard & knightBitboard = chessboard.getBitboard(KNIGHT);
-   Bitboard & bishopBitboard = chessboard.getBitboard(BISHOP);
-   Bitboard & rookBitboard = chessboard.getBitboard(ROOK);
-   Bitboard & queenBitboard = chessboard.getBitboard(QUEEN);
-   Bitboard & kingBitboard = chessboard.getBitboard(KING);
+   const Bitboard & pawnBitboard = chessboard.getBitboard(PAWN);
+   const Bitboard & knightBitboard = chessboard.getBitboard(KNIGHT);
+   const Bitboard & bishopBitboard = chessboard.getBitboard(BISHOP);
+   const Bitboard & rookBitboard = chessboard.getBitboard(ROOK);
+   const Bitboard & queenBitboard = chessboard.getBitboard(QUEEN);
+   const Bitboard & kingBitboard = chessboard.getBitboard(KING);
 
    ASSERT_EQ(pawnBitboard.getBoard(), bitboard::DEFAULT_PAWN_STRUCTURE);
    ASSERT_EQ(knightBitboard.getBoard(), bitboard::DEFAULT_KNIGHT_STRUCTURE);
@@ -93,7 +93,7 @@ TEST_F(ChessboardTest, getBitboard_returnsBitboardByColorAndPiece)
 {
    Chessboard chessboard;
 
-   Bitboard & blackBishopBitboard = chessboard.getBitboard(BLACK, BISHOP);
+   const Bitboard & blackBishopBitboard = chessboard.getBitboard(BLACK, BISHOP);
 
    ASSERT_EQ(blackBishopBitboard.getBoard(), bitboard::DEFAULT_BLACK_BISHOP_STRUCTURE);
 }
@@ -105,7 +105,7 @@ TEST_F(ChessboardTest, movePiece_ShouldMoveWhitePawnToE4)
    chessboard.movePiece(WHITE, PAWN, e2, e4);
 
    u64 EXPECTED = 0x1000EF00;
-   Bitboard & bitboard = chessboard.getBitboard(WHITE, PAWN);
+   const Bitboard & bitboard = chessboard.getBitboard(WHITE, PAWN);
    ASSERT_EQ(bitboard.getBoard(), EXPECTED);
 }
 

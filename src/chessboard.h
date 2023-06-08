@@ -11,9 +11,9 @@ struct Chessboard {
     public:
         Chessboard();
         const Bitboard & getOccupiedSquares();
-        Bitboard & getBitboard(PieceType piece);
-        Bitboard & getBitboard(Color color);
-        Bitboard & getBitboard(Color color, PieceType piece);
-        void movePiece(Color color, PieceType piece, Square startingSquare, Square endingSquare);
+        const Bitboard & getBitboard(const PieceType piece) const;
+        const Bitboard & getBitboard(const Color color) const;
+        const Bitboard & getBitboard(const Color color, const PieceType piece) const;
+        void movePiece(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare);
         void generateMoves();
 };

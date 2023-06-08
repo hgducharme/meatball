@@ -15,12 +15,12 @@ Chessboard::Chessboard()
     blackOccupied_ = bitboard::DEFAULT_BLACK_OCCUPIED;
 }
 
-Bitboard & Chessboard::getBitboard(PieceType piece)
+const Bitboard & Chessboard::getBitboard(const PieceType piece) const
 {
     return pieceBitboards_[piece];
 }
 
-Bitboard & Chessboard::getBitboard(Color color)
+const Bitboard & Chessboard::getBitboard(const Color color) const
 {
     if (color == WHITE)
     {
@@ -32,23 +32,34 @@ Bitboard & Chessboard::getBitboard(Color color)
     }
 }
 
-Bitboard & Chessboard::getBitboard(Color color, PieceType piece)
+const Bitboard & Chessboard::getBitboard(const Color color, const PieceType piece) const
 {
     u64 bitwiseANDResult = pieceBitboards_[piece].getBoard() & getBitboard(color).getBoard();
     Bitboard b(bitwiseANDResult);
     return b;
 }
 
-void Chessboard::movePiece(Color color, PieceType piece, Square startingSquare, Square endingSquare)
+void Chessboard::movePiece(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare)
 {
     // Update the piece bitboard
     pieceBitboards_[piece].clearBit(startingSquare);
     pieceBitboards_[piece].setBit(endingSquare);
 
     // Update the occupiedSquares bitboard corresponding to the specified color
-    Bitboard & colorBoard = getBitboard(color);
-    colorBoard.clearBit(startingSquare);
-    colorBoard.setBit(endingSquare);
+    switch (color)
+    {
+        case WHITE:
+        {
+            whiteOccupied_.clearBit(startingSquare);
+            whiteOccupied_.setBit(endingSquare);
+        }
+        case BLACK:
+        {
+            blackOccupied_.clearBit(startingSquare);
+            blackOccupied_.setBit(endingSquare);
+        }
+    }
+
 }
 
 void Chessboard::generateMoves()
