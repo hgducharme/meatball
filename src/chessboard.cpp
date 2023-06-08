@@ -52,12 +52,15 @@ void Chessboard::movePiece(const Color color, const PieceType piece, const Squar
         {
             whiteOccupied_.clearBit(startingSquare);
             whiteOccupied_.setBit(endingSquare);
+            break;
         }
         case BLACK:
         {
             blackOccupied_.clearBit(startingSquare);
             blackOccupied_.setBit(endingSquare);
+            break;
         }
+        case NUMBER_OF_COLORS: { break; }
     }
 
 }
