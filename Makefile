@@ -22,7 +22,7 @@ CXX := clang++
 
 # Compiler flags
 DEBUG = -g
-COVERAGE := -O1 -fPIC --coverage # (--coverage is a synonym for: -fprofile-arcs -ftest-coverage)
+COVERAGE := -O0 -fPIC --coverage # (--coverage is a synonym for: -fprofile-arcs -ftest-coverage)
 CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -std=c++17 $(DEBUG) $(COVERAGE)
 
 # C PreProcessor flags, generally used for path management, dependency file generation, and dumping preprocessor state
