@@ -17,23 +17,11 @@ Chessboard::Chessboard()
     board_[BLACK][KING].setBoard(bitboard::DEFAULT_BLACK_KING_STRUCTURE);
 
     // Initialize the 'whitePieces' and 'blackPieces' bitboards
-    for (int color = 0; color < static_cast<int>(sizeof(board_)/sizeof(board_[0])); color++)
-    {
-        for (int piece = 0; piece < static_cast<int>(sizeof(board_[color])/sizeof(board_[color][0])); piece++)
-        {
-            if (color == WHITE)
-            {
-                whiteOccupied_ |= board_[color][piece];
-            }
-            if (color == BLACK)
-            { 
-                blackOccupied_ |= board_[color][piece];
-            }
-        }
-    }
+    whiteOccupied_ = bitboard::DEFAULT_WHITE_OCCUPIED;
+    blackOccupied_ = bitboard::DEFAULT_BLACK_OCCUPIED;
 
     // Initialize the occupiedSquares bitboard
-    occupiedSquares_ = whiteOccupied_ | blackOccupied_;
+    occupiedSquares_ = bitboard::DEFAULT_WHITE_OCCUPIED | bitboard::DEFAULT_BLACK_OCCUPIED;
 }
 
 Bitboard & Chessboard::getPieceBitboard(Color color, PieceType piece)
