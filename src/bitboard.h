@@ -23,9 +23,9 @@ class Bitboard {
             return *this;
         }
 
-        friend Bitboard operator | (Bitboard & a, const Bitboard & b) { 
-            a |= b;
-            return a;
+        friend Bitboard operator | (Bitboard & a, const Bitboard & b) {
+            Bitboard combinedBoard = a.getBoard() | b.getBoard();
+            return combinedBoard;
         }
 
 

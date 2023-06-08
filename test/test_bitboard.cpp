@@ -109,5 +109,41 @@ TEST_F(BitboardTest, reset_ResetsBoardState)
    ASSERT_EQ(bitboard.getBoard(), bitboard::EMPTY_BOARD);
 }
 
+TEST_F(BitboardTest, setBoard_correctlySetsBitboard)
+{
+   Bitboard bitboard;
+
+   bitboard.setBoard(bitboard::UNIVERSE);
+
+   ASSERT_EQ(bitboard.getBoard(), bitboard::UNIVERSE);
+}
+
+TEST_F(BitboardTest, bitwiseOrOperator_returnsNewBitboard)
+{
+   Bitboard a(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+   Bitboard b(bitboard::DEFAULT_WHITE_PAWN_STRUCTURE);
+
+   Bitboard c = a | b;
+
+   u64 EXPECTED = 0x00FF00000000FF00;
+   ASSERT_EQ(c.getBoard(), EXPECTED);
+}
+
+TEST_F(BitboardTest, shorthandBitwiseOrOperator_correctlySetsNewBoardState)
+{
+   Bitboard a(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+   Bitboard b(bitboard::DEFAULT_BLACK_QUEEN_STRUCTURE);
+
+   a |= b;
+
+   u64 EXPECTED = 0x08FF000000000000;
+
+   // bitboard a has an updated state
+   ASSERT_EQ(a.getBoard(), EXPECTED);
+
+   // bitboard b is unchanged
+   ASSERT_EQ(b.getBoard(), bitboard::DEFAULT_BLACK_QUEEN_STRUCTURE);
+}
+
 }  // namespace
 }  // namespace meatball
