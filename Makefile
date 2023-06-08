@@ -104,9 +104,6 @@ $(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
 
 coverage: tests | $(COVERAGE_DIR)
 	@echo
-	@echo "Running test executable..."
-	./$(TEST_EXECUTABLE)
-	@echo
 	@echo "Generating test coverage data..."
 	gcov --color $(sourcefiles_without_main) -o=$(BUILD_DIR)/src
 	mv *.gcov $(COVERAGE_DIR)/
