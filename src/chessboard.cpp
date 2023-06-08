@@ -11,8 +11,8 @@ Chessboard::Chessboard()
     pieceBitboards_[KING].setBoard(bitboard::DEFAULT_KING_STRUCTURE);
 
     // Initialize the 'whitePieces' and 'blackPieces' bitboards
-    whiteOccupied_ = bitboard::DEFAULT_WHITE_OCCUPIED;
-    blackOccupied_ = bitboard::DEFAULT_BLACK_OCCUPIED;
+    colorBitboards_[WHITE] = bitboard::DEFAULT_WHITE_OCCUPIED;
+    colorBitboards_[BLACK] = bitboard::DEFAULT_BLACK_OCCUPIED;
 }
 
 const Bitboard & Chessboard::getBitboard(const PieceType piece) const
@@ -22,14 +22,7 @@ const Bitboard & Chessboard::getBitboard(const PieceType piece) const
 
 const Bitboard & Chessboard::getBitboard(const Color color) const
 {
-    if (color == WHITE)
-    {
-        return whiteOccupied_;
-    }
-    else
-    {
-        return blackOccupied_;
-    }
+    return colorBitboards_[color];
 }
 
 const Bitboard & Chessboard::getBitboard(const Color color, const PieceType piece) const
@@ -46,23 +39,8 @@ void Chessboard::movePiece(const Color color, const PieceType piece, const Squar
     pieceBitboards_[piece].setBit(endingSquare);
 
     // Update the occupiedSquares bitboard corresponding to the specified color
-    switch (color)
-    {
-        case WHITE:
-        {
-            whiteOccupied_.clearBit(startingSquare);
-            whiteOccupied_.setBit(endingSquare);
-            break;
-        }
-        case BLACK:
-        {
-            blackOccupied_.clearBit(startingSquare);
-            blackOccupied_.setBit(endingSquare);
-            break;
-        }
-        case NUMBER_OF_COLORS: { break; }
-    }
-
+    colorBitboards_[color].clearBit(startingSquare);
+    colorBitboards_[color].setBit(endingSquare);
 }
 
 void Chessboard::generateMoves()

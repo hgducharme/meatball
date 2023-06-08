@@ -4,8 +4,7 @@
 struct Chessboard {
     private:
         Bitboard pieceBitboards_[NUMBER_OF_PIECES];
-        Bitboard whiteOccupied_;
-        Bitboard blackOccupied_;
+        Bitboard colorBitboards_[NUMBER_OF_COLORS];
         Color sideToMove_ = WHITE;
 
     public:
