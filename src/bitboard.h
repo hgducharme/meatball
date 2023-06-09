@@ -21,7 +21,7 @@ class Bitboard {
 
         // Shorthand union between this bitboard and another bitboard
         Bitboard & operator |= (const Bitboard & rhs) { 
-            this->setBoard(this->board_ | rhs.getBoard());
+            setBoard(board_ | rhs.getBoard());
             return *this;
         }
 
@@ -33,7 +33,7 @@ class Bitboard {
         // Shorthand intersection between this bitboard and another bitboard
         Bitboard & operator &= (const Bitboard & rhs)
         {
-            this->setBoard(this->board_ & rhs.getBoard());
+            setBoard(board_ & rhs.getBoard());
             return *this;
         }
 

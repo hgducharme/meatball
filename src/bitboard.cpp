@@ -2,7 +2,7 @@
 
 Bitboard::Bitboard(u64 boardState)
 {
-    this->setBoard(boardState);
+    setBoard(boardState);
 }
 
 void Bitboard::setBit(int n)
@@ -25,7 +25,7 @@ int Bitboard::getBit(int n) const
 
 void Bitboard::reset()
 {
-    this->setBoard(bitboard::EMPTY_BOARD);
+    setBoard(bitboard::EMPTY_BOARD);
 }
 
 int Bitboard::numberOfSetBits() const
