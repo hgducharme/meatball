@@ -165,5 +165,50 @@ TEST_F(BitboardTest, shorthandBitwiseAndOperator_correctlySetsNewBoardState)
    ASSERT_EQ(universe.getBoard(), bitboard::DEFAULT_PAWN_STRUCTURE);
 }
 
+TEST_F(BitboardTest, populationCount_countsNumberOfSetBitsInUniverseSet)
+{
+   Bitboard universe(bitboard::UNIVERSE);
+
+   int numberOfSetBits = universe.populationCount();
+
+   ASSERT_EQ(numberOfSetBits, 64);
+}
+
+TEST_F(BitboardTest, populationCount_countsNumberOfSetBitsInEmptySet)
+{
+   Bitboard emptySet(bitboard::EMPTY_BOARD);
+
+   int numberOfSetBits = emptySet.populationCount();
+
+   ASSERT_EQ(numberOfSetBits, 0);
+}
+
+TEST_F(BitboardTest, populationCount_countsNumberOfSetBitsInWhiteBishopStructure)
+{
+   Bitboard whiteBishops(bitboard::DEFAULT_WHITE_BISHOP_STRUCTURE);
+
+   int numberOfSetBits = whiteBishops.populationCount();
+
+   ASSERT_EQ(numberOfSetBits, 2);
+}
+
+TEST_F(BitboardTest, bitscanForward_findsIndexOfLeastSignificantBit)
+{
+   Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+
+   int indexOfFirstBlackPawn = blackPawns.bitscanForward();
+
+   ASSERT_EQ(indexOfFirstBlackPawn, Square::a7);
+}
+
+TEST_F(BitboardTest, bitscanReverse_findsIndexOfMostSignificantBit)
+{
+   Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+
+   int indexOfLastBlackPawn = blackPawns.bitscanReverse();
+
+   ASSERT_EQ(indexOfLastBlackPawn, Square::h7);
+}
+
 }  // namespace
 }  // namespace meatball
