@@ -219,6 +219,15 @@ TEST_F(BitboardTest, findIndexLSB_doesNotModifyTheOriginalValue)
    ASSERT_EQ(blackPawns.getBoard(), bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
 }
 
+TEST_F(BitboardTest, findIndexLSB_returnsNegativeOneIfNoBitIsSet)
+{
+   Bitboard emptyBoard(bitboard::EMPTY_BOARD);
+
+   int indexOfLSB = emptyBoard.findIndexLSB();
+
+   ASSERT_EQ(indexOfLSB, -1);
+}
+
 TEST_F(BitboardTest, findMSBIndex_findsIndexOfMostSignificantBit)
 {
    Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
@@ -235,6 +244,15 @@ TEST_F(BitboardTest, findIndexMSB_doesNotModifyTheOriginalValue)
    blackPawns.findIndexMSB();
 
    ASSERT_EQ(blackPawns.getBoard(), bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+}
+
+TEST_F(BitboardTest, findIndexMSB_returnsNegativeOneIfNoBitIsSet)
+{
+   Bitboard emptyBoard(bitboard::EMPTY_BOARD);
+
+   int indexOfMSB = emptyBoard.findIndexMSB();
+
+   ASSERT_EQ(indexOfMSB, -1);
 }
 
 }  // namespace
