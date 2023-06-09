@@ -8,7 +8,7 @@ The brains of the chess engine can be broken up into three distinct categories:
 2. Search - Monte Carlo Tree Search (MCTS)
 3. Evaluation - deep neural network
 
-NOTE: This code is written with readability in mind and is not meant to be optimized (although certain optimizations may occur in future releases). There are also instances in this code that can be replaced with data structures or functions in the C++ standard library, but that's no fun so I decided to implement them as an exercise.
+This code is written with readability in mind and is not meant to be optimized (although certain optimizations may occur in future releases).
 
 # Installation
 
