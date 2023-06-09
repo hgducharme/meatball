@@ -13,8 +13,11 @@ class Bitboard {
         inline void setBoard(const u64 boardState) { board_ = boardState; };
         void setBit(int n);
         void clearBit(int n);
-        int getBit(int n);
+        int getBit(int n) const;
         void reset();
+        int numberOfSetBits() const;
+        int findIndexLSB() const;
+        int findIndexMSB() const;
 
         // Shorthand union between this bitboard and another bitboard
         Bitboard & operator |= (const Bitboard & rhs) { 

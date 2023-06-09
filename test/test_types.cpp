@@ -124,6 +124,12 @@ TEST_F(TypesTest, defaultWhiteStructure)
    ASSERT_EQ(bitboard::DEFAULT_WHITE_OCCUPIED, EXPECTED);
 }
 
+TEST_F(TypesTest, mostSignificantBitSet)
+{
+   u64 EXPECTED = 0x8000000000000000;
+   ASSERT_EQ(bitboard::MOST_SIGNIFICANT_BIT_SET, EXPECTED);
+}
+
 }  // namespace
 }  // namespace meatball
 

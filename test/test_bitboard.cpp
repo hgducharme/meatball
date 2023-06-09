@@ -165,49 +165,76 @@ TEST_F(BitboardTest, shorthandBitwiseAndOperator_correctlySetsNewBoardState)
    ASSERT_EQ(universe.getBoard(), bitboard::DEFAULT_PAWN_STRUCTURE);
 }
 
-TEST_F(BitboardTest, populationCount_countsNumberOfSetBitsInUniverseSet)
+TEST_F(BitboardTest, numberOfSetBits_countsNumberOfSetBitsInUniverseSet)
 {
    Bitboard universe(bitboard::UNIVERSE);
 
-   int numberOfSetBits = universe.populationCount();
+   int numberOfSetBits = universe.numberOfSetBits();
 
    ASSERT_EQ(numberOfSetBits, 64);
 }
 
-TEST_F(BitboardTest, populationCount_countsNumberOfSetBitsInEmptySet)
+TEST_F(BitboardTest, numberOfSetBits_countsNumberOfSetBitsInEmptySet)
 {
    Bitboard emptySet(bitboard::EMPTY_BOARD);
 
-   int numberOfSetBits = emptySet.populationCount();
+   int numberOfSetBits = emptySet.numberOfSetBits();
 
    ASSERT_EQ(numberOfSetBits, 0);
 }
 
-TEST_F(BitboardTest, populationCount_countsNumberOfSetBitsInWhiteBishopStructure)
+TEST_F(BitboardTest, numberOfSetBits_countsNumberOfSetBitsInWhiteBishopStructure)
 {
    Bitboard whiteBishops(bitboard::DEFAULT_WHITE_BISHOP_STRUCTURE);
 
-   int numberOfSetBits = whiteBishops.populationCount();
+   int numberOfSetBits = whiteBishops.numberOfSetBits();
 
    ASSERT_EQ(numberOfSetBits, 2);
 }
 
-TEST_F(BitboardTest, bitscanForward_findsIndexOfLeastSignificantBit)
+TEST_F(BitboardTest, numberOfSetBits_doesNotModifyTheOriginalValue)
+{
+   Bitboard universe(bitboard::UNIVERSE);
+
+   universe.numberOfSetBits();
+
+   ASSERT_EQ(universe.getBoard(), bitboard::UNIVERSE);
+}
+
+TEST_F(BitboardTest, findIndexLSB_findsIndexOfLeastSignificantBit)
 {
    Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
 
-   int indexOfFirstBlackPawn = blackPawns.bitscanForward();
+   int indexOfFirstBlackPawn = blackPawns.findIndexLSB();
 
    ASSERT_EQ(indexOfFirstBlackPawn, Square::a7);
 }
 
-TEST_F(BitboardTest, bitscanReverse_findsIndexOfMostSignificantBit)
+TEST_F(BitboardTest, findIndexLSB_doesNotModifyTheOriginalValue)
 {
    Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
 
-   int indexOfLastBlackPawn = blackPawns.bitscanReverse();
+   blackPawns.findIndexLSB();
+
+   ASSERT_EQ(blackPawns.getBoard(), bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+}
+
+TEST_F(BitboardTest, findMSBIndex_findsIndexOfMostSignificantBit)
+{
+   Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+
+   int indexOfLastBlackPawn = blackPawns.findIndexMSB();
 
    ASSERT_EQ(indexOfLastBlackPawn, Square::h7);
+}
+
+TEST_F(BitboardTest, findIndexMSB_doesNotModifyTheOriginalValue)
+{
+   Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+
+   blackPawns.findIndexMSB();
+
+   ASSERT_EQ(blackPawns.getBoard(), bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
 }
 
 }  // namespace
