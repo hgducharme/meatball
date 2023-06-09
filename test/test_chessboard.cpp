@@ -109,11 +109,38 @@ TEST_F(ChessboardTest, movePiece_ShouldMoveWhitePawnToE4)
    ASSERT_EQ(bitboard.getBoard(), EXPECTED);
 }
 
-TEST_F(ChessboardTest, generateMoves1)
+TEST_F(ChessboardTest, movePiece_togglesSideToMove)
 {
    Chessboard chessboard;
 
-   chessboard.generateMoves();
+   // Make sure after white's move it becomes black's move
+   chessboard.movePiece(WHITE, PAWN, e2, e4);
+   Color sideToMove = chessboard.getSideToMove();
+   ASSERT_EQ(sideToMove, BLACK);
+
+   // Once black moves it should be white's move again
+   chessboard.movePiece(BLACK, PAWN, d7, d5);
+   sideToMove = chessboard.getSideToMove();
+   ASSERT_EQ(sideToMove, WHITE);
+}
+
+TEST_F(ChessboardTest, movePiece_doesNothingIfWrongSideTriesToMakeMove)
+{
+   Chessboard chessboard;
+
+   // It's white's turn by default
+   chessboard.movePiece(BLACK, PAWN, e2, e4);
+
+   ASSERT_EQ(chessboard.getBitboard(PAWN).getBoard(), bitboard::DEFAULT_PAWN_STRUCTURE);
+}
+
+TEST_F(ChessboardTest, getSideToMove_returnsWhiteByDefault)
+{
+   Chessboard chessboard;
+
+   Color sideToMove = chessboard.getSideToMove();
+
+   ASSERT_EQ(sideToMove, WHITE);
 }
 
 }  // namespace
