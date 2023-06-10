@@ -4,7 +4,7 @@
 
 class Bitboard {
     private:
-        u64 board_ = 0;
+        u64 board_ = bitboard::EMPTY_BOARD;
 
     public:
         Bitboard() = default;

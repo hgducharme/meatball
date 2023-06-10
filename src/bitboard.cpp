@@ -1,9 +1,6 @@
 #include "bitboard.h"
-
-Bitboard::Bitboard(u64 boardState)
-{
-    setBoard(boardState);
-}
+Bitboard::Bitboard(u64 boardState) : board_(boardState)
+{}
 
 void Bitboard::setBit(int n)
 {
