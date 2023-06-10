@@ -106,8 +106,8 @@ coverage: tests | $(COVERAGE_DIR)
 	@echo
 	@echo "Generating test coverage data..."
 	gcov --color $(sourcefiles_without_main) -o=$(BUILD_DIR)/src
-	mv *.gcov $(COVERAGE_DIR)/
-	gcovr --html-details $(COVERAGE_DIR)/coverage.html $(BUILD_DIR)/src
+	mv *.gcov $(COVERAGE_DIR)/gcov
+	gcovr --html-details $(COVERAGE_DIR)/html/coverage.html $(BUILD_DIR)/src
 
 # -------------------------------------- #
 # Folder targets
@@ -119,7 +119,8 @@ $(BUILD_DIR):
 	mkdir -p $@
 
 $(COVERAGE_DIR):
-	mkdir -p $@
+	mkdir -p $@/gcov
+	mkdir -p $@/html
 
 # -------------------------------------- #
 # Clean
