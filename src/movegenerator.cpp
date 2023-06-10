@@ -8,6 +8,8 @@ std::vector<Move> MoveGenerator::generatePsuedoLegalMoves(const Chessboard & che
     // std::vector<Move> rookMoves = getRookMoves();
     // std::vector<Move> queenMoves = getQueenMoves();
     // std::vector<Move> kingMoves = getKingMoves();
+
+    return pawnMoves;
 }
 
 std::vector<Move> MoveGenerator::generatePawnMoves(const Chessboard & chessboard)
@@ -33,7 +35,7 @@ std::vector<Move> MoveGenerator::generatePawnMoves(const Chessboard & chessboard
         // pawnAttackTable[8] (square A2 from white's POV) will say the pawn can go to square A3 or capture on B3 (if there's an opponent on B3).
         // But this won't work if we're masking this against black pawns because a black pawn on square A2 can only go to A1 or capture on B1
         // (if there's an opponent's piece).
-        Bitboard psuedoLegalPawnMoves = attack_tables::pawnAttackTable[startingSquare];
+        Bitboard psuedoLegalPawnMoves = attack_tables::pawn[startingSquare];
 
         // Iterate over every psuedo legal pawn moves, encode the move into an object, and append the move to the vector
         int numberOfPsuedoLegalPawnMoves = psuedoLegalPawnMoves.numberOfSetBits();

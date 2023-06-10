@@ -45,7 +45,8 @@ TEST_F(MoveGeneratorTest, generatePsuedoLegalMoves)
 {
    Chessboard chessboard;
    MoveGenerator moveGenerator;
-
+   attack_tables::init();
+   
    std::vector<Move> moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
 }
 

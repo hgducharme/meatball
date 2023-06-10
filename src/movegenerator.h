@@ -8,7 +8,8 @@
 
 class MoveGenerator
 {
-    MoveGenerator() = default;
-    std::vector<Move> generatePsuedoLegalMoves(const Chessboard & chessboard);
-    std::vector<Move> generatePawnMoves(const Chessboard & chessboard);
+    public:
+        MoveGenerator() = default;
+        std::vector<Move> generatePsuedoLegalMoves(const Chessboard & chessboard);
+        std::vector<Move> generatePawnMoves(const Chessboard & chessboard);
 };
