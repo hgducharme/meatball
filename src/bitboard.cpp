@@ -99,3 +99,17 @@ int Bitboard::findIndexMSB() const
 
     return indexOfMSB;
 }
+
+int Bitboard::clearAndReturnLSB()
+{
+    int indexOfLSB = findIndexLSB();
+    clearBit(indexOfLSB);
+    return indexOfLSB;
+}
+
+int Bitboard::clearAndReturnMSB()
+{
+    int indexOfMSB = findIndexMSB();
+    clearBit(indexOfMSB);
+    return indexOfMSB;
+}
