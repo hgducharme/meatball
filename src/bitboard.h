@@ -18,6 +18,8 @@ class Bitboard {
         int numberOfSetBits() const;
         int findIndexLSB() const;
         int findIndexMSB() const;
+        int clearAndReturnLSB();
+        int clearAndReturnMSB();
 
         // Shorthand union between this bitboard and another bitboard
         Bitboard & operator |= (const Bitboard & rhs) { 

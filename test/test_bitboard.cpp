@@ -255,5 +255,28 @@ TEST_F(BitboardTest, findIndexMSB_returnsNegativeOneIfNoBitIsSet)
    ASSERT_EQ(indexOfMSB, -1);
 }
 
+TEST_F(BitboardTest, clearAndReturnLSB)
+{
+   Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+
+   int indexOfLSB = blackPawns.clearAndReturnLSB();
+
+   int squareA7 = 48;
+   EXPECT_EQ(indexOfLSB, squareA7);
+   EXPECT_EQ(blackPawns.getBit(indexOfLSB), 0);
+}
+
+TEST_F(BitboardTest, returnAndClearMSB)
+{
+   Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+
+   int indexOfMSB = blackPawns.clearAndReturnMSB();
+
+   int squareH7 = 55;
+   EXPECT_EQ(indexOfMSB, squareH7);
+   EXPECT_EQ(blackPawns.getBit(indexOfMSB), 0);
+}
+
+
 }  // namespace
 }  // namespace meatball
