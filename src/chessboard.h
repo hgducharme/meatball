@@ -2,6 +2,7 @@
 
 #include "bitboard.h"
 #include "types.h"
+#include "constants.h"
 
 class Chessboard {
     private:
@@ -10,6 +11,9 @@ class Chessboard {
         Color sideToMove_ = WHITE;
 
     public:
+        File static squareToFile(Square s);
+        Rank static squareToRank(Square s);
+
         Chessboard();
         const Bitboard & getOccupiedSquares();
         const Bitboard & getBitboard(const PieceType piece) const;

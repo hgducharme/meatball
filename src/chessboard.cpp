@@ -1,5 +1,32 @@
 #include "chessboard.h"
 
+File Chessboard::squareToFile(Square s)
+{
+   /*
+   Let n be the square's rank [0, 8]
+   A file squares are multiples of 8
+   B file squares are multiples of 8n + 1
+   ...
+   H file squares are multiples of 8n + 7
+   Therefore, file = square % 8
+   */
+   return static_cast<File>(static_cast<int>(s) % 8);
+}
+
+Rank Chessboard::squareToRank(Square s)
+{
+   /*
+   Let n be the square's file [0, 8]
+   Rank 0 squares are in the range [0, 7] (less than 8*1)
+   Rank 1 squares are in the range [8, 15] (between 8*1 and 8*2)
+   ...
+   Rank 8 squares are in the range [56, 63] (between 8*7 and 8*8)
+   Therefore, rank = floor(square / 8)
+   Since integer division in C++ truncates towards zero, (square / 8) will produce the same result.
+   */
+   return static_cast<Rank>( (static_cast<int>(s) / 8) );
+}
+
 Chessboard::Chessboard()
 {
     // Initialize the bitboards for each piece type
@@ -38,7 +65,7 @@ void Chessboard::movePiece(const Color color, const PieceType piece, const Squar
     pieceBitboards_[piece].clearBit(startingSquare);
     pieceBitboards_[piece].setBit(endingSquare);
 
-    // Update the occupiedSquares bitboard corresponding to the specified color
+    // Update the color bitboard
     colorBitboards_[color].clearBit(startingSquare);
     colorBitboards_[color].setBit(endingSquare);
 

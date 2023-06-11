@@ -143,5 +143,33 @@ TEST_F(ChessboardTest, getSideToMove_returnsWhiteByDefault)
    ASSERT_EQ(sideToMove, WHITE);
 }
 
+TEST_F(ChessboardTest, squareToFile)
+{
+   for (int i = Square::a1; i <= Square::h8; i++)
+   {
+      Square square = static_cast<Square>(i);
+      File file = Chessboard::squareToFile(square);
+
+      // Using this method for verifying file calculation:
+      // https://www.chessprogramming.org/Squares#Square_by_Rank_and_File
+      File EXPECTED = static_cast<File>(static_cast<u64>(i) & static_cast<u64>(7));
+      EXPECT_EQ(file, EXPECTED);
+   }
+}
+
+TEST_F(ChessboardTest, squareToRank)
+{
+   for (int i = Square::a1; i <= Square::h8; i++)
+   {
+      Square square = static_cast<Square>(i);
+      Rank rank = Chessboard::squareToRank(square);
+
+      // Using this method for verifying rank calculation:
+      // https://www.chessprogramming.org/Squares#Square_by_Rank_and_File
+      Rank EXPECTED = static_cast<Rank>(static_cast<u64>(i) >> static_cast<u64>(3));
+      EXPECT_EQ(rank, EXPECTED);
+   }
+}
+
 }  // namespace
 }  // namespace meatball
