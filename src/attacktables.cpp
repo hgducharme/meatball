@@ -45,7 +45,36 @@ void initializePawnAttackTable()
         // one move to the north east corresponds to the bit 9 positions larger than the current bit
         // So shift the attack mask such that the LSB in the mask is 7 positions ahead of the current square
         // That will set the 7th, 8th, and 9th bit in "front" of the current square to 1
-        attack_tables::pawn[square] = (constants::attack_masks::pawn_single_push << (square + 7));
+
+        // If the targetSquare is more than 1 square away then it's not a legal move
+        // For example, the pawn attack mask will say the a2 pawn can travel north west, which means it would
+        // end up on the h2 square, which is impossible.
+        // If we're considering pawns on the A-file, they can only travel north and north east
+        // Pawns on the H-file can only travel north and north west
+        // We can check:
+        // - if the distance of the target square is more than 1 square away from the starting square
+        // - the file of the starting square and adjust the attackmask accordingly
+        
+        u64 legalMoves;
+        switch (Chessboard::squareToFile(static_cast<Square>(square)))
+        {
+            case FILE_A:
+            {
+               u64 disabledNorthWestMoves = constants::attack_masks::pawn_single_push & 0x3;
+               legalMoves = disabledNorthWestMoves << (square + 7);
+            }
+            case FILE_H:
+            {
+               u64 disabledNorthEastMoves = constants::attack_masks::pawn_single_push & 0x6;
+               legalMoves = disabledNorthEastMoves << (square + 7);
+            }
+            default:
+            {
+               legalMoves = constants::attack_masks::pawn_single_push << (square + 7);
+            }
+        }
+
+        attack_tables::pawn[square] = legalMoves;
     }
 }
 
