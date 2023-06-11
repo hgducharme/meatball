@@ -48,6 +48,7 @@ TEST_F(MoveGeneratorTest, generatePsuedoLegalMoves)
    MoveGenerator moveGenerator;
    attack_tables::init();
    
+   // TODO: Need to fix illegal moves for pawns on the A and H files
    std::vector<Move> moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
 }
 
