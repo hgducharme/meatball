@@ -22,7 +22,7 @@ std::vector<Move> MoveGenerator::generatePawnMoves(const Chessboard & chessboard
     int numberOfPawnsOnBoard = pawns.numberOfSetBits();
     for (int i = 0; i < numberOfPawnsOnBoard; i++)
     {
-        int startingSquare = pawns.findIndexLSB();
+        int startingSquare = pawns.clearAndReturnLSB();
 
         // pawnAttackTable is an array of 64, 64-bit integers.
         // pawnAttackTable[0] is the 64-bit integer representing the valid pawn moves for Square 0 (aka square A1).
@@ -41,8 +41,8 @@ std::vector<Move> MoveGenerator::generatePawnMoves(const Chessboard & chessboard
         int numberOfPsuedoLegalPawnMoves = psuedoLegalPawnMoves.numberOfSetBits();
         for (int j = 0; j < numberOfPsuedoLegalPawnMoves; j++)
         {
-            int currentTargetSquare = psuedoLegalPawnMoves.findIndexLSB();
-            Move m(sideToMove, PAWN, static_cast<Square>(startingSquare), static_cast<Square>(currentTargetSquare));
+            int targetSquare = psuedoLegalPawnMoves.clearAndReturnLSB();
+            Move m(sideToMove, PAWN, static_cast<Square>(startingSquare), static_cast<Square>(targetSquare));
             moveVector.push_back(m);
         }
     }
