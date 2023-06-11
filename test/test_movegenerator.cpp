@@ -1,4 +1,5 @@
 #include "../src/movegenerator.h"
+#include "../src/attacktables.h"
 #include "../src/types.h"
 
 #include "gtest/gtest.h"
