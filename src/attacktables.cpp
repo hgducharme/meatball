@@ -54,19 +54,21 @@ void initializePawnAttackTable()
         // We can check:
         // - if the distance of the target square is more than 1 square away from the starting square
         // - the file of the starting square and adjust the attackmask accordingly
-        
+
         u64 legalMoves;
         switch (Chessboard::squareToFile(static_cast<Square>(square)))
         {
             case FILE_A:
             {
                u64 disabledNorthWestMoves = constants::attack_masks::pawn_single_push & 0x3;
-               legalMoves = disabledNorthWestMoves << (square + 7);
+               legalMoves = disabledNorthWestMoves << (square + 8);
+               break;
             }
             case FILE_H:
             {
                u64 disabledNorthEastMoves = constants::attack_masks::pawn_single_push & 0x6;
-               legalMoves = disabledNorthEastMoves << (square + 7);
+               legalMoves = disabledNorthEastMoves << (square + 6);
+               break;
             }
             default:
             {
