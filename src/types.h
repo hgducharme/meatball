@@ -48,16 +48,16 @@ enum PieceType
     NUMBER_OF_PIECES = 6
 };
 
-enum Directions
+enum Direction
 {
-    NORTH = 1,
-    SOUTH = -1,
-    EAST = 2,
-    WEST = -2,
-    NORTH_EAST = 3,
-    SOUTH_WEST = -3,
-    NORTH_WEST = 4,
-    SOUTH_EAST = -4
+    NORTH = 8,
+    SOUTH = -8,
+    NORTH_EAST = 9,
+    SOUTH_WEST = -9,
+    NORTH_WEST = 7,
+    SOUTH_EAST = -7,
+    EAST = 1,
+    WEST = -1,
 };
 
 enum Square
