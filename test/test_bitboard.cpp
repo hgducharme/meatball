@@ -54,6 +54,15 @@ TEST_F(BitboardTest, constructor_canInitializeBoardWithAState)
    ASSERT_EQ(bitboard.getBoard(), bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
 }
 
+TEST_F(BitboardTest, constructor_createBitboardFromSquare)
+{
+   Square d5 = Square::d5;
+   Bitboard b(d5);
+
+   u64 EXPECTED = 0x800000000;
+   ASSERT_EQ(b.getBoard(), EXPECTED);
+}
+
 TEST_F(BitboardTest, setBit)
 {
    Bitboard bitboard;

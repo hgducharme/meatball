@@ -2,6 +2,11 @@
 Bitboard::Bitboard(u64 boardState) : board_(boardState)
 {}
 
+Bitboard::Bitboard(Square s)
+{
+    setBit(s);
+}
+
 void Bitboard::setBit(int n)
 {
     // Shift bitboard::ONE by n positions to the left and do a bitwise OR with board_
