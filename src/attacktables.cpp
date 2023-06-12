@@ -5,78 +5,49 @@ namespace attack_tables
 
 Bitboard pawn[Square::NUMBER_OF_SQUARES];
 
-void init()
+constexpr void init()
 {
     initializePawnAttackTable();
 }
 
-void initializePawnAttackTable()
+constexpr void initializePawnAttackTable()
 {
-    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
+    for (unsigned int s = 0; s < Square::NUMBER_OF_SQUARES; s++)
     {
-        // From the side to move reference frame:
-        // No pawns will ever be on the first or last rank
-        // Pawns get initialized on the second rank
+        Square square = static_cast<Square>(s);
+
+        // From the side to move reference frame: a pawn will never be on rank 1,
         // and if a pawn is on the last rank that means it's a promotion
-        if (square < Square::a2 || square > Square::h7)
+        if (Chessboard::squareToRank(square) == RANK_1 || Chessboard::squareToRank(square) == RANK_8)
         {
-            /*
-            From the perspective of the side who is moving, no pawn will ever be on the first rank
-            NOTE: I need to be careful with this implementation. Right now I'm using absolute positions
-            (square a1, a2, ..., etc.), but am messing with reference frames.
-            For example, I am setting all squares A1 to H1 as having no valid moves for a pawn
-            (from the perspective of whoever's side it is to move). However, when flipping reference frames,
-            black pawns don't change their absolute position in the intertial reference frame (squares a1, a2, etc.).
-            But this following implementation is saying the black pieces are moving their position in the interial frame
-            to white's squares.
-            */
-            attack_tables::pawn[square] = bitboard::EMPTY_BOARD;
+            attack_tables::pawn[square] = 0;
         }
 
-        // Create a bitboard representing the position of the current square
-        Bitboard b;
-        b.setBit(square);
-
-        // The valid positions from the current square is one move to either the north west, north, or north east
-        // This corresponds to 7, 8, or 9 bits closer to the 64th (last) bit, respectively.
-        // AKA:
         // one move to the north west corresponds to the bit 7 positions larger than the current bit
         // one move to the north      corresponds to the bit 8 positions larger than the current bit
         // one move to the north east corresponds to the bit 9 positions larger than the current bit
-        // So shift the attack mask such that the LSB in the mask is 7 positions ahead of the current square
-        // That will set the 7th, 8th, and 9th bit in "front" of the current square to 1
-
-        // If the targetSquare is more than 1 square away then it's not a legal move
-        // For example, the pawn attack mask will say the a2 pawn can travel north west, which means it would
-        // end up on the h2 square, which is impossible.
-        // If we're considering pawns on the A-file, they can only travel north and north east
-        // Pawns on the H-file can only travel north and north west
-        // We can check:
-        // - if the distance of the target square is more than 1 square away from the starting square
-        // - the file of the starting square and adjust the attackmask accordingly
-
-        u64 legalMoves;
-        switch (Chessboard::squareToFile(static_cast<Square>(square)))
+        u64 legalMovesFromThisSquare = 0;
+        if (Chessboard::squareToFile(square) == FILE_A)
         {
-            case FILE_A:
-            {
-               u64 disabledNorthWestMoves = constants::attack_masks::pawn_single_push & 0x3;
-               legalMoves = disabledNorthWestMoves << (square + 8);
-               break;
-            }
-            case FILE_H:
-            {
-               u64 disabledNorthEastMoves = constants::attack_masks::pawn_single_push & 0x6;
-               legalMoves = disabledNorthEastMoves << (square + 6);
-               break;
-            }
-            default:
-            {
-               legalMoves = constants::attack_masks::pawn_single_push << (square + 7);
-            }
+            u64 disabledNorthWestMoves = constants::attack_masks::pawn_single_push & 0x3;
+            legalMovesFromThisSquare = disabledNorthWestMoves << (square + 8);
+            // Possible ways to improve this:
+            // legalMovesFromThisSquare = square.moveNorth(1)    | square.moveNorthEast(1);
+            // legalMovesFromThisSquare = square.move(North, 1)  | square.move(NorthEast, 1);
+            // legalMovesFromThisSquare = moveNorth(1, square)   | moveNorthEast(1, square);
+            // legalMovesFromThisSquare = getBitboardForMoveNorth(1, currentSquare)
+        }
+        else if (Chessboard::squareToFile(square) == FILE_H)
+        {
+            u64 disabledNorthEastMoves = constants::attack_masks::pawn_single_push & 0x6;
+            legalMovesFromThisSquare = disabledNorthEastMoves << (square + 6);
+        }
+        else
+        {
+            legalMovesFromThisSquare = constants::attack_masks::pawn_single_push << (square + 7);
         }
 
-        attack_tables::pawn[square] = legalMoves;
+        attack_tables::pawn[square] = legalMovesFromThisSquare;
     }
 }
 
