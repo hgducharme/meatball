@@ -56,11 +56,10 @@ TEST_F(BitboardTest, constructor_canInitializeBoardWithAState)
 
 TEST_F(BitboardTest, constructor_createBitboardFromSquare)
 {
-   Square d5 = Square::d5;
-   Bitboard b(d5);
+   Bitboard d5(Square::d5);
 
    u64 EXPECTED = 0x800000000;
-   ASSERT_EQ(b.getBoard(), EXPECTED);
+   ASSERT_EQ(d5.getBoard(), EXPECTED);
 }
 
 TEST_F(BitboardTest, setBit)
@@ -284,6 +283,50 @@ TEST_F(BitboardTest, returnAndClearMSB)
    int squareH7 = 55;
    EXPECT_EQ(indexOfMSB, squareH7);
    EXPECT_EQ(blackPawns.getBit(indexOfMSB), 0);
+}
+
+TEST_F(BitboardTest, getNeighbor)
+{
+   Bitboard d5(Square::d5);
+
+   Bitboard d6 = d5.getNeighbor(NORTH);
+   Bitboard e5 = d5.getNeighbor(EAST);
+   Bitboard d4 = d5.getNeighbor(SOUTH);
+   Bitboard c5 = d5.getNeighbor(WEST);
+   Bitboard c6 = d5.getNeighbor(NORTH_WEST);
+   Bitboard e6 = d5.getNeighbor(NORTH_EAST);
+   Bitboard c4 = d5.getNeighbor(SOUTH_WEST);
+   Bitboard e4 = d5.getNeighbor(SOUTH_EAST);
+
+   u64 d6_EXPECTED = 0x80000000000;
+   u64 e5_EXPECTED = 0x1000000000;
+   u64 d4_EXPECTED = 0x8000000;
+   u64 c5_EXPECTED = 0x400000000;
+   u64 c6_EXPECTED = 0x40000000000;
+   u64 e6_EXPECTED = 0x100000000000;
+   u64 c4_EXPECTED = 0x4000000;
+   u64 e4_EXPECTED = 0x10000000;
+
+   EXPECT_EQ(d6.getBoard(), d6_EXPECTED);
+   EXPECT_EQ(e5.getBoard(), e5_EXPECTED);
+   EXPECT_EQ(d4.getBoard(), d4_EXPECTED);
+   EXPECT_EQ(c5.getBoard(), c5_EXPECTED);
+   EXPECT_EQ(c6.getBoard(), c6_EXPECTED);
+   EXPECT_EQ(e6.getBoard(), e6_EXPECTED);
+   EXPECT_EQ(c4.getBoard(), c4_EXPECTED);
+   EXPECT_EQ(e4.getBoard(), e4_EXPECTED);
+}
+
+TEST_F(BitboardTest, implictConversionFromU64)
+{
+
+}
+
+TEST_F(BitboardTest, implicitConversionToU64)
+{
+   Bitboard b;
+   u64 zero = 0;
+   ASSERT_EQ(b, zero);
 }
 
 

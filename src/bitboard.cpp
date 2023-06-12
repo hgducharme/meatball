@@ -118,3 +118,8 @@ int Bitboard::clearAndReturnMSB()
     clearBit(indexOfMSB);
     return indexOfMSB;
 }
+
+Bitboard Bitboard::getNeighbor(Direction direction) const
+{
+    return (direction > 0) ? (getBoard() << direction) : (getBoard() >> std::abs(direction));
+}

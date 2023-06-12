@@ -10,8 +10,8 @@ class Bitboard {
         Bitboard() = default;
         Bitboard(u64 boardState);
         Bitboard (Square square);
-        u64 getBoard() const { return board_; }
-        void setBoard(const u64 boardState) { board_ = boardState; };
+        inline u64 getBoard() const { return board_; }
+        inline void setBoard(const u64 boardState) { board_ = boardState; };
         void setBit(int n);
         void clearBit(int n);
         int getBit(int n) const;
@@ -21,6 +21,14 @@ class Bitboard {
         int findIndexMSB() const;
         int clearAndReturnLSB();
         int clearAndReturnMSB();
+        Bitboard getNeighbor(Direction direction) const;
+
+        // Implicit conversion from u64
+        // Bitboard(u64);
+        // Implicit conversion to u64
+        // operator uint64_t();
+        // operator u64 &() { return board_; }
+        // u64 * operator &() { return &board_; }
 
         // Shorthand union between this bitboard and another bitboard
         Bitboard & operator |= (const Bitboard & rhs) { 
