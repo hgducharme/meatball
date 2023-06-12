@@ -8,6 +8,6 @@
 namespace attack_tables
 {
     extern Bitboard pawn[Square::NUMBER_OF_SQUARES];
-    constexpr void init();
-    constexpr void initializePawnAttackTable();
+    void init();
+    void initializePawnAttackTable();
 }
