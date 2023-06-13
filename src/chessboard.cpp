@@ -57,7 +57,7 @@ Bitboard Chessboard::getBitboard(const Color color, const PieceType piece) const
     return pieceBitboards_[piece] & colorBitboards_[color];
 }
 
-void Chessboard::movePiece(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare)
+void Chessboard::applyMove(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare)
 {
     if (color != activePlayer_) { return; }
 
@@ -74,7 +74,7 @@ void Chessboard::movePiece(const Color color, const PieceType piece, const Squar
 
 void Chessboard::applyMove(const Move & move)
 {
-    movePiece(move.color, move.piece, move.startSquare, move.endSquare);
+    applyMove(move.color, move.piece, move.startSquare, move.endSquare);
 }
 
 void Chessboard::toggleActivePlayer()

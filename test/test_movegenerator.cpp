@@ -62,7 +62,7 @@ TEST_F(MoveGeneratorTest, generatePsuedoLegalMoves)
    
    std::vector<Move> moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
 
-	chessboard.movePiece(WHITE, PAWN, e2, e4);
+	chessboard.applyMove(WHITE, PAWN, e2, e4);
 
 	moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
 }
