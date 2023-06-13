@@ -37,7 +37,19 @@ class BitboardTest : public ::testing::Test
      // before the destructor).
   }
 
+  static void SetUpTestSuite()
+  {
+   // Code here will be called before the first test and will not be called again.
+  }
+
+  static void TearDownTestSuite()
+  {
+   // Code here will be called after the last test.
+  }
+
   // Class members declared here can be used by all tests in the test suite.
+  // To share resources between tests, declare them as static class members,
+  // then add their definition just below the test fixture class.
 };
 
 TEST_F(BitboardTest, defaultConstructor_shouldInitializeBoardWithStateOfZero)
