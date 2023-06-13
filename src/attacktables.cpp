@@ -46,4 +46,4 @@ void initializePawnAttackTable()
     }
 }
 
-}
+} // namespace attack_tables
