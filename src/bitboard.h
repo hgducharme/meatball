@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include <cstdlib>
 
 class Bitboard {
     private:
@@ -22,13 +23,6 @@ class Bitboard {
         int clearAndReturnLSB();
         int clearAndReturnMSB();
         Bitboard getNeighbor(Direction direction) const;
-
-        // Implicit conversion from u64
-        // Bitboard(u64);
-        // Implicit conversion to u64
-        // operator uint64_t();
-        // operator u64 &() { return board_; }
-        // u64 * operator &() { return &board_; }
 
         // Shorthand union between this bitboard and another bitboard
         Bitboard & operator |= (const Bitboard & rhs) { 
@@ -53,5 +47,7 @@ class Bitboard {
         {
             return Bitboard(a.getBoard() & b.getBoard());
         }
-
 };
+
+inline bool operator == (const Bitboard & lhs, const u64 rhs) { return lhs.getBoard() == rhs; }
+inline bool operator == (const Bitboard & lhs, const Bitboard & rhs) { return lhs.getBoard() == rhs.getBoard(); }

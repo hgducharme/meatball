@@ -289,15 +289,6 @@ TEST_F(BitboardTest, getNeighbor)
 {
    Bitboard d5(Square::d5);
 
-   Bitboard d6 = d5.getNeighbor(NORTH);
-   Bitboard e5 = d5.getNeighbor(EAST);
-   Bitboard d4 = d5.getNeighbor(SOUTH);
-   Bitboard c5 = d5.getNeighbor(WEST);
-   Bitboard c6 = d5.getNeighbor(NORTH_WEST);
-   Bitboard e6 = d5.getNeighbor(NORTH_EAST);
-   Bitboard c4 = d5.getNeighbor(SOUTH_WEST);
-   Bitboard e4 = d5.getNeighbor(SOUTH_EAST);
-
    u64 d6_EXPECTED = 0x80000000000;
    u64 e5_EXPECTED = 0x1000000000;
    u64 d4_EXPECTED = 0x8000000;
@@ -307,19 +298,14 @@ TEST_F(BitboardTest, getNeighbor)
    u64 c4_EXPECTED = 0x4000000;
    u64 e4_EXPECTED = 0x10000000;
 
-   EXPECT_EQ(d6.getBoard(), d6_EXPECTED);
-   EXPECT_EQ(e5.getBoard(), e5_EXPECTED);
-   EXPECT_EQ(d4.getBoard(), d4_EXPECTED);
-   EXPECT_EQ(c5.getBoard(), c5_EXPECTED);
-   EXPECT_EQ(c6.getBoard(), c6_EXPECTED);
-   EXPECT_EQ(e6.getBoard(), e6_EXPECTED);
-   EXPECT_EQ(c4.getBoard(), c4_EXPECTED);
-   EXPECT_EQ(e4.getBoard(), e4_EXPECTED);
-}
-
-TEST_F(BitboardTest, implictConversionFromU64)
-{
-
+   EXPECT_EQ(d5.getNeighbor(NORTH),      d6_EXPECTED);
+   EXPECT_EQ(d5.getNeighbor(EAST),       e5_EXPECTED);
+   EXPECT_EQ(d5.getNeighbor(SOUTH),      d4_EXPECTED);
+   EXPECT_EQ(d5.getNeighbor(WEST),       c5_EXPECTED);
+   EXPECT_EQ(d5.getNeighbor(NORTH_WEST), c6_EXPECTED);
+   EXPECT_EQ(d5.getNeighbor(NORTH_EAST), e6_EXPECTED);
+   EXPECT_EQ(d5.getNeighbor(SOUTH_WEST), c4_EXPECTED);
+   EXPECT_EQ(d5.getNeighbor(SOUTH_EAST), e4_EXPECTED);
 }
 
 TEST_F(BitboardTest, implicitConversionToU64)
@@ -328,7 +314,6 @@ TEST_F(BitboardTest, implicitConversionToU64)
    u64 zero = 0;
    ASSERT_EQ(b, zero);
 }
-
 
 }  // namespace
 }  // namespace meatball
