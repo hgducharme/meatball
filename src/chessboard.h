@@ -3,12 +3,13 @@
 #include "bitboard.h"
 #include "types.h"
 #include "constants.h"
+#include "move.h"
 
 class Chessboard {
     private:
         Bitboard pieceBitboards_[NUMBER_OF_PIECES];
         Bitboard colorBitboards_[NUMBER_OF_COLORS];
-        Color sideToMove_ = WHITE;
+        Color activePlayer_ = WHITE;
 
     public:
         File static squareToFile(Square s);
@@ -20,5 +21,7 @@ class Chessboard {
         const Bitboard & getBitboard(const Color color) const;
         Bitboard getBitboard(const Color color, const PieceType piece) const;
         void movePiece(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare);
-        Color getSideToMove() const;
+        void applyMove(const Move & move);
+        void toggleActivePlayer();
+        Color getActivePlayer() const;
 };

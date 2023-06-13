@@ -59,7 +59,7 @@ Bitboard Chessboard::getBitboard(const Color color, const PieceType piece) const
 
 void Chessboard::movePiece(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare)
 {
-    if (color != sideToMove_) { return; }
+    if (color != activePlayer_) { return; }
 
     // Update the piece bitboard
     pieceBitboards_[piece].clearBit(startingSquare);
@@ -69,17 +69,26 @@ void Chessboard::movePiece(const Color color, const PieceType piece, const Squar
     colorBitboards_[color].clearBit(startingSquare);
     colorBitboards_[color].setBit(endingSquare);
 
-    // Toggle side to move variable
-    if (color == WHITE) 
+    toggleActivePlayer();
+}
+
+void Chessboard::applyMove(const Move & move)
+{
+    movePiece(move.color, move.piece, move.startSquare, move.endSquare);
+}
+
+void Chessboard::toggleActivePlayer()
+{
+    if (activePlayer_ == WHITE) 
     {
-        sideToMove_ = BLACK;
+        activePlayer_ = BLACK;
     }
     else {
-        sideToMove_ = WHITE;
+        activePlayer_ = WHITE;
     }
 }
 
-Color Chessboard::getSideToMove() const
+Color Chessboard::getActivePlayer() const
 {
-    return sideToMove_;
+    return activePlayer_;
 }

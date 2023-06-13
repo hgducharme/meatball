@@ -1,5 +1,6 @@
 #include "../src/chessboard.h"
 #include "../src/types.h"
+#include "../src/move.h"
 
 #include "gtest/gtest.h"
 
@@ -110,7 +111,7 @@ TEST_F(ChessboardTest, getBitboard_returnsBitboardByColorAndPiece)
    ASSERT_EQ(blackBishopBitboard.getBoard(), bitboard::DEFAULT_BLACK_BISHOP_STRUCTURE);
 }
 
-TEST_F(ChessboardTest, movePiece_ShouldMoveWhitePawnToE4)
+TEST_F(ChessboardTest, movePiece_shouldMoveWhitePawnFromE2ToE4)
 {
    Chessboard chessboard;
 
@@ -121,19 +122,19 @@ TEST_F(ChessboardTest, movePiece_ShouldMoveWhitePawnToE4)
    ASSERT_EQ(bitboard.getBoard(), EXPECTED);
 }
 
-TEST_F(ChessboardTest, movePiece_togglesSideToMove)
+TEST_F(ChessboardTest, movePiece_togglesActivePlayer)
 {
    Chessboard chessboard;
 
    // Make sure after white's move it becomes black's move
    chessboard.movePiece(WHITE, PAWN, e2, e4);
-   Color sideToMove = chessboard.getSideToMove();
-   ASSERT_EQ(sideToMove, BLACK);
+   Color activePlayer = chessboard.getActivePlayer();
+   ASSERT_EQ(activePlayer, BLACK);
 
    // Once black moves it should be white's move again
    chessboard.movePiece(BLACK, PAWN, d7, d5);
-   sideToMove = chessboard.getSideToMove();
-   ASSERT_EQ(sideToMove, WHITE);
+   activePlayer = chessboard.getActivePlayer();
+   ASSERT_EQ(activePlayer, WHITE);
 }
 
 TEST_F(ChessboardTest, movePiece_doesNothingIfWrongSideTriesToMakeMove)
@@ -146,13 +147,24 @@ TEST_F(ChessboardTest, movePiece_doesNothingIfWrongSideTriesToMakeMove)
    ASSERT_EQ(chessboard.getBitboard(PAWN).getBoard(), bitboard::DEFAULT_PAWN_STRUCTURE);
 }
 
-TEST_F(ChessboardTest, getSideToMove_returnsWhiteByDefault)
+TEST_F(ChessboardTest, applyMove_shouldMoveWhitePawnFromE2ToE4)
 {
    Chessboard chessboard;
 
-   Color sideToMove = chessboard.getSideToMove();
+   chessboard.applyMove(Move(WHITE, PAWN, e2, e4));
 
-   ASSERT_EQ(sideToMove, WHITE);
+   u64 EXPECTED = 0x1000EF00;
+   const Bitboard & bitboard = chessboard.getBitboard(WHITE, PAWN);
+   ASSERT_EQ(bitboard.getBoard(), EXPECTED);
+}
+
+TEST_F(ChessboardTest, getActivePlayer_returnsWhiteByDefault)
+{
+   Chessboard chessboard;
+
+   Color activePlayer = chessboard.getActivePlayer();
+
+   ASSERT_EQ(activePlayer, WHITE);
 }
 
 TEST_F(ChessboardTest, squareToFile)
@@ -181,6 +193,16 @@ TEST_F(ChessboardTest, squareToRank)
       Rank EXPECTED = static_cast<Rank>(static_cast<u64>(i) >> static_cast<u64>(3));
       EXPECT_EQ(rank, EXPECTED);
    }
+}
+
+TEST_F(ChessboardTest, toggleActivePlayer)
+{
+   // White's move by default
+   Chessboard chessboard;
+
+   chessboard.toggleActivePlayer();
+
+   ASSERT_EQ(chessboard.getActivePlayer(), Color::BLACK);
 }
 
 }  // namespace
