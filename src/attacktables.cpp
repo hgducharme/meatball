@@ -8,6 +8,7 @@ Bitboard pawn[Square::NUMBER_OF_SQUARES];
 void init()
 {
     initializePawnAttackTable();
+    initializeKnightAttackTable();
 }
 
 void initializePawnAttackTable()
@@ -43,6 +44,21 @@ void initializePawnAttackTable()
 
         // Store the moves in the pawn table
         attack_tables::pawn[square] = legalMovesFromThisSquare;
+    }
+}
+
+void initializeKnightAttackTable()
+{
+    for (unsigned int s = 0; s < Square::NUMBER_OF_SQUARES; s++)
+    {
+        Square square = static_cast<Square>(s);
+        Bitboard squareBitboard(square);
+        Bitboard legalMovesFromThisSquare;
+
+        // From the perspective of whos side it is to move:
+        
+
+        attack_tables::knight[square] = legalMovesFromThisSquare;
     }
 }
 
