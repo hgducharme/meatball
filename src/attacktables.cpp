@@ -22,9 +22,10 @@ void initializePawnAttackTable()
         // and if a pawn is on the last rank that means it's a promotion
         if (Chessboard::squareToRank(square) == RANK_1 || Chessboard::squareToRank(square) == RANK_8)
         {
-            attack_tables::pawn[square] = 0;
+            attack_tables::pawn[square] = Bitboard();
         }
 
+        // Determine valid move directions based on file
         if (Chessboard::squareToFile(square) == FILE_A)
         {
             legalMovesFromThisSquare = squareBitboard.getNeighbor(NORTH) | squareBitboard.getNeighbor(NORTH_EAST);
@@ -36,10 +37,11 @@ void initializePawnAttackTable()
         else
         {
             legalMovesFromThisSquare = squareBitboard.getNeighbor(NORTH_EAST) |
-													squareBitboard.getNeighbor(NORTH) |
-													squareBitboard.getNeighbor(NORTH_WEST);
+                                       squareBitboard.getNeighbor(NORTH)      |
+                                       squareBitboard.getNeighbor(NORTH_WEST);
         }
 
+        // Store the moves in the pawn table
         attack_tables::pawn[square] = legalMovesFromThisSquare;
     }
 }
