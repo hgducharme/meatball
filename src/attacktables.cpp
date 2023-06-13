@@ -9,7 +9,7 @@ Bitboard knight[Color::NUMBER_OF_COLORS][Square::NUMBER_OF_SQUARES];
 void init()
 {
     initializePawnAttackTable();
-    // initializeKnightAttackTable();
+    initializeKnightAttackTable();
 }
 
 void initializePawnAttackTable()
@@ -63,9 +63,9 @@ void initializeKnightAttackTable()
     {
         Square square = static_cast<Square>(s);
         Bitboard squareBitboard(square);
-        Bitboard legalMovesFromThisSquare;
+        Bitboard legalWhiteKnightMoves;
+        Bitboard legalBlackKnightMoves;
 
-        // From the perspective of whos side it is to move:
         // A knight can move:
         // north 2 east 1
         // north 2 west 1
@@ -77,9 +77,11 @@ void initializeKnightAttackTable()
         // south 1 west 2
         // If we calculate the north moves we could just mirror the board vertically across the current square's rank
         // to get the squares for the moves to the south
+
+        // What is an efficient way to trim off-board moves?
         
 
-        attack_tables::knight[Color::WHITE][square] = legalMovesFromThisSquare;
+        attack_tables::knight[Color::WHITE][square] = legalWhiteKnightMoves;
     }
 }
 
