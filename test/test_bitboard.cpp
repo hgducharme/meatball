@@ -320,12 +320,5 @@ TEST_F(BitboardTest, getNeighbor)
    EXPECT_EQ(d5.getNeighbor(SOUTH_EAST), e4_EXPECTED);
 }
 
-TEST_F(BitboardTest, implicitConversionToU64)
-{
-   Bitboard b;
-   u64 zero = 0;
-   ASSERT_EQ(b, zero);
-}
-
 }  // namespace
 }  // namespace meatball

@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "bitboard.h"
 #include "chessboard.h"
+#include "utils.h"
 
 namespace attack_tables
 {

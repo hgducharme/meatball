@@ -66,25 +66,8 @@ void initializeKnightAttackTable()
         Bitboard legalWhiteKnightMoves;
         Bitboard legalBlackKnightMoves;
 
-        // A knight can move:
-        // north 2 east 1 -- this corresponds to 17 bits ahead of current square
-        // north 2 west 1 -- this corresponds to 15 bits ahead of current square
-        // north 1 east 2 -- this corresponds to 10 bits ahead of current square
-        // north 1 west 2 -- this corresponds to 6 bits ahead of current square
-        // south 2 east 1 -- this corresponds to 15 bits behind current square
-        // south 2 west 1 -- this corresponds to 17 bits behind current square
-        // south 1 east 2 -- this corresponds to 6 bits behind current square
-        // south 1 west 2 -- this corresponds to 10 bits behind current square
-        // If we calculate the north moves we could just mirror the board vertically across the current square's rank
-        // to get the squares for the moves to the south
-
-        // What is an efficient way to trim off-board moves?
-
-        /*
-        legalWhiteKnightMoves = 
-        */        
-
-        attack_tables::knight[Color::WHITE][square] = legalWhiteKnightMoves;
+        attack_tables::knight[Color::WHITE][square] = utils::getKnightAttacks(squareBitboard);
+        // attack_tables::knight[Color::BLACK][square] = utils::getKnightAttacks(squareBitboard);
     }
 }
 

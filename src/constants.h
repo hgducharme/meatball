@@ -8,6 +8,22 @@ namespace constants
    {
       constexpr u64 pawn_single_push = 0x7;
    }
+
+   namespace bit_masks
+   {
+      constexpr u64 FILE_A = 0x101010101010101;
+      constexpr u64 FILE_B = 0x202020202020202;
+      constexpr u64 FILE_C = 0x404040404040404;
+      constexpr u64 FILE_D = 0x808080808080808;
+      constexpr u64 FILE_E = 0x1010101010101010;
+      constexpr u64 FILE_F = 0x20202020202020;
+      constexpr u64 FILE_G = 0x4040404040404040;
+      constexpr u64 FILE_H = 0x8080808080808080;
+      constexpr u64 NOT_FILE_A = ~FILE_A;
+      constexpr u64 NOT_FILE_H = ~FILE_H;
+      constexpr u64 NEITHER_FILE_A_NOR_B = ~FILE_A & ~FILE_B; 
+      constexpr u64 NEITHER_FILE_H_NOR_G = ~FILE_H & ~FILE_G; 
+   }
 }
 
 enum File
