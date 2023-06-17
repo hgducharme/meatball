@@ -107,7 +107,7 @@ coverage: tests | $(COVERAGE_DIR)
 	@echo "Generating test coverage data..."
 	gcov --color $(sourcefiles_without_main) -o=$(BUILD_DIR)/src
 	mv *.gcov $(COVERAGE_DIR)/gcov
-	gcovr --exclude-unreachable-branches --html-details $(COVERAGE_DIR)/html/coverage.html $(BUILD_DIR)/src
+	gcovr --exclude-unreachable-branches --exclude-throw-branches --decisions --html-details $(COVERAGE_DIR)/html/coverage.html $(BUILD_DIR)/src
 
 # -------------------------------------- #
 # Folder targets
