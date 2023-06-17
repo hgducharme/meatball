@@ -1,28 +1,44 @@
 #include "bitboard.h"
+
 Bitboard::Bitboard(u64 boardState) : board_(boardState)
 {}
 
-Bitboard::Bitboard(Square s)
+Bitboard::Bitboard(int bit)
 {
-    setBit(s);
+    setBit(bit);
 }
 
 void Bitboard::setBit(int n)
 {
+    raiseExceptionIfBitIsOutOfRange(n);
+
     // Shift bitboard::ONE by n positions to the left and do a bitwise OR with board_
     board_ |= (bitboard::ONE << n);
 }
 
 void Bitboard::clearBit(int n)
 {
+    raiseExceptionIfBitIsOutOfRange(n);
+
     // Shift bitboard::ONE by n positions to the left, invert it, and do a bitwise AND with board_ 
     board_ &= ~(bitboard::ONE << n);
 }
 
 int Bitboard::getBit(int n) const
 {
+    raiseExceptionIfBitIsOutOfRange(n);
+
     // Move the bit of interest to the least significant bit and compare it to 1
     return ( (board_ >> n) & bitboard::ONE );
+}
+
+void Bitboard::raiseExceptionIfBitIsOutOfRange(int n) const
+{
+    if ( !(n >= 0) || !(n < Square::NUMBER_OF_SQUARES) )
+    {
+        throw std::out_of_range("Bitboard can only manipulate bits in the inclusive range [0, 63]. Received: " + std::to_string(n));
+    }
+
 }
 
 void Bitboard::reset()
@@ -32,7 +48,7 @@ void Bitboard::reset()
 
 int Bitboard::numberOfSetBits() const
 {
-    unsigned int count = 0;
+    int count = 0;
 
     if (board_ == 0) { return count; }
 
@@ -56,7 +72,7 @@ int Bitboard::findIndexLSB() const
     if (board_ == 0) { return indexOfLSB; }
 
     u64 copyOfBoard = board_;
-    unsigned int currentPosition = 0;
+    int currentPosition = 0;
     while (indexOfLSB < 0)
     {
         // Isolate the very first bit
@@ -82,7 +98,7 @@ int Bitboard::findIndexMSB() const
     if (board_ == 0) { return indexOfMSB; }
     
     // This loop starts searching from the most significant bit
-    unsigned int currentPosition = 63;
+    int currentPosition = 63;
     u64 copyOfBoard = board_;
     while (indexOfMSB < 0)
     {

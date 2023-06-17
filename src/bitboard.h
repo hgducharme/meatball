@@ -1,7 +1,10 @@
 #pragma once
 
 #include "types.h"
+
+#include <stdexcept>
 #include <cstdlib>
+#include <string>
 
 class Bitboard {
     private:
@@ -10,7 +13,7 @@ class Bitboard {
     public:
         Bitboard() = default;
         Bitboard(u64 boardState);
-        Bitboard (Square square);
+        Bitboard(int bit);
         inline u64 getBoard() const { return board_; }
         inline void setBoard(const u64 boardState) { board_ = boardState; };
         void setBit(int n);
@@ -47,6 +50,9 @@ class Bitboard {
         {
             return Bitboard(a.getBoard() & b.getBoard());
         }
+
+        private:
+            void raiseExceptionIfBitIsOutOfRange(int n) const;
 };
 
 inline bool operator == (const Bitboard & lhs, const u64 rhs) { return lhs.getBoard() == rhs; }

@@ -74,6 +74,15 @@ TEST_F(BitboardTest, constructor_createBitboardFromSquare)
    ASSERT_EQ(d5.getBoard(), EXPECTED);
 }
 
+TEST_F(BitboardTest, constructor_createBitboardFromInt)
+{
+   int bit = 32;
+   Bitboard a5(bit);
+
+   u64 EXPECTED_A5 = 0x100000000;
+   ASSERT_EQ(a5.getBoard(), EXPECTED_A5);
+}
+
 TEST_F(BitboardTest, setBit)
 {
    Bitboard bitboard;
@@ -82,6 +91,40 @@ TEST_F(BitboardTest, setBit)
    
    u64 EXPECTED_BITBOARD = 0x0000000000400000;
    ASSERT_EQ(bitboard.getBoard(), EXPECTED_BITBOARD);
+}
+
+TEST_F(BitboardTest, setBit_throwsExceptionIfBitIsOutOfRange)
+{
+   Bitboard bitboard;
+
+   int inRange = 0;
+   EXPECT_NO_THROW(bitboard.setBit(inRange));
+   inRange = 63;
+   EXPECT_NO_THROW(bitboard.setBit(inRange));
+
+   EXPECT_THROW({
+   try
+   {
+      int outOfRange = 64;
+      bitboard.setBit(outOfRange);
+   }
+   catch( const std::out_of_range & e )
+   {
+      throw;
+   }
+   }, std::out_of_range );
+
+   EXPECT_THROW({
+   try
+   {
+      int outOfRange = -1;
+      bitboard.setBit(outOfRange);
+   }
+   catch( const std::out_of_range & e )
+   {
+      throw;
+   }
+   }, std::out_of_range );
 }
 
 TEST_F(BitboardTest, clearBit)
@@ -104,6 +147,40 @@ TEST_F(BitboardTest, clearBit2)
    ASSERT_EQ(bitboard.getBoard(), bitboard::EMPTY_BOARD);
 }
 
+TEST_F(BitboardTest, clearBit_throwsExceptionIfBitIsOutOfRange)
+{
+   Bitboard bitboard;
+
+   int inRange = 0;
+   EXPECT_NO_THROW(bitboard.clearBit(inRange));
+   inRange = 63;
+   EXPECT_NO_THROW(bitboard.clearBit(inRange));
+
+   EXPECT_THROW({
+   try
+   {
+      int outOfRange = 64;
+      bitboard.clearBit(outOfRange);
+   }
+   catch( const std::out_of_range & e )
+   {
+      throw;
+   }
+   }, std::out_of_range );
+
+   EXPECT_THROW({
+   try
+   {
+      int outOfRange = -1;
+      bitboard.clearBit(outOfRange);
+   }
+   catch( const std::out_of_range & e )
+   {
+      throw;
+   }
+   }, std::out_of_range );
+}
+
 TEST_F(BitboardTest, getBit)
 {
    Bitboard bitboard(bitboard::EMPTY_BOARD);
@@ -118,6 +195,40 @@ TEST_F(BitboardTest, getBit2)
    bitboard.clearBit(g3);
 
    ASSERT_EQ(bitboard.getBit(g3), 0);
+}
+
+TEST_F(BitboardTest, getBit_throwsExceptionIfBitIsOutOfRange)
+{
+   Bitboard bitboard;
+
+   int inRange = 0;
+   EXPECT_NO_THROW(bitboard.getBit(inRange));
+   inRange = 63;
+   EXPECT_NO_THROW(bitboard.getBit(inRange));
+
+   EXPECT_THROW({
+   try
+   {
+      int outOfRange = 64;
+      bitboard.getBit(outOfRange);
+   }
+   catch( const std::out_of_range & e )
+   {
+      throw;
+   }
+   }, std::out_of_range );
+
+   EXPECT_THROW({
+   try
+   {
+      int outOfRange = -1;
+      bitboard.getBit(outOfRange);
+   }
+   catch( const std::out_of_range & e )
+   {
+      throw;
+   }
+   }, std::out_of_range );
 }
 
 TEST_F(BitboardTest, reset_ResetsBoardState)
