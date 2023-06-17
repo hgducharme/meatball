@@ -58,20 +58,20 @@ TEST_F(ChessboardTest, defaultConstructor_correctlyInitializesAllPieceBitboards)
 {
    Chessboard chessboard;
 
-   ASSERT_EQ(chessboard.getBitboard(PAWN).getBoard(), bitboard::DEFAULT_PAWN_STRUCTURE);
-   ASSERT_EQ(chessboard.getBitboard(KNIGHT).getBoard(), bitboard::DEFAULT_KNIGHT_STRUCTURE);
-   ASSERT_EQ(chessboard.getBitboard(BISHOP).getBoard(), bitboard::DEFAULT_BISHOP_STRUCTURE);
-   ASSERT_EQ(chessboard.getBitboard(ROOK).getBoard(), bitboard::DEFAULT_ROOK_STRUCTURE);
-   ASSERT_EQ(chessboard.getBitboard(QUEEN).getBoard(), bitboard::DEFAULT_QUEEN_STRUCTURE);
-   ASSERT_EQ(chessboard.getBitboard(KING).getBoard(), bitboard::DEFAULT_KING_STRUCTURE);
+   ASSERT_EQ(chessboard.getBitboard(PAWN).getBoard(), constants::DEFAULT_PAWN_STRUCTURE);
+   ASSERT_EQ(chessboard.getBitboard(KNIGHT).getBoard(), constants::DEFAULT_KNIGHT_STRUCTURE);
+   ASSERT_EQ(chessboard.getBitboard(BISHOP).getBoard(), constants::DEFAULT_BISHOP_STRUCTURE);
+   ASSERT_EQ(chessboard.getBitboard(ROOK).getBoard(), constants::DEFAULT_ROOK_STRUCTURE);
+   ASSERT_EQ(chessboard.getBitboard(QUEEN).getBoard(), constants::DEFAULT_QUEEN_STRUCTURE);
+   ASSERT_EQ(chessboard.getBitboard(KING).getBoard(), constants::DEFAULT_KING_STRUCTURE);
 }
 
 TEST_F(ChessboardTest, defaultConstructor_correctlyInitializesWhiteAndBlackBitboards)
 {
    Chessboard chessboard;
 
-   ASSERT_EQ(chessboard.getBitboard(WHITE).getBoard(), bitboard::DEFAULT_WHITE_OCCUPIED);
-   ASSERT_EQ(chessboard.getBitboard(BLACK).getBoard(), bitboard::DEFAULT_BLACK_OCCUPIED);
+   ASSERT_EQ(chessboard.getBitboard(WHITE).getBoard(), constants::DEFAULT_WHITE_OCCUPIED);
+   ASSERT_EQ(chessboard.getBitboard(BLACK).getBoard(), constants::DEFAULT_BLACK_OCCUPIED);
 }
 
 TEST_F(ChessboardTest, getBitboard_returnsBitboardByColor)
@@ -80,7 +80,7 @@ TEST_F(ChessboardTest, getBitboard_returnsBitboardByColor)
 
    const Bitboard & whiteBitboard = chessboard.getBitboard(WHITE);
 
-   ASSERT_EQ(whiteBitboard.getBoard(), bitboard::DEFAULT_WHITE_OCCUPIED);
+   ASSERT_EQ(whiteBitboard.getBoard(), constants::DEFAULT_WHITE_OCCUPIED);
 }
 
 TEST_F(ChessboardTest, getBitboard_returnsBitboardByPiece)
@@ -94,12 +94,12 @@ TEST_F(ChessboardTest, getBitboard_returnsBitboardByPiece)
    const Bitboard & queenBitboard = chessboard.getBitboard(QUEEN);
    const Bitboard & kingBitboard = chessboard.getBitboard(KING);
 
-   ASSERT_EQ(pawnBitboard.getBoard(), bitboard::DEFAULT_PAWN_STRUCTURE);
-   ASSERT_EQ(knightBitboard.getBoard(), bitboard::DEFAULT_KNIGHT_STRUCTURE);
-   ASSERT_EQ(bishopBitboard.getBoard(), bitboard::DEFAULT_BISHOP_STRUCTURE);
-   ASSERT_EQ(rookBitboard.getBoard(), bitboard::DEFAULT_ROOK_STRUCTURE);
-   ASSERT_EQ(queenBitboard.getBoard(), bitboard::DEFAULT_QUEEN_STRUCTURE);
-   ASSERT_EQ(kingBitboard.getBoard(), bitboard::DEFAULT_KING_STRUCTURE);
+   ASSERT_EQ(pawnBitboard.getBoard(), constants::DEFAULT_PAWN_STRUCTURE);
+   ASSERT_EQ(knightBitboard.getBoard(), constants::DEFAULT_KNIGHT_STRUCTURE);
+   ASSERT_EQ(bishopBitboard.getBoard(), constants::DEFAULT_BISHOP_STRUCTURE);
+   ASSERT_EQ(rookBitboard.getBoard(), constants::DEFAULT_ROOK_STRUCTURE);
+   ASSERT_EQ(queenBitboard.getBoard(), constants::DEFAULT_QUEEN_STRUCTURE);
+   ASSERT_EQ(kingBitboard.getBoard(), constants::DEFAULT_KING_STRUCTURE);
 }
 
 TEST_F(ChessboardTest, getBitboard_returnsBitboardByColorAndPiece)
@@ -108,7 +108,7 @@ TEST_F(ChessboardTest, getBitboard_returnsBitboardByColorAndPiece)
 
    const Bitboard & blackBishopBitboard = chessboard.getBitboard(BLACK, BISHOP);
 
-   ASSERT_EQ(blackBishopBitboard.getBoard(), bitboard::DEFAULT_BLACK_BISHOP_STRUCTURE);
+   ASSERT_EQ(blackBishopBitboard.getBoard(), constants::DEFAULT_BLACK_BISHOP_STRUCTURE);
 }
 
 TEST_F(ChessboardTest, movePiece_shouldMoveWhitePawnFromE2ToE4)
@@ -144,7 +144,7 @@ TEST_F(ChessboardTest, movePiece_doesNothingIfWrongSideTriesToMakeMove)
    // It's white's turn by default
    chessboard.applyMove(BLACK, PAWN, e2, e4);
 
-   ASSERT_EQ(chessboard.getBitboard(PAWN).getBoard(), bitboard::DEFAULT_PAWN_STRUCTURE);
+   ASSERT_EQ(chessboard.getBitboard(PAWN).getBoard(), constants::DEFAULT_PAWN_STRUCTURE);
 }
 
 TEST_F(ChessboardTest, applyMove_shouldMoveWhitePawnFromE2ToE4)

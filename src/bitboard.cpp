@@ -12,16 +12,16 @@ void Bitboard::setBit(int n)
 {
     raiseExceptionIfBitIsOutOfRange(n);
 
-    // Shift bitboard::ONE by n positions to the left and do a bitwise OR with board_
-    board_ |= (bitboard::ONE << n);
+    // Shift constants::ONE by n positions to the left and do a bitwise OR with board_
+    board_ |= (constants::ONE << n);
 }
 
 void Bitboard::clearBit(int n)
 {
     raiseExceptionIfBitIsOutOfRange(n);
 
-    // Shift bitboard::ONE by n positions to the left, invert it, and do a bitwise AND with board_ 
-    board_ &= ~(bitboard::ONE << n);
+    // Shift constants::ONE by n positions to the left, invert it, and do a bitwise AND with board_ 
+    board_ &= ~(constants::ONE << n);
 }
 
 int Bitboard::getBit(int n) const
@@ -29,7 +29,7 @@ int Bitboard::getBit(int n) const
     raiseExceptionIfBitIsOutOfRange(n);
 
     // Move the bit of interest to the least significant bit and compare it to 1
-    return ( (board_ >> n) & bitboard::ONE );
+    return ( (board_ >> n) & constants::ONE );
 }
 
 void Bitboard::raiseExceptionIfBitIsOutOfRange(int n) const
@@ -43,7 +43,7 @@ void Bitboard::raiseExceptionIfBitIsOutOfRange(int n) const
 
 void Bitboard::reset()
 {
-    setBoard(bitboard::EMPTY_BOARD);
+    setBoard(constants::EMPTY_BOARD);
 }
 
 int Bitboard::numberOfSetBits() const
@@ -76,7 +76,7 @@ int Bitboard::findIndexLSB() const
     while (indexOfLSB < 0)
     {
         // Isolate the very first bit
-        int valueOfLSB = (copyOfBoard & bitboard::ONE);
+        int valueOfLSB = (copyOfBoard & constants::ONE);
 
         // Check if we found the least significant bit
         if (valueOfLSB == 1) { indexOfLSB = currentPosition; }
@@ -103,7 +103,7 @@ int Bitboard::findIndexMSB() const
     while (indexOfMSB < 0)
     {
         // Isolate the very last bit
-        u64 intersectionOfTheLastBit = (copyOfBoard & bitboard::MOST_SIGNIFICANT_BIT_SET);
+        u64 intersectionOfTheLastBit = (copyOfBoard & constants::MOST_SIGNIFICANT_BIT_SET);
 
         // Shift the last bit to the very first bit
         int valueOfMSB = (intersectionOfTheLastBit >> 63);

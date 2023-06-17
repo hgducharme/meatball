@@ -30,16 +30,16 @@ Rank Chessboard::squareToRank(Square s)
 Chessboard::Chessboard()
 {
     // Initialize the bitboards for each piece type
-    pieceBitboards_[PAWN].setBoard(bitboard::DEFAULT_PAWN_STRUCTURE);
-    pieceBitboards_[KNIGHT].setBoard(bitboard::DEFAULT_KNIGHT_STRUCTURE);
-    pieceBitboards_[BISHOP].setBoard(bitboard::DEFAULT_BISHOP_STRUCTURE);
-    pieceBitboards_[ROOK].setBoard(bitboard::DEFAULT_ROOK_STRUCTURE);
-    pieceBitboards_[QUEEN].setBoard(bitboard::DEFAULT_QUEEN_STRUCTURE);
-    pieceBitboards_[KING].setBoard(bitboard::DEFAULT_KING_STRUCTURE);
+    pieceBitboards_[PAWN].setBoard(constants::DEFAULT_PAWN_STRUCTURE);
+    pieceBitboards_[KNIGHT].setBoard(constants::DEFAULT_KNIGHT_STRUCTURE);
+    pieceBitboards_[BISHOP].setBoard(constants::DEFAULT_BISHOP_STRUCTURE);
+    pieceBitboards_[ROOK].setBoard(constants::DEFAULT_ROOK_STRUCTURE);
+    pieceBitboards_[QUEEN].setBoard(constants::DEFAULT_QUEEN_STRUCTURE);
+    pieceBitboards_[KING].setBoard(constants::DEFAULT_KING_STRUCTURE);
 
     // Initialize the 'whitePieces' and 'blackPieces' bitboards
-    colorBitboards_[WHITE] = bitboard::DEFAULT_WHITE_OCCUPIED;
-    colorBitboards_[BLACK] = bitboard::DEFAULT_BLACK_OCCUPIED;
+    colorBitboards_[WHITE] = constants::DEFAULT_WHITE_OCCUPIED;
+    colorBitboards_[BLACK] = constants::DEFAULT_BLACK_OCCUPIED;
 }
 
 const Bitboard & Chessboard::getBitboard(const PieceType piece) const

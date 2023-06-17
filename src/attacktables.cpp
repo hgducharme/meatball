@@ -46,7 +46,7 @@ Bitboard calculatePawnAttacks(const Color color, const Bitboard & bitboard)
     // A pawn only has valid moves between ranks 2 and 7
     if (rank == RANK_1 || rank == RANK_8)
     {
-        return bitboard::EMPTY_BOARD;
+        return constants::EMPTY_BOARD;
     }
 
     // white directions in white reference frame

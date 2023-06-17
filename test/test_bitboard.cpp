@@ -56,14 +56,14 @@ TEST_F(BitboardTest, defaultConstructor_shouldInitializeBoardWithStateOfZero)
 {
    Bitboard bitboard;
 
-   ASSERT_EQ(bitboard.getBoard(), bitboard::EMPTY_BOARD);
+   ASSERT_EQ(bitboard.getBoard(), constants::EMPTY_BOARD);
 }
 
 TEST_F(BitboardTest, constructor_canInitializeBoardWithAState)
 {
-   Bitboard bitboard(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+   Bitboard bitboard(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
 
-   ASSERT_EQ(bitboard.getBoard(), bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+   ASSERT_EQ(bitboard.getBoard(), constants::DEFAULT_BLACK_PAWN_STRUCTURE);
 }
 
 TEST_F(BitboardTest, constructor_createBitboardFromSquare)
@@ -129,7 +129,7 @@ TEST_F(BitboardTest, setBit_throwsExceptionIfBitIsOutOfRange)
 
 TEST_F(BitboardTest, clearBit)
 {
-   Bitboard bitboard(bitboard::UNIVERSE);
+   Bitboard bitboard(constants::UNIVERSE);
 
    bitboard.clearBit(g3);
 
@@ -144,7 +144,7 @@ TEST_F(BitboardTest, clearBit2)
    bitboard.setBit(g3);
    bitboard.clearBit(g3);
 
-   ASSERT_EQ(bitboard.getBoard(), bitboard::EMPTY_BOARD);
+   ASSERT_EQ(bitboard.getBoard(), constants::EMPTY_BOARD);
 }
 
 TEST_F(BitboardTest, clearBit_throwsExceptionIfBitIsOutOfRange)
@@ -183,7 +183,7 @@ TEST_F(BitboardTest, clearBit_throwsExceptionIfBitIsOutOfRange)
 
 TEST_F(BitboardTest, getBit)
 {
-   Bitboard bitboard(bitboard::EMPTY_BOARD);
+   Bitboard bitboard(constants::EMPTY_BOARD);
    bitboard.setBit(g3);
 
    ASSERT_EQ(bitboard.getBit(g3), 1);
@@ -191,7 +191,7 @@ TEST_F(BitboardTest, getBit)
 
 TEST_F(BitboardTest, getBit2)
 {
-   Bitboard bitboard(bitboard::UNIVERSE);
+   Bitboard bitboard(constants::UNIVERSE);
    bitboard.clearBit(g3);
 
    ASSERT_EQ(bitboard.getBit(g3), 0);
@@ -233,26 +233,26 @@ TEST_F(BitboardTest, getBit_throwsExceptionIfBitIsOutOfRange)
 
 TEST_F(BitboardTest, reset_ResetsBoardState)
 {
-   Bitboard bitboard(bitboard::UNIVERSE);
+   Bitboard bitboard(constants::UNIVERSE);
 
    bitboard.reset();
 
-   ASSERT_EQ(bitboard.getBoard(), bitboard::EMPTY_BOARD);
+   ASSERT_EQ(bitboard.getBoard(), constants::EMPTY_BOARD);
 }
 
 TEST_F(BitboardTest, setBoard_correctlySetsBitboard)
 {
    Bitboard bitboard;
 
-   bitboard.setBoard(bitboard::UNIVERSE);
+   bitboard.setBoard(constants::UNIVERSE);
 
-   ASSERT_EQ(bitboard.getBoard(), bitboard::UNIVERSE);
+   ASSERT_EQ(bitboard.getBoard(), constants::UNIVERSE);
 }
 
 TEST_F(BitboardTest, bitwiseOrOperator_returnsNewBitboard)
 {
-   Bitboard a(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
-   Bitboard b(bitboard::DEFAULT_WHITE_PAWN_STRUCTURE);
+   Bitboard a(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
+   Bitboard b(constants::DEFAULT_WHITE_PAWN_STRUCTURE);
 
    Bitboard c = a | b;
 
@@ -262,8 +262,8 @@ TEST_F(BitboardTest, bitwiseOrOperator_returnsNewBitboard)
 
 TEST_F(BitboardTest, shorthandBitwiseOrOperator_correctlySetsNewBoardState)
 {
-   Bitboard a(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
-   Bitboard b(bitboard::DEFAULT_BLACK_QUEEN_STRUCTURE);
+   Bitboard a(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
+   Bitboard b(constants::DEFAULT_BLACK_QUEEN_STRUCTURE);
 
    a |= b;
 
@@ -273,32 +273,32 @@ TEST_F(BitboardTest, shorthandBitwiseOrOperator_correctlySetsNewBoardState)
    ASSERT_EQ(a.getBoard(), EXPECTED);
 
    // bitboard b is unchanged
-   ASSERT_EQ(b.getBoard(), bitboard::DEFAULT_BLACK_QUEEN_STRUCTURE);
+   ASSERT_EQ(b.getBoard(), constants::DEFAULT_BLACK_QUEEN_STRUCTURE);
 }
 
 TEST_F(BitboardTest, bitwiseAndOperator_returnsNewBitboardWithCorrectResult)
 {
-   Bitboard universe(bitboard::UNIVERSE);
-   Bitboard whitePawns(bitboard::DEFAULT_WHITE_PAWN_STRUCTURE);
+   Bitboard universe(constants::UNIVERSE);
+   Bitboard whitePawns(constants::DEFAULT_WHITE_PAWN_STRUCTURE);
 
    Bitboard result = universe & whitePawns;
 
-   ASSERT_EQ(result.getBoard(), bitboard::DEFAULT_WHITE_PAWN_STRUCTURE);
+   ASSERT_EQ(result.getBoard(), constants::DEFAULT_WHITE_PAWN_STRUCTURE);
 }
 
 TEST_F(BitboardTest, shorthandBitwiseAndOperator_correctlySetsNewBoardState)
 {
-   Bitboard universe(bitboard::UNIVERSE);
-   Bitboard pawns(bitboard::DEFAULT_PAWN_STRUCTURE);
+   Bitboard universe(constants::UNIVERSE);
+   Bitboard pawns(constants::DEFAULT_PAWN_STRUCTURE);
 
    universe &= pawns;
 
-   ASSERT_EQ(universe.getBoard(), bitboard::DEFAULT_PAWN_STRUCTURE);
+   ASSERT_EQ(universe.getBoard(), constants::DEFAULT_PAWN_STRUCTURE);
 }
 
 TEST_F(BitboardTest, numberOfSetBits_countsNumberOfSetBitsInUniverseSet)
 {
-   Bitboard universe(bitboard::UNIVERSE);
+   Bitboard universe(constants::UNIVERSE);
 
    int numberOfSetBits = universe.numberOfSetBits();
 
@@ -307,7 +307,7 @@ TEST_F(BitboardTest, numberOfSetBits_countsNumberOfSetBitsInUniverseSet)
 
 TEST_F(BitboardTest, numberOfSetBits_countsNumberOfSetBitsInEmptySet)
 {
-   Bitboard emptySet(bitboard::EMPTY_BOARD);
+   Bitboard emptySet(constants::EMPTY_BOARD);
 
    int numberOfSetBits = emptySet.numberOfSetBits();
 
@@ -316,7 +316,7 @@ TEST_F(BitboardTest, numberOfSetBits_countsNumberOfSetBitsInEmptySet)
 
 TEST_F(BitboardTest, numberOfSetBits_countsNumberOfSetBitsInWhiteBishopStructure)
 {
-   Bitboard whiteBishops(bitboard::DEFAULT_WHITE_BISHOP_STRUCTURE);
+   Bitboard whiteBishops(constants::DEFAULT_WHITE_BISHOP_STRUCTURE);
 
    int numberOfSetBits = whiteBishops.numberOfSetBits();
 
@@ -325,16 +325,16 @@ TEST_F(BitboardTest, numberOfSetBits_countsNumberOfSetBitsInWhiteBishopStructure
 
 TEST_F(BitboardTest, numberOfSetBits_doesNotModifyTheOriginalValue)
 {
-   Bitboard universe(bitboard::UNIVERSE);
+   Bitboard universe(constants::UNIVERSE);
 
    universe.numberOfSetBits();
 
-   ASSERT_EQ(universe.getBoard(), bitboard::UNIVERSE);
+   ASSERT_EQ(universe.getBoard(), constants::UNIVERSE);
 }
 
 TEST_F(BitboardTest, findIndexLSB_findsIndexOfLeastSignificantBit)
 {
-   Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+   Bitboard blackPawns(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
 
    int indexOfFirstBlackPawn = blackPawns.findIndexLSB();
 
@@ -343,16 +343,16 @@ TEST_F(BitboardTest, findIndexLSB_findsIndexOfLeastSignificantBit)
 
 TEST_F(BitboardTest, findIndexLSB_doesNotModifyTheOriginalValue)
 {
-   Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+   Bitboard blackPawns(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
 
    blackPawns.findIndexLSB();
 
-   ASSERT_EQ(blackPawns.getBoard(), bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+   ASSERT_EQ(blackPawns.getBoard(), constants::DEFAULT_BLACK_PAWN_STRUCTURE);
 }
 
 TEST_F(BitboardTest, findIndexLSB_returnsNegativeOneIfNoBitIsSet)
 {
-   Bitboard emptyBoard(bitboard::EMPTY_BOARD);
+   Bitboard emptyBoard(constants::EMPTY_BOARD);
 
    int indexOfLSB = emptyBoard.findIndexLSB();
 
@@ -361,7 +361,7 @@ TEST_F(BitboardTest, findIndexLSB_returnsNegativeOneIfNoBitIsSet)
 
 TEST_F(BitboardTest, findMSBIndex_findsIndexOfMostSignificantBit)
 {
-   Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+   Bitboard blackPawns(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
 
    int indexOfLastBlackPawn = blackPawns.findIndexMSB();
 
@@ -370,16 +370,16 @@ TEST_F(BitboardTest, findMSBIndex_findsIndexOfMostSignificantBit)
 
 TEST_F(BitboardTest, findIndexMSB_doesNotModifyTheOriginalValue)
 {
-   Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+   Bitboard blackPawns(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
 
    blackPawns.findIndexMSB();
 
-   ASSERT_EQ(blackPawns.getBoard(), bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+   ASSERT_EQ(blackPawns.getBoard(), constants::DEFAULT_BLACK_PAWN_STRUCTURE);
 }
 
 TEST_F(BitboardTest, findIndexMSB_returnsNegativeOneIfNoBitIsSet)
 {
-   Bitboard emptyBoard(bitboard::EMPTY_BOARD);
+   Bitboard emptyBoard(constants::EMPTY_BOARD);
 
    int indexOfMSB = emptyBoard.findIndexMSB();
 
@@ -388,7 +388,7 @@ TEST_F(BitboardTest, findIndexMSB_returnsNegativeOneIfNoBitIsSet)
 
 TEST_F(BitboardTest, clearAndReturnLSB)
 {
-   Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+   Bitboard blackPawns(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
 
    int indexOfLSB = blackPawns.clearAndReturnLSB();
 
@@ -399,7 +399,7 @@ TEST_F(BitboardTest, clearAndReturnLSB)
 
 TEST_F(BitboardTest, returnAndClearMSB)
 {
-   Bitboard blackPawns(bitboard::DEFAULT_BLACK_PAWN_STRUCTURE);
+   Bitboard blackPawns(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
 
    int indexOfMSB = blackPawns.clearAndReturnMSB();
 

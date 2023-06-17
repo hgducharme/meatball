@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include "constants.h"
 
 #include <stdexcept>
 #include <cstdlib>
@@ -8,7 +9,7 @@
 
 class Bitboard {
     private:
-        u64 board_ = bitboard::EMPTY_BOARD;
+        u64 board_ = constants::EMPTY_BOARD;
 
     public:
         Bitboard() = default;
