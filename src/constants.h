@@ -19,10 +19,10 @@ namespace constants
       constexpr u64 FILE_F = 0x20202020202020;
       constexpr u64 FILE_G = 0x4040404040404040;
       constexpr u64 FILE_H = 0x8080808080808080;
-      constexpr u64 NOT_FILE_A = ~FILE_A;
-      constexpr u64 NOT_FILE_H = ~FILE_H;
-      constexpr u64 NEITHER_FILE_A_NOR_B = ~FILE_A & ~FILE_B; 
-      constexpr u64 NEITHER_FILE_H_NOR_G = ~FILE_H & ~FILE_G; 
+      constexpr u64 EXCLUDE_FILE_A = ~FILE_A;
+      constexpr u64 EXCLUDE_FILE_H = ~FILE_H;
+      constexpr u64 EXCLUDE_FILES_A_AND_B = ~FILE_A & ~FILE_B; 
+      constexpr u64 EXCLUDE_FILES_H_AND_G = ~FILE_H & ~FILE_G; 
    }
 }
 

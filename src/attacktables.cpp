@@ -14,61 +14,84 @@ void init()
 
 void initializePawnAttackTable()
 {
-    for (unsigned int s = 0; s < Square::NUMBER_OF_SQUARES; s++)
+    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
-        Square square = static_cast<Square>(s);
         Bitboard squareBitboard(square);
-        Bitboard legalWhitePawnMoves;
-        Bitboard legalBlackPawnMoves;
-
-        // From the side to move reference frame: a pawn will never be on rank 1,
-        // and if a pawn is on the last rank that means it's a promotion
-        if (Chessboard::squareToRank(square) == RANK_1 || Chessboard::squareToRank(square) == RANK_8)
-        {
-            attack_tables::pawn[Color::WHITE][square] = Bitboard();
-            attack_tables::pawn[Color::BLACK][square] = Bitboard();
-        }
-
-        // Determine valid move directions based on file
-        if (Chessboard::squareToFile(square) == FILE_A)
-        {
-            legalWhitePawnMoves = squareBitboard.getNeighbor(NORTH) | squareBitboard.getNeighbor(NORTH_EAST);
-            legalBlackPawnMoves = squareBitboard.getNeighbor(SOUTH) | squareBitboard.getNeighbor(SOUTH_EAST);
-        }
-        else if (Chessboard::squareToFile(square) == FILE_H)
-        {
-            legalWhitePawnMoves = squareBitboard.getNeighbor(NORTH) | squareBitboard.getNeighbor(NORTH_WEST);
-            legalBlackPawnMoves = squareBitboard.getNeighbor(SOUTH) | squareBitboard.getNeighbor(SOUTH_WEST);
-        }
-        else
-        {
-            legalWhitePawnMoves = squareBitboard.getNeighbor(NORTH) |
-                                  squareBitboard.getNeighbor(NORTH_WEST) |
-                                  squareBitboard.getNeighbor(NORTH_EAST);
-
-            legalBlackPawnMoves = squareBitboard.getNeighbor(SOUTH) |
-                                  squareBitboard.getNeighbor(SOUTH_WEST) |
-                                  squareBitboard.getNeighbor(SOUTH_EAST);
-        }
-
-        // Store the moves in the pawn table
-        attack_tables::pawn[Color::WHITE][square] = legalWhitePawnMoves;
-        attack_tables::pawn[Color::BLACK][square] = legalBlackPawnMoves;
+        attack_tables::pawn[Color::WHITE][square] = attack_tables::calculatePawnAttacks(Color::WHITE, squareBitboard);
+        attack_tables::pawn[Color::BLACK][square] = attack_tables::calculatePawnAttacks(Color::BLACK, squareBitboard);
     }
 }
 
 void initializeKnightAttackTable()
 {
-    for (unsigned int s = 0; s < Square::NUMBER_OF_SQUARES; s++)
+    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
-        Square square = static_cast<Square>(s);
         Bitboard squareBitboard(square);
-        Bitboard legalWhiteKnightMoves;
-        Bitboard legalBlackKnightMoves;
-
-        attack_tables::knight[Color::WHITE][square] = utils::getKnightAttacks(squareBitboard);
-        // attack_tables::knight[Color::BLACK][square] = utils::getKnightAttacks(squareBitboard);
+        attack_tables::knight[Color::WHITE][square] = attack_tables::calculateKnightAttacks(Color::WHITE, squareBitboard);
+        attack_tables::knight[Color::BLACK][square] = attack_tables::calculateKnightAttacks(Color::BLACK, squareBitboard);
     }
+}
+
+Bitboard calculatePawnAttacks(const Color color, const Bitboard & bitboard)
+{
+    Square currentSquare = static_cast<Square>(bitboard.findIndexLSB());
+    Rank rank = Chessboard::squareToRank(currentSquare);
+
+    // A pawn only has valid moves between ranks 2 and 7
+    if (rank == RANK_1 || rank == RANK_8)
+    {
+        return bitboard::EMPTY_BOARD;
+    }
+
+    // white directions in white reference frame
+    int forward = 1;
+    int east = 1;
+    int west = -1;
+
+    // black directions in white reference frame to d
+    if (color == Color::BLACK)
+    {
+        forward = -1;
+    }
+
+    // If we perform a move and end up on the opposite side of the board, that is an off-board move and we need to exclude that move
+    Bitboard captureEast = utils::shiftToNewPosition(bitboard, forward, east) & constants::bit_masks::EXCLUDE_FILE_A;
+    Bitboard captureWest = utils::shiftToNewPosition(bitboard, forward, west) & constants::bit_masks::EXCLUDE_FILE_H;
+
+    Bitboard pawnAttacks_whiteRefFrame = captureEast | captureWest;
+    return pawnAttacks_whiteRefFrame;
+}
+
+Bitboard calculateKnightAttacks(const Color color, const Bitboard & bitboard)
+{
+    // white directions in white reference frame
+    int north = 1;
+    int east = 1;
+    int south = -1;
+    int west = -1;
+
+    // black directions in white reference frame to d
+    if (color == Color::BLACK)
+    {
+        north = -1;
+        east = 1;
+        south = 1;
+        west = -1;
+    }
+
+    Bitboard north2East1_whiteRefFrame = utils::shiftToNewPosition(bitboard, 2 * north, 1 * east) & constants::bit_masks::EXCLUDE_FILE_A;
+    Bitboard south2East1_whiteRefFrame = utils::shiftToNewPosition(bitboard, 2 * south, 1 * east) & constants::bit_masks::EXCLUDE_FILE_A;
+    Bitboard north2West1_whiteRefFrame = utils::shiftToNewPosition(bitboard, 2 * north, 1 * west) & constants::bit_masks::EXCLUDE_FILE_H;
+    Bitboard south2West1_whiteRefFrame = utils::shiftToNewPosition(bitboard, 2 * south, 1 * west) & constants::bit_masks::EXCLUDE_FILE_H;
+    Bitboard north1East2_whiteRefFrame = utils::shiftToNewPosition(bitboard, 1 * north, 2 * east) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
+    Bitboard south1East2_whiteRefFrame = utils::shiftToNewPosition(bitboard, 1 * south, 2 * east) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
+    Bitboard north1West2_whiteRefFrame = utils::shiftToNewPosition(bitboard, 1 * north, 2 * west) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
+    Bitboard south1West2_whiteRefFrame = utils::shiftToNewPosition(bitboard, 1 * south, 2 * west) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
+
+    Bitboard knightAttacks_whiteRefFrame = north2East1_whiteRefFrame | north2West1_whiteRefFrame | north1East2_whiteRefFrame | north1West2_whiteRefFrame |
+                                           south2East1_whiteRefFrame | south2West1_whiteRefFrame | south1East2_whiteRefFrame | south1West2_whiteRefFrame;
+
+    return knightAttacks_whiteRefFrame;
 }
 
 } // namespace attack_tables

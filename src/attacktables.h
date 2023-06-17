@@ -17,4 +17,7 @@ namespace attack_tables
     void init();
     void initializePawnAttackTable();
     void initializeKnightAttackTable();
+
+    Bitboard calculatePawnAttacks(Color color, const Bitboard & bitboard);
+    Bitboard calculateKnightAttacks(const Color color, const Bitboard & bitboard);
 }
