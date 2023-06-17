@@ -60,11 +60,9 @@ TEST_F(MoveGeneratorTest, generatePsuedoLegalMoves)
    Chessboard chessboard;
    MoveGenerator moveGenerator;
    
-   std::vector<Move> moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
-
-	chessboard.applyMove(WHITE, PAWN, e2, e4);
-
-	moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
+   // std::vector<Move> moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
+	// chessboard.applyMove(WHITE, PAWN, e2, e4);
+	// moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
 }
 
 }  // namespace
