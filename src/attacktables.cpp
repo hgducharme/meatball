@@ -1,10 +1,13 @@
 #include "attacktables.h"
 
+#include <iostream>
+#include <iomanip>
+
 namespace attack_tables
 {
 
 Bitboard pawn[Color::NUMBER_OF_COLORS][Square::NUMBER_OF_SQUARES];
-Bitboard knight[Color::NUMBER_OF_COLORS][Square::NUMBER_OF_SQUARES];
+Bitboard knight[Square::NUMBER_OF_SQUARES];
 
 void init()
 {
@@ -27,8 +30,11 @@ void initializeKnightAttackTable()
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
         Bitboard squareBitboard(square);
-        attack_tables::knight[Color::WHITE][square] = attack_tables::calculateKnightAttacks(Color::WHITE, squareBitboard);
-        attack_tables::knight[Color::BLACK][square] = attack_tables::calculateKnightAttacks(Color::BLACK, squareBitboard);
+        attack_tables::knight[square] = attack_tables::calculateKnightAttacks(Color::WHITE, squareBitboard);
+
+        // TODO: This is redundant. Both white and black knights have the exact same possible moves from each square.
+        attack_tables::knight[square] = attack_tables::calculateKnightAttacks(Color::BLACK, squareBitboard);
+
     }
 }
 

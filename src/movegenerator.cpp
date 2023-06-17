@@ -3,7 +3,7 @@
 std::vector<Move> MoveGenerator::generatePsuedoLegalMoves(const Chessboard & chessboard) const
 {
     std::vector<Move> pawnMoves = generatePawnMoves(chessboard);
-    // std::vector<Move> knightMoves = getKnightMoves();
+    // std::vector<Move> knightMoves = generateKnightMoves(chessboard);
     // std::vector<Move> bishopMoves = getBishopMoves();
     // std::vector<Move> rookMoves = getRookMoves();
     // std::vector<Move> queenMoves = getQueenMoves();
