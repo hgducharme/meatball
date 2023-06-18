@@ -8,18 +8,16 @@
 
 namespace attack_tables
 {
-    // The legal pawn moves for each square on the chessboard
     extern Bitboard pawn[Color::NUMBER_OF_COLORS][Square::NUMBER_OF_SQUARES];
-
-    // The legal knight moves for each square on the chessboard
     extern Bitboard knight[Square::NUMBER_OF_SQUARES];
+    extern Bitboard bishop[Square::NUMBER_OF_SQUARES];
+    extern Bitboard rook[Square::NUMBER_OF_SQUARES];
+    extern Bitboard queen[Square::NUMBER_OF_SQUARES];
+    extern Bitboard king[Square::NUMBER_OF_SQUARES];
 
     void init();
-    void initializePawnAttackTable();
-    void initializeKnightAttackTable();
-    void initializeKingAttackTable();
 
-    Bitboard calculatePawnAttacks(Color color, const Bitboard & bitboard);
-    Bitboard calculateKnightAttacks(const Color color, const Bitboard & bitboard);
-    Bitboard calculateKingAttacks(const Bitboard & bitboard);
+    Bitboard calculatePawnAttacksFromSquare(Color color, const Bitboard & bitboard);
+    Bitboard calculateKnightAttacksFromSquare(const Color color, const Bitboard & bitboard);
+    Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard);
 }

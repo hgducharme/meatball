@@ -8,37 +8,29 @@ namespace attack_tables
 
 Bitboard pawn[Color::NUMBER_OF_COLORS][Square::NUMBER_OF_SQUARES];
 Bitboard knight[Square::NUMBER_OF_SQUARES];
+Bitboard bishop[Square::NUMBER_OF_SQUARES];
+Bitboard rook[Square::NUMBER_OF_SQUARES];
+Bitboard queen[Square::NUMBER_OF_SQUARES];
+Bitboard king[Square::NUMBER_OF_SQUARES];
 
 void init()
 {
-    initializePawnAttackTable();
-    initializeKnightAttackTable();
-}
-
-void initializePawnAttackTable()
-{
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
         Bitboard squareBitboard(square);
-        attack_tables::pawn[Color::WHITE][square] = attack_tables::calculatePawnAttacks(Color::WHITE, squareBitboard);
-        attack_tables::pawn[Color::BLACK][square] = attack_tables::calculatePawnAttacks(Color::BLACK, squareBitboard);
-    }
-}
 
-void initializeKnightAttackTable()
-{
-    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
-    {
-        Bitboard squareBitboard(square);
-        attack_tables::knight[square] = attack_tables::calculateKnightAttacks(Color::WHITE, squareBitboard);
+        pawn[Color::WHITE][square] = calculatePawnAttacksFromSquare(Color::WHITE, squareBitboard);
+        pawn[Color::BLACK][square] = calculatePawnAttacksFromSquare(Color::BLACK, squareBitboard);
 
         // TODO: This is redundant. Both white and black knights have the exact same possible moves from each square.
-        attack_tables::knight[square] = attack_tables::calculateKnightAttacks(Color::BLACK, squareBitboard);
+        knight[square] = calculateKnightAttacksFromSquare(Color::WHITE, squareBitboard);
+        knight[square] = calculateKnightAttacksFromSquare(Color::BLACK, squareBitboard);
 
+        king[square] = calculateKingAttacksFromSquare(squareBitboard);
     }
 }
 
-Bitboard calculatePawnAttacks(const Color color, const Bitboard & bitboard)
+Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitboard)
 {
     Square currentSquare = static_cast<Square>(bitboard.findIndexLSB());
     Rank rank = Chessboard::squareToRank(currentSquare);
@@ -68,7 +60,7 @@ Bitboard calculatePawnAttacks(const Color color, const Bitboard & bitboard)
     return pawnAttacks_whiteRefFrame;
 }
 
-Bitboard calculateKnightAttacks(const Color color, const Bitboard & bitboard)
+Bitboard calculateKnightAttacksFromSquare(const Color color, const Bitboard & bitboard)
 {
     // white directions in white reference frame
     int north = 1;
@@ -98,6 +90,29 @@ Bitboard calculateKnightAttacks(const Color color, const Bitboard & bitboard)
                                            south2East1_whiteRefFrame | south2West1_whiteRefFrame | south1East2_whiteRefFrame | south1West2_whiteRefFrame;
 
     return knightAttacks_whiteRefFrame;
+}
+
+Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard)
+{
+    int north = 1;
+    int south = -1;
+    int east = 1;
+    int west = -1;
+
+    // utils::shiftPieceOnBitboardByDirection(bitboard, NORTH)
+    Bitboard captureNorth = utils::shiftToNewPosition(bitboard, north, 0);
+    Bitboard captureSouth = utils::shiftToNewPosition(bitboard, south, 0);
+    Bitboard captureEast = utils::shiftToNewPosition(bitboard, 0, east) & constants::bit_masks::EXCLUDE_FILE_A;
+    Bitboard captureWest = utils::shiftToNewPosition(bitboard, 0, west) & constants::bit_masks::EXCLUDE_FILE_H;
+    Bitboard captureNorthWest = utils::shiftToNewPosition(bitboard, north, west) & constants::bit_masks::EXCLUDE_FILE_H;
+    Bitboard captureNorthEast = utils::shiftToNewPosition(bitboard, north, east) & constants::bit_masks::EXCLUDE_FILE_A;
+    Bitboard captureSouthWest = utils::shiftToNewPosition(bitboard, south, west) & constants::bit_masks::EXCLUDE_FILE_H;
+    Bitboard captureSouthEast = utils::shiftToNewPosition(bitboard, south, east) & constants::bit_masks::EXCLUDE_FILE_A;
+
+    Bitboard legalKingMoves = captureNorth     | captureSouth     | captureEast      | captureWest |
+                              captureNorthWest | captureNorthEast | captureSouthWest | captureSouthEast;
+
+    return legalKingMoves;
 }
 
 } // namespace attack_tables

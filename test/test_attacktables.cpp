@@ -241,6 +241,72 @@ class AttackTablesTest : public ::testing::Test
       AttackTablesTest::EXPECTED_KNIGHT[61] = 0x88500000000000;
       AttackTablesTest::EXPECTED_KNIGHT[62] = 0x10a00000000000;
       AttackTablesTest::EXPECTED_KNIGHT[63] = 0x20400000000000;
+
+      /* Expected king attack table */
+      AttackTablesTest::EXPECTED_KING[0] = 0x302;
+      AttackTablesTest::EXPECTED_KING[1] = 0x705;
+      AttackTablesTest::EXPECTED_KING[2] = 0xe0a;
+      AttackTablesTest::EXPECTED_KING[3] = 0x1c14;
+      AttackTablesTest::EXPECTED_KING[4] = 0x3828;
+      AttackTablesTest::EXPECTED_KING[5] = 0x7050;
+      AttackTablesTest::EXPECTED_KING[6] = 0xe0a0;
+      AttackTablesTest::EXPECTED_KING[7] = 0xc040;
+      AttackTablesTest::EXPECTED_KING[8] = 0x30203;
+      AttackTablesTest::EXPECTED_KING[9] = 0x70507;
+      AttackTablesTest::EXPECTED_KING[10] = 0xe0a0e;
+      AttackTablesTest::EXPECTED_KING[11] = 0x1c141c;
+      AttackTablesTest::EXPECTED_KING[12] = 0x382838;
+      AttackTablesTest::EXPECTED_KING[13] = 0x705070;
+      AttackTablesTest::EXPECTED_KING[14] = 0xe0a0e0;
+      AttackTablesTest::EXPECTED_KING[15] = 0xc040c0;
+      AttackTablesTest::EXPECTED_KING[16] = 0x3020300;
+      AttackTablesTest::EXPECTED_KING[17] = 0x7050700;
+      AttackTablesTest::EXPECTED_KING[18] = 0xe0a0e00;
+      AttackTablesTest::EXPECTED_KING[19] = 0x1c141c00;
+      AttackTablesTest::EXPECTED_KING[20] = 0x38283800;
+      AttackTablesTest::EXPECTED_KING[21] = 0x70507000;
+      AttackTablesTest::EXPECTED_KING[22] = 0xe0a0e000;
+      AttackTablesTest::EXPECTED_KING[23] = 0xc040c000;
+      AttackTablesTest::EXPECTED_KING[24] = 0x302030000;
+      AttackTablesTest::EXPECTED_KING[25] = 0x705070000;
+      AttackTablesTest::EXPECTED_KING[26] = 0xe0a0e0000;
+      AttackTablesTest::EXPECTED_KING[27] = 0x1c141c0000;
+      AttackTablesTest::EXPECTED_KING[28] = 0x3828380000;
+      AttackTablesTest::EXPECTED_KING[29] = 0x7050700000;
+      AttackTablesTest::EXPECTED_KING[30] = 0xe0a0e00000;
+      AttackTablesTest::EXPECTED_KING[31] = 0xc040c00000;
+      AttackTablesTest::EXPECTED_KING[32] = 0x30203000000;
+      AttackTablesTest::EXPECTED_KING[33] = 0x70507000000;
+      AttackTablesTest::EXPECTED_KING[34] = 0xe0a0e000000;
+      AttackTablesTest::EXPECTED_KING[35] = 0x1c141c000000;
+      AttackTablesTest::EXPECTED_KING[36] = 0x382838000000;
+      AttackTablesTest::EXPECTED_KING[37] = 0x705070000000;
+      AttackTablesTest::EXPECTED_KING[38] = 0xe0a0e0000000;
+      AttackTablesTest::EXPECTED_KING[39] = 0xc040c0000000;
+      AttackTablesTest::EXPECTED_KING[40] = 0x3020300000000;
+      AttackTablesTest::EXPECTED_KING[41] = 0x7050700000000;
+      AttackTablesTest::EXPECTED_KING[42] = 0xe0a0e00000000;
+      AttackTablesTest::EXPECTED_KING[43] = 0x1c141c00000000;
+      AttackTablesTest::EXPECTED_KING[44] = 0x38283800000000;
+      AttackTablesTest::EXPECTED_KING[45] = 0x70507000000000;
+      AttackTablesTest::EXPECTED_KING[46] = 0xe0a0e000000000;
+      AttackTablesTest::EXPECTED_KING[47] = 0xc040c000000000;
+      AttackTablesTest::EXPECTED_KING[48] = 0x302030000000000;
+      AttackTablesTest::EXPECTED_KING[49] = 0x705070000000000;
+      AttackTablesTest::EXPECTED_KING[50] = 0xe0a0e0000000000;
+      AttackTablesTest::EXPECTED_KING[51] = 0x1c141c0000000000;
+      AttackTablesTest::EXPECTED_KING[52] = 0x3828380000000000;
+      AttackTablesTest::EXPECTED_KING[53] = 0x7050700000000000;
+      AttackTablesTest::EXPECTED_KING[54] = 0xe0a0e00000000000;
+      AttackTablesTest::EXPECTED_KING[55] = 0xc040c00000000000;
+      AttackTablesTest::EXPECTED_KING[56] = 0x203000000000000;
+      AttackTablesTest::EXPECTED_KING[57] = 0x507000000000000;
+      AttackTablesTest::EXPECTED_KING[58] = 0xa0e000000000000;
+      AttackTablesTest::EXPECTED_KING[59] = 0x141c000000000000;
+      AttackTablesTest::EXPECTED_KING[60] = 0x2838000000000000;
+      AttackTablesTest::EXPECTED_KING[61] = 0x5070000000000000;
+      AttackTablesTest::EXPECTED_KING[62] = 0xa0e0000000000000;
+      AttackTablesTest::EXPECTED_KING[63] = 0x40c0000000000000;
    }
 
   static void TearDownTestSuite()
@@ -248,15 +314,23 @@ class AttackTablesTest : public ::testing::Test
 		// Code here will be called after the last test.
   }
 
-  // Class members declared here can be used by all tests in the test suite.
-  // To share resources between tests, declare them as static class members,
-  // then add their definition just below the test fixture class.
-  static u64 EXPECTED_PAWN[2][64];
-  static u64 EXPECTED_KNIGHT[64];
+   // Class members declared here can be used by all tests in the test suite.
+   // To share resources between tests, declare them as static class members,
+   // then add their definition just below the test fixture class.
+   static u64 EXPECTED_PAWN[2][64];
+   static u64 EXPECTED_KNIGHT[64];
+   static u64 EXPECTED_BISHOP[64];
+   static u64 EXPECTED_ROOK[64];
+   static u64 EXPECTED_QUEEN[64];
+   static u64 EXPECTED_KING[64];
 };
 
 u64 AttackTablesTest::EXPECTED_PAWN[2][64];
 u64 AttackTablesTest::EXPECTED_KNIGHT[64];
+u64 AttackTablesTest::EXPECTED_BISHOP[64];
+u64 AttackTablesTest::EXPECTED_ROOK[64];
+u64 AttackTablesTest::EXPECTED_QUEEN[64];
+u64 AttackTablesTest::EXPECTED_KING[64];
 
 TEST_F(AttackTablesTest, whitePawnAttackTable)
 {
@@ -279,6 +353,14 @@ TEST_F(AttackTablesTest, knightAttackTable)
    for (int square = 0; square < 64; square++)
    {
       EXPECT_EQ(attack_tables::knight[square], EXPECTED_KNIGHT[square]);
+   }
+}
+
+TEST_F(AttackTablesTest, kingAttackTable)
+{
+   for (int square = 0; square < 64; square++)
+   {
+      EXPECT_EQ(attack_tables::king[square], EXPECTED_KING[square]);
    }
 }
 
