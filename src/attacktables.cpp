@@ -1,8 +1,5 @@
 #include "attacktables.h"
 
-#include <iostream>
-#include <iomanip>
-
 namespace attack_tables
 {
 
@@ -21,11 +18,10 @@ void init()
 
         pawn[Color::WHITE][square] = calculatePawnAttacksFromSquare(Color::WHITE, squareBitboard);
         pawn[Color::BLACK][square] = calculatePawnAttacksFromSquare(Color::BLACK, squareBitboard);
-
-        // TODO: This is redundant. Both white and black knights have the exact same possible moves from each square.
-        knight[square] = calculateKnightAttacksFromSquare(Color::WHITE, squareBitboard);
-        knight[square] = calculateKnightAttacksFromSquare(Color::BLACK, squareBitboard);
-
+        knight[square] = calculateKnightAttacksFromSquare(squareBitboard);
+        bishop[square] = calculateBishopAttacksFromSquare(squareBitboard);
+        rook[square] = calculateRookAttacksFromSquare(squareBitboard);
+        queen[square] = calculateQueenAttacksFromSquare(squareBitboard);
         king[square] = calculateKingAttacksFromSquare(squareBitboard);
     }
 }
@@ -41,78 +37,76 @@ Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitb
         return constants::EMPTY_BOARD;
     }
 
-    // white directions in white reference frame
-    int forward = 1;
-    int east = 1;
-    int west = -1;
-
-    // black directions in white reference frame to d
-    if (color == Color::BLACK)
+    // White pawns can only move north and black pawns can only move south
+    Bitboard legalPawnAttacks;
+    Direction eastDirection = NORTH_EAST;
+    Direction westDirection = NORTH_WEST;
+    if (color == BLACK)
     {
-        forward = -1;
+        eastDirection = SOUTH_EAST;
+        westDirection = SOUTH_WEST;
     }
 
     // If we perform a move and end up on the opposite side of the board, that is an off-board move and we need to exclude that move
-    Bitboard captureEast = utils::shiftToNewPosition(bitboard, forward, east) & constants::bit_masks::EXCLUDE_FILE_A;
-    Bitboard captureWest = utils::shiftToNewPosition(bitboard, forward, west) & constants::bit_masks::EXCLUDE_FILE_H;
+    legalPawnAttacks |= utils::shiftPieceOnBitboard(bitboard, eastDirection) & constants::bit_masks::EXCLUDE_FILE_A;
+    legalPawnAttacks |= utils::shiftPieceOnBitboard(bitboard, westDirection) & constants::bit_masks::EXCLUDE_FILE_H;
 
-    Bitboard pawnAttacks_whiteRefFrame = captureEast | captureWest;
-    return pawnAttacks_whiteRefFrame;
+    return legalPawnAttacks;
 }
 
-Bitboard calculateKnightAttacksFromSquare(const Color color, const Bitboard & bitboard)
+Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard)
 {
-    // white directions in white reference frame
-    int north = 1;
-    int east = 1;
-    int south = -1;
-    int west = -1;
+    Bitboard legalKnightAttacks;
 
-    // black directions in white reference frame to d
-    if (color == Color::BLACK)
-    {
-        north = -1;
-        east = 1;
-        south = 1;
-        west = -1;
-    }
+    // If we perform a move and end up on the opposite side of the board, that is an off-board move and we need to exclude that move
+    legalKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, 2 * NORTH + EAST) & constants::bit_masks::EXCLUDE_FILE_A;    
+    legalKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, 2 * SOUTH + EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+    legalKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, 2 * NORTH + WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+    legalKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, 2 * SOUTH + WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+    legalKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, NORTH + 2 * EAST) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
+    legalKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, SOUTH + 2 * EAST) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
+    legalKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, NORTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
+    legalKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, SOUTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
 
-    Bitboard north2East1_whiteRefFrame = utils::shiftToNewPosition(bitboard, 2 * north, 1 * east) & constants::bit_masks::EXCLUDE_FILE_A;
-    Bitboard south2East1_whiteRefFrame = utils::shiftToNewPosition(bitboard, 2 * south, 1 * east) & constants::bit_masks::EXCLUDE_FILE_A;
-    Bitboard north2West1_whiteRefFrame = utils::shiftToNewPosition(bitboard, 2 * north, 1 * west) & constants::bit_masks::EXCLUDE_FILE_H;
-    Bitboard south2West1_whiteRefFrame = utils::shiftToNewPosition(bitboard, 2 * south, 1 * west) & constants::bit_masks::EXCLUDE_FILE_H;
-    Bitboard north1East2_whiteRefFrame = utils::shiftToNewPosition(bitboard, 1 * north, 2 * east) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
-    Bitboard south1East2_whiteRefFrame = utils::shiftToNewPosition(bitboard, 1 * south, 2 * east) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
-    Bitboard north1West2_whiteRefFrame = utils::shiftToNewPosition(bitboard, 1 * north, 2 * west) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
-    Bitboard south1West2_whiteRefFrame = utils::shiftToNewPosition(bitboard, 1 * south, 2 * west) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
+    return legalKnightAttacks;
+}
 
-    Bitboard knightAttacks_whiteRefFrame = north2East1_whiteRefFrame | north2West1_whiteRefFrame | north1East2_whiteRefFrame | north1West2_whiteRefFrame |
-                                           south2East1_whiteRefFrame | south2West1_whiteRefFrame | south1East2_whiteRefFrame | south1West2_whiteRefFrame;
+Bitboard calculateBishopAttacksFromSquare(const Bitboard & bitboard)
+{
+    Bitboard legalBishopAttacks;
 
-    return knightAttacks_whiteRefFrame;
+    return legalBishopAttacks;
+}
+
+Bitboard calculateRookAttacksFromSquare(const Bitboard & bitboard)
+{
+    Bitboard legalRookAttacks;
+
+    return legalRookAttacks;
+}
+
+Bitboard calculateQueenAttacksFromSquare(const Bitboard & bitboard)
+{
+    Bitboard legalQueenAttacks;
+
+    return legalQueenAttacks;
 }
 
 Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard)
 {
-    int north = 1;
-    int south = -1;
-    int east = 1;
-    int west = -1;
+    Bitboard legalKingAttacks;
 
-    // utils::shiftPieceOnBitboardByDirection(bitboard, NORTH)
-    Bitboard captureNorth = utils::shiftToNewPosition(bitboard, north, 0);
-    Bitboard captureSouth = utils::shiftToNewPosition(bitboard, south, 0);
-    Bitboard captureEast = utils::shiftToNewPosition(bitboard, 0, east) & constants::bit_masks::EXCLUDE_FILE_A;
-    Bitboard captureWest = utils::shiftToNewPosition(bitboard, 0, west) & constants::bit_masks::EXCLUDE_FILE_H;
-    Bitboard captureNorthWest = utils::shiftToNewPosition(bitboard, north, west) & constants::bit_masks::EXCLUDE_FILE_H;
-    Bitboard captureNorthEast = utils::shiftToNewPosition(bitboard, north, east) & constants::bit_masks::EXCLUDE_FILE_A;
-    Bitboard captureSouthWest = utils::shiftToNewPosition(bitboard, south, west) & constants::bit_masks::EXCLUDE_FILE_H;
-    Bitboard captureSouthEast = utils::shiftToNewPosition(bitboard, south, east) & constants::bit_masks::EXCLUDE_FILE_A;
+    // If we perform a move and end up on the opposite side of the board, that is an off-board move and we need to exclude that move
+    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, NORTH);
+    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, SOUTH);
+    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, NORTH_WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, SOUTH_WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, NORTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, SOUTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
 
-    Bitboard legalKingMoves = captureNorth     | captureSouth     | captureEast      | captureWest |
-                              captureNorthWest | captureNorthEast | captureSouthWest | captureSouthEast;
-
-    return legalKingMoves;
+    return legalKingAttacks;
 }
 
 } // namespace attack_tables

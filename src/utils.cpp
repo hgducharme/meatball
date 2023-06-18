@@ -3,7 +3,23 @@
 namespace utils
 {
 
-Bitboard shiftToNewPosition(const Bitboard & oldPosition, int numberOfRanksToMove, int numberOfFilesToMove)
+Bitboard shiftPieceOnBitboard(const Bitboard & oldPosition, const int numberOfBits)
+{
+   Bitboard newPosition;
+
+   if (numberOfBits > 0)
+   {
+      newPosition = oldPosition << numberOfBits;
+   }
+   else
+   {
+      newPosition = oldPosition >> std::abs(numberOfBits);
+   }
+
+   return newPosition;
+}
+
+Bitboard shiftToNewPosition(const Bitboard & oldPosition, const int numberOfRanksToMove, const int numberOfFilesToMove)
 {
     /*
      * NOTE: This function produces the desired results by implicitly relying on the rules
@@ -27,7 +43,7 @@ Bitboard shiftToNewPosition(const Bitboard & oldPosition, int numberOfRanksToMov
     return newPosition;
 }
 
-int convertRelativePositionVectorToNumberOfBits(int numberOfRanksToMove, int numberOfFilesToMove)
+int convertRelativePositionVectorToNumberOfBits(const int numberOfRanksToMove, const int numberOfFilesToMove)
 {
     /* numberOfBits = numberOfFilesInARank * deltaRanks + deltaFiles */
     return File::NUMBER_OF_FILES * numberOfRanksToMove + numberOfFilesToMove;

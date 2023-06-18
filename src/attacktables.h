@@ -16,8 +16,10 @@ namespace attack_tables
     extern Bitboard king[Square::NUMBER_OF_SQUARES];
 
     void init();
-
     Bitboard calculatePawnAttacksFromSquare(Color color, const Bitboard & bitboard);
-    Bitboard calculateKnightAttacksFromSquare(const Color color, const Bitboard & bitboard);
+    Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard);
+    Bitboard calculateBishopAttacksFromSquare(const Bitboard & bitboard);
+    Bitboard calculateRookAttacksFromSquare(const Bitboard & bitboard);
+    Bitboard calculateQueenAttacksFromSquare(const Bitboard & bitboard);
     Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard);
 }
