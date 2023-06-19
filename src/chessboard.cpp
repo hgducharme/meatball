@@ -1,6 +1,6 @@
 #include "chessboard.h"
 
-File Chessboard::squareToFile(Square s)
+File Chessboard::squareToFile(const Square s)
 {
    /*
    Let n be the square's rank [0, 8]
@@ -13,7 +13,7 @@ File Chessboard::squareToFile(Square s)
    return static_cast<File>(static_cast<int>(s) % 8);
 }
 
-Rank Chessboard::squareToRank(Square s)
+Rank Chessboard::squareToRank(const Square s)
 {
    /*
    Let n be the square's file [0, 8]

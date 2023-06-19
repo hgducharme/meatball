@@ -12,8 +12,8 @@ class Chessboard {
         Color activePlayer_ = WHITE;
 
     public:
-        File static squareToFile(Square s);
-        Rank static squareToRank(Square s);
+        File static squareToFile(const Square s);
+        Rank static squareToRank(const Square s);
 
         Chessboard();
         const Bitboard & getOccupiedSquares();
