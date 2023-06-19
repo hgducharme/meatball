@@ -73,8 +73,11 @@ Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard)
 Bitboard calculateBishopAttacksFromSquare(const Bitboard & bitboard)
 {
     Bitboard legalBishopAttacks;
+
+    Rank currentRank = Chessboard::squareToRank(bitboard.findIndexLSB());
+    File currentFile = Chessboard::squareToFile(bitboard.findIndexLSB());
     // find number of squares till edge of board north east
-    
+    // int numberOfSquaresTillNorthEastEdge = sqrt( (squares till east edge)**2 + (squares till the rank that the current ray intersects)**2 )
     // find number of squares till edge of board north west
     // find number of squares till edge of board south east
     // find number of squares till edge of board south west
