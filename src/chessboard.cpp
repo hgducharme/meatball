@@ -1,6 +1,6 @@
 #include "chessboard.h"
 
-File Chessboard::squareToFile(const Square s)
+File Chessboard::squareToFile(const int square)
 {
    /*
    Let n be the square's rank [0, 8]
@@ -10,10 +10,10 @@ File Chessboard::squareToFile(const Square s)
    H file squares are multiples of 8n + 7
    Therefore, file = square % 8
    */
-   return static_cast<File>(static_cast<int>(s) % 8);
+   return static_cast<File>(square % 8);
 }
 
-Rank Chessboard::squareToRank(const Square s)
+Rank Chessboard::squareToRank(const int square)
 {
    /*
    Let n be the square's file [0, 8]
@@ -24,7 +24,7 @@ Rank Chessboard::squareToRank(const Square s)
    Therefore, rank = floor(square / 8)
    Since integer division in C++ truncates towards zero, (square / 8) will produce the same result.
    */
-   return static_cast<Rank>( (static_cast<int>(s) / 8) );
+   return static_cast<Rank>(square/8);
 }
 
 Chessboard::Chessboard()

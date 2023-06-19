@@ -21,24 +21,23 @@ void init()
         knight[square] = calculateKnightAttacksFromSquare(squareBitboard);
         bishop[square] = calculateBishopAttacksFromSquare(squareBitboard);
         rook[square] = calculateRookAttacksFromSquare(squareBitboard);
-        queen[square] = calculateQueenAttacksFromSquare(squareBitboard);
+        queen[square] |= bishop[square] | rook[square];
         king[square] = calculateKingAttacksFromSquare(squareBitboard);
     }
 }
 
 Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitboard)
 {
-    Square currentSquare = static_cast<Square>(bitboard.findIndexLSB());
-    Rank rank = Chessboard::squareToRank(currentSquare);
+    Bitboard legalPawnAttacks;
+    Rank rank = Chessboard::squareToRank(bitboard.findIndexLSB());
 
     // A pawn only has valid moves between ranks 2 and 7
     if (rank == RANK_1 || rank == RANK_8)
     {
-        return constants::EMPTY_BOARD;
+        return legalPawnAttacks;
     }
 
     // White pawns can only move north and black pawns can only move south
-    Bitboard legalPawnAttacks;
     Direction eastDirection = NORTH_EAST;
     Direction westDirection = NORTH_WEST;
     if (color == BLACK)
@@ -74,6 +73,21 @@ Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard)
 Bitboard calculateBishopAttacksFromSquare(const Bitboard & bitboard)
 {
     Bitboard legalBishopAttacks;
+    // find number of squares till edge of board north east
+    
+    // find number of squares till edge of board north west
+    // find number of squares till edge of board south east
+    // find number of squares till edge of board south west
+
+    // for (int i = 0; i < squaresTillNorthEastEdgeOfBoard; i++)
+    // {
+    //     legalBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_EAST);
+    // }
+
+        // for (int i = 0; i < squaresTillNorthWestEdgeOfBoard; i++)
+    // {
+    //     legalBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_EAST);
+    // }
 
     return legalBishopAttacks;
 }
