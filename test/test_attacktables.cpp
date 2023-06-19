@@ -356,6 +356,30 @@ TEST_F(AttackTablesTest, knightAttackTable)
    }
 }
 
+TEST_F(AttackTablesTest, bishopAttackTable)
+{
+   for (int square = 0; square < 64; square++)
+   {
+      EXPECT_EQ(attack_tables::bishop[square], EXPECTED_BISHOP[square]);
+   }
+}
+
+TEST_F(AttackTablesTest, rookAttackTable)
+{
+   for (int square = 0; square < 64; square++)
+   {
+      EXPECT_EQ(attack_tables::rook[square], EXPECTED_ROOK[square]);
+   }
+}
+
+TEST_F(AttackTablesTest, queenAttackTable)
+{
+   for (int square = 0; square < 64; square++)
+   {
+      EXPECT_EQ(attack_tables::queen[square], EXPECTED_QUEEN[square]);
+   }
+}
+
 TEST_F(AttackTablesTest, kingAttackTable)
 {
    for (int square = 0; square < 64; square++)
