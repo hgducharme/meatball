@@ -4,7 +4,8 @@
 #include "constants.h"
 #include "chessboard.h"
 
-#include <cmath>
+#include <cmath>     // std::abs
+#include <algorithm> // std::math
 
 namespace utils
 {
@@ -16,5 +17,7 @@ Bitboard shiftToNewPosition(const Bitboard & oldPosition, const int numberOfRank
 
 // Convert a difference in rank and files to the number of bits between squares
 inline int convertRelativePositionVectorToNumberOfBits(const int numberOfRanksToMove, const int numberOfFilesToMove);
+
+int calculateDistanceFromEdgeOfBoard(Square square, Direction direction);
 
 } // namespace utils

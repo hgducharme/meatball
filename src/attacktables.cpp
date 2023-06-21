@@ -73,46 +73,23 @@ Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard)
 Bitboard calculateBishopAttacksFromSquare(const Bitboard & bitboard)
 {
     Bitboard legalBishopAttacks;
-
-    Rank currentRank = Chessboard::squareToRank(bitboard.findIndexLSB());
-    File currentFile = Chessboard::squareToFile(bitboard.findIndexLSB());
+    Square square = static_cast<Square>(bitboard.findIndexLSB());
 
     // Magic bitboard process:
     // Bitboard maskedOccupancySquares = move_generation::magic_bitboard::calculateOccupancyMask();
     // Calculate magic numbers? move_generation::magic_bitboard::generateMagicNumbers();
     // Hash them? move_generation::magic_bitboard::hash(magicNumbers, maskedOccupancySquares);
 
-    // find number of squares till edge of board north east
-    // int numberOfSquaresTillNorthEastEdge = sqrt( (squares till east edge)**2 + (squares till the rank that the current ray intersects)**2 )
-    // find number of squares till edge of board north west
-    // find number of squares till edge of board south east
-    // find number of squares till edge of board south west
-
-    // for (int i = 0; i < squaresTillNorthEastEdgeOfBoard - 1; i++)
-    // {
-    //     legalBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_EAST);
-    // }
-
-        // for (int i = 0; i < squaresTillNorthWestEdgeOfBoard; i++)
-    // {
-    //     legalBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_EAST);
-    // }
-
-    /*
-        THIS IS THE MOST UPDATED CODE & MOST LIKELY TO WORK
-    // This function calculates the ray distance of a bishop to the edge of the board in a given direction,
-    // and will return the number of squares the bishop can move to reach the end of the board
-    // DOES NOT ACCOUNT FOR OCCUPIED SQUARES
     // For magic bitboards we subtract 1 because we don't want to actually reach the edge of the boards
-    // int numberOfMovesNorthEast = calculateBishopDistanceFromEdgeOfBoard(NORTHEAST) - 1;
-    // int numberOfMovesNorthWest = calculateBishopDistanceFromEdgeOfBoard(NORTHEAST) - 1;
-    // int numberOfMovesSouthEast = calculateBishopDistanceFromEdgeOfBoard(NORTHEAST) - 1;
-    // int numberOfMovesSouthWest = calculateBishopDistanceFromEdgeOfBoard(NORTHEAST) - 1;
-    // for (int i = 1; i <= numberOfMovesNorthEast; i++) { legalBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_EAST); }
-    // for (int i = 1; i <= numberOfMovesNorthWest; i++) { legalBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_WEST); }
-    // for (int i = 1; i <= numberOfMovesSouthEast; i++) { legalBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * SOUTH_EAST); }
-    // for (int i = 1; i <= numberOfMovesSouthWest; i++) { legalBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * SOUTH_WEST); }
-    */
+    int numberOfMovesNorthEast = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_EAST); // - 1;
+    int numberOfMovesNorthWest = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_WEST); // - 1;
+    int numberOfMovesSouthEast = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_EAST); // - 1;
+    int numberOfMovesSouthWest = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_WEST); // - 1;
+
+    for (int i = 1; i <= numberOfMovesNorthEast; i++) { legalBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_EAST); }
+    for (int i = 1; i <= numberOfMovesNorthWest; i++) { legalBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_WEST); }
+    for (int i = 1; i <= numberOfMovesSouthEast; i++) { legalBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * SOUTH_EAST); }
+    for (int i = 1; i <= numberOfMovesSouthWest; i++) { legalBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * SOUTH_WEST); }
 
     return legalBishopAttacks;
 }
@@ -120,12 +97,17 @@ Bitboard calculateBishopAttacksFromSquare(const Bitboard & bitboard)
 Bitboard calculateRookAttacksFromSquare(const Bitboard & bitboard)
 {
     Bitboard legalRookAttacks;
+    Square square = static_cast<Square>(bitboard.findIndexLSB());
 
-    Rank currentRank = Chessboard::squareToRank(bitboard.findIndexLSB());
-    File currentFile = Chessboard::squareToFile(bitboard.findIndexLSB());
+    int numberOfMovesNorth = utils::calculateDistanceFromEdgeOfBoard(square, NORTH); // - 1;
+    int numberOfMovesSouth = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH); // - 1;
+    int numberOfMovesEast = utils::calculateDistanceFromEdgeOfBoard(square, EAST); // - 1;
+    int numberOfMovesWest = utils::calculateDistanceFromEdgeOfBoard(square, WEST); // - 1;
 
-    int distanceFrom8thRank = NUMBER_OF_RANKS - currentRank;
-    int distanceFromFileH = NUMBER_OF_FILES - currentFile;
+    for (int i = 1; i <= numberOfMovesNorth; i++) { legalRookAttacks |= utils::shiftPieceOnBitboard(bitboard, i * NORTH); }
+    for (int i = 1; i <= numberOfMovesSouth; i++) { legalRookAttacks |= utils::shiftPieceOnBitboard(bitboard, i * SOUTH); }
+    for (int i = 1; i <= numberOfMovesEast; i++)  { legalRookAttacks |= utils::shiftPieceOnBitboard(bitboard, i * EAST); }
+    for (int i = 1; i <= numberOfMovesWest; i++)  { legalRookAttacks |= utils::shiftPieceOnBitboard(bitboard, i * WEST); }
 
     return legalRookAttacks;
 }
