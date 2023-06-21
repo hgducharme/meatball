@@ -112,13 +112,6 @@ Bitboard calculateRookAttacksFromSquare(const Bitboard & bitboard)
     return legalRookAttacks;
 }
 
-Bitboard calculateQueenAttacksFromSquare(const Bitboard & bitboard)
-{
-    Bitboard legalQueenAttacks;
-
-    return legalQueenAttacks;
-}
-
 Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard)
 {
     Bitboard legalKingAttacks;

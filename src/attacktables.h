@@ -20,6 +20,10 @@ namespace attack_tables
     Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard);
     Bitboard calculateBishopAttacksFromSquare(const Bitboard & bitboard);
     Bitboard calculateRookAttacksFromSquare(const Bitboard & bitboard);
-    Bitboard calculateQueenAttacksFromSquare(const Bitboard & bitboard);
     Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard);
+}
+
+namespace magic_bitboards
+{
+
 }
