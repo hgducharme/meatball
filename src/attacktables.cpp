@@ -80,11 +80,13 @@ Bitboard calculateBishopAttacksFromSquare(const Bitboard & bitboard)
     // Calculate magic numbers? move_generation::magic_bitboard::generateMagicNumbers();
     // Hash them? move_generation::magic_bitboard::hash(magicNumbers, maskedOccupancySquares);
 
-    // For magic bitboards we subtract 1 because we don't want to actually reach the edge of the boards
-    int numberOfMovesNorthEast = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_EAST); // - 1;
-    int numberOfMovesNorthWest = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_WEST); // - 1;
-    int numberOfMovesSouthEast = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_EAST); // - 1;
-    int numberOfMovesSouthWest = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_WEST); // - 1;
+    // If using magic bitboards, subtract 1 since we don't want to actually reach the edge of the board
+    // usingMagicBitboards = 1 if the bool is true
+    // usingMagicBitboards = 0 if the bool is false
+    int numberOfMovesNorthEast = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_EAST); // - static_cast<int>(usingMagicBitboards);
+    int numberOfMovesNorthWest = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_WEST); // - static_cast<int>(usingMagicBitboards);
+    int numberOfMovesSouthEast = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_EAST); // - static_cast<int>(usingMagicBitboards);
+    int numberOfMovesSouthWest = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_WEST); // - static_cast<int>(usingMagicBitboards);
 
     for (int i = 1; i <= numberOfMovesNorthEast; i++) { legalBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_EAST); }
     for (int i = 1; i <= numberOfMovesNorthWest; i++) { legalBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_WEST); }
