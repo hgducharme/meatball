@@ -25,6 +25,10 @@ void init()
         king[square] = calculateKingAttacksFromSquare(squareBitboard);
 
         Bitboard potentialBishopBlockerSquares = calculatePotentialBlockerSquaresForBishopMoves(squareBitboard);
+        Bitboard potentialRookBlockerSquares = calculatePotentialBlockerSquaresForRookMoves(squareBitboard);
+
+        // hashOccupancySet(potentialBishopBlockerSquares);
+        // hashOccupancySet(potentialRookBlockerSquares);
     }
 }
 
