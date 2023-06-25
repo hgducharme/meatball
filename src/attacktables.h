@@ -18,9 +18,9 @@ namespace attack_tables
     void init();
     Bitboard calculatePawnAttacksFromSquare(Color color, const Bitboard & bitboard);
     Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard);
-    Bitboard calculateBishopAttacksFromSquare(const Bitboard & bitboard);
-    Bitboard calculateRookAttacksFromSquare(const Bitboard & bitboard);
     Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard);
+    Bitboard calculatePotentialBlockerSquaresForBishopMoves(const Bitboard & bitboard);
+    Bitboard calculatePotentialBlockerSquaresForRookMoves(const Bitboard & bitboard);
 }
 
 namespace magic_bitboards
