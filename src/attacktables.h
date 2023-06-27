@@ -18,12 +18,17 @@ namespace attack_tables
     void init();
     Bitboard calculatePawnAttacksFromSquare(Color color, const Bitboard & bitboard);
     Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard);
+    Bitboard calculateBishopAttacksFromSquareClassical(const Bitboard & bitboard);
+    Bitboard calculateRookAttacksFromSquareClassical(const Bitboard & bitboard);
     Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard);
-    Bitboard calculatePotentialBlockerSquaresForBishopMoves(const Bitboard & bitboard);
-    Bitboard calculatePotentialBlockerSquaresForRookMoves(const Bitboard & bitboard);
+
 }
 
 namespace magic_bitboards
 {
+    extern Bitboard bishopOccupancies[Square::NUMBER_OF_SQUARES];
+    extern Bitboard rookOccupancies[Square::NUMBER_OF_SQUARES];
 
+    Bitboard calculatePotentialBlockerSquaresForBishopMoves(const Bitboard & bitboard);
+    Bitboard calculatePotentialBlockerSquaresForRookMoves(const Bitboard & bitboard);
 }
