@@ -28,7 +28,9 @@ namespace magic_bitboards
 {
     extern Bitboard bishopOccupancies[Square::NUMBER_OF_SQUARES];
     extern Bitboard rookOccupancies[Square::NUMBER_OF_SQUARES];
+    // extern Bitboard bishopAttacks[INSERT SIZE];
+    // extern Bitboard rookAttacks[INSERT SIZE];
 
     Bitboard calculatePotentialBlockerSquaresForBishopMoves(const Bitboard & bitboard);
-    Bitboard calculatePotentialBlockerSquaresForRookMoves(const Bitboard & bitboard);
+    Bitboard calculatePotentialBlockerSquaresForRookMoves(const Bitboard & bitboard);                           
 }
