@@ -26,6 +26,9 @@ void init()
 
         magic_bitboards::bishopOccupancies[square] = magic_bitboards::calculatePotentialBlockerSquaresForBishopMoves(squareBitboard);
         magic_bitboards::rookOccupancies[square] = magic_bitboards::calculatePotentialBlockerSquaresForRookMoves(squareBitboard);
+
+        u64 bishopHashedIndex = magic_bitboards::bitboardToHashedIndex(static_cast<Square>(square), magic_bitboards::bishopOccupancies[square]);
+        u64 rookHashedIndex = magic_bitboards::bitboardToHashedIndex(static_cast<Square>(square), magic_bitboards::rookOccupancies[square]);
     }
 }
 
@@ -170,6 +173,18 @@ Bitboard calculatePotentialBlockerSquaresForRookMoves(const Bitboard & bitboard)
     for (int i = 1; i <= numberOfMovesWest; i++)  { potentialBlockersToTheRook |= utils::shiftPieceOnBitboard(bitboard, i * WEST); }
 
     return potentialBlockersToTheRook;
+}
+
+u64 bitboardToHashedIndex(const Square square, const Bitboard & blockers)
+{
+    // return (blockers * magicNumbers[square]) >> (Square::NUMBER_OF_SQUARES - numberOfBits);
+}
+
+Bitboard getPotentialBishopAttacks(const int square, const Bitboard & boardState)
+{
+    Bitboard blockersToBishop = boardState & bishopOccupancies[square];
+    u64 hashedBlockerConfiguration = (boardState * bishopMagicNumbers[square]) >> (Square::NUMBER_OF_SQUARES - bishopNumberOfBits[square]);
+    return bishopAttacks[square][hashedBlockerConfiguration];
 }
 
 } // namespace magic_bitboards

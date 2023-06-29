@@ -26,11 +26,27 @@ namespace attack_tables
 
 namespace magic_bitboards
 {
+    /* This can be cleaned up. Instead of having this many arrays, we can have two arrays called
+     * bishopMagicBitboard and rookMagicBitboard that contain MagicEntrys.
+     * struct MagicEntry
+     * {
+     *    Bitboard occupancyMask,
+     *    u64 MagicNumber,
+     *    int numberOfBits,
+     *    Square square,
+     * }
+     */
     extern Bitboard bishopOccupancies[Square::NUMBER_OF_SQUARES];
     extern Bitboard rookOccupancies[Square::NUMBER_OF_SQUARES];
-    // extern Bitboard bishopAttacks[INSERT SIZE];
-    // extern Bitboard rookAttacks[INSERT SIZE];
+    extern u64 BISHOP_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
+    extern u64 ROOK_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
+    extern u64 BISHOP_NUMBER_OF_BITS[Square::NUMBER_OF_SQUARES];
+    extern u64 ROOK_NUMBER_OF_BITS[Square::NUMBER_OF_SQUARES];
+    // extern Bitboard bishopAttacks[Square::NUMBER_OF_SQUARES][Number of blocker configurations for this square];
+    // extern Bitboard rookAttacks[Square::NUMBER_OF_SQUARES][Number of blocker configurations for this square];
 
     Bitboard calculatePotentialBlockerSquaresForBishopMoves(const Bitboard & bitboard);
-    Bitboard calculatePotentialBlockerSquaresForRookMoves(const Bitboard & bitboard);                           
+    Bitboard calculatePotentialBlockerSquaresForRookMoves(const Bitboard & bitboard);
+    u64 bitboardToHashedIndex(const Square square, const Bitboard & blockers);
+    Bitboard getPotentialBishopAttacks(const int square, const Bitboard & blockers);
 }
