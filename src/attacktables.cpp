@@ -23,12 +23,6 @@ void init()
         rook[square] = calculateRookAttacksFromSquareClassical(squareBitboard);
         queen[square] |= bishop[square] | rook[square];
         king[square] = calculateKingAttacksFromSquare(squareBitboard);
-
-        magic_bitboards::bishopOccupancies[square] = magic_bitboards::calculatePotentialBlockerSquaresForBishopMoves(squareBitboard);
-        magic_bitboards::rookOccupancies[square] = magic_bitboards::calculatePotentialBlockerSquaresForRookMoves(squareBitboard);
-
-        u64 bishopHashedIndex = magic_bitboards::bitboardToHashedIndex(static_cast<Square>(square), magic_bitboards::bishopOccupancies[square]);
-        u64 rookHashedIndex = magic_bitboards::bitboardToHashedIndex(static_cast<Square>(square), magic_bitboards::rookOccupancies[square]);
     }
 }
 
@@ -130,61 +124,3 @@ Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard)
 }
 
 } // namespace attack_tables
-
-namespace magic_bitboards
-{
-
-Bitboard bishopOccupancies[Square::NUMBER_OF_SQUARES];
-Bitboard rookOccupancies[Square::NUMBER_OF_SQUARES];
-
-Bitboard calculatePotentialBlockerSquaresForBishopMoves(const Bitboard & bitboard)
-{
-    Bitboard potentialBlockersToTheBishop;
-    Square square = static_cast<Square>(bitboard.findIndexLSB());
-
-    // This is for magic bitboards, subtract 1 since the edge of the board isn't considered a blocking square
-    int numberOfMovesNorthEast = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_EAST) - 1;
-    int numberOfMovesNorthWest = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_WEST) - 1;
-    int numberOfMovesSouthEast = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_EAST) - 1;
-    int numberOfMovesSouthWest = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_WEST) - 1;
-
-    for (int i = 1; i <= numberOfMovesNorthEast; i++) { potentialBlockersToTheBishop |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_EAST); }
-    for (int i = 1; i <= numberOfMovesNorthWest; i++) { potentialBlockersToTheBishop |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_WEST); }
-    for (int i = 1; i <= numberOfMovesSouthEast; i++) { potentialBlockersToTheBishop |= utils::shiftPieceOnBitboard(bitboard, i * SOUTH_EAST); }
-    for (int i = 1; i <= numberOfMovesSouthWest; i++) { potentialBlockersToTheBishop |= utils::shiftPieceOnBitboard(bitboard, i * SOUTH_WEST); }
-
-    return potentialBlockersToTheBishop;
-}
-
-Bitboard calculatePotentialBlockerSquaresForRookMoves(const Bitboard & bitboard)
-{
-    Bitboard potentialBlockersToTheRook;
-    Square square = static_cast<Square>(bitboard.findIndexLSB());
-
-    // This is for magic bitboards, subtract 1 since the edge of the board isn't considered a blocking square
-    int numberOfMovesNorth = utils::calculateDistanceFromEdgeOfBoard(square, NORTH) - 1;
-    int numberOfMovesSouth = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH) - 1;
-    int numberOfMovesEast = utils::calculateDistanceFromEdgeOfBoard(square, EAST) - 1;
-    int numberOfMovesWest = utils::calculateDistanceFromEdgeOfBoard(square, WEST) - 1;
-
-    for (int i = 1; i <= numberOfMovesNorth; i++) { potentialBlockersToTheRook |= utils::shiftPieceOnBitboard(bitboard, i * NORTH); }
-    for (int i = 1; i <= numberOfMovesSouth; i++) { potentialBlockersToTheRook |= utils::shiftPieceOnBitboard(bitboard, i * SOUTH); }
-    for (int i = 1; i <= numberOfMovesEast; i++)  { potentialBlockersToTheRook |= utils::shiftPieceOnBitboard(bitboard, i * EAST); }
-    for (int i = 1; i <= numberOfMovesWest; i++)  { potentialBlockersToTheRook |= utils::shiftPieceOnBitboard(bitboard, i * WEST); }
-
-    return potentialBlockersToTheRook;
-}
-
-u64 bitboardToHashedIndex(const Square square, const Bitboard & blockers)
-{
-    // return (blockers * magicNumbers[square]) >> (Square::NUMBER_OF_SQUARES - numberOfBits);
-}
-
-Bitboard getPotentialBishopAttacks(const int square, const Bitboard & boardState)
-{
-    Bitboard blockersToBishop = boardState & bishopOccupancies[square];
-    u64 hashedBlockerConfiguration = (boardState * bishopMagicNumbers[square]) >> (Square::NUMBER_OF_SQUARES - bishopNumberOfBits[square]);
-    return bishopAttacks[square][hashedBlockerConfiguration];
-}
-
-} // namespace magic_bitboards
