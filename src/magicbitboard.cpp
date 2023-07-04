@@ -35,6 +35,10 @@ void init()
         // Store the number of bits in the product of the occupancy mask and the magic number
         bishopEntry.numberOfBitsInProduct = bishopEntry.occupancyMaskAndMagicProduct.numberOfSetBits();
         rookEntry.numberOfBitsInProduct = rookEntry.occupancyMaskAndMagicProduct.numberOfSetBits();
+
+        // Add the entry to the lookup table
+        BISHOP_MAGIC_LOOKUP[square] = bishopEntry;
+        ROOK_MAGIC_LOOKUP[square] = rookEntry;
     }
 }
 

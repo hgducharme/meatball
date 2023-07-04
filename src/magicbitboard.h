@@ -7,17 +7,6 @@
 namespace magic_bitboards
 {
 
-/* This can be cleaned up. Instead of having this many arrays, we can have two arrays called
- * bishopMagicBitboard and rookMagicBitboard that contain MagicEntrys.
- * struct MagicEntry
- * {
- *    Bitboard occupancyMask,
- *    u64 MagicNumber,
- *    int numberOfBits,
- *    Square square,
- * }
-*/
-
 struct MagicBitboardEntry
 {
     Square square;
