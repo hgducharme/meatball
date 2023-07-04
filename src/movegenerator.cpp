@@ -17,8 +17,8 @@ std::vector<Move> MoveGenerator::generatePawnMoves(const Chessboard & chessboard
     // What we use from chessboard: side to move, we get the position of the pawns, thats it
     std::vector<Move> moveVector;
     Color activePlayer = chessboard.getActivePlayer();
-
     Bitboard pawns = chessboard.getBitboard(activePlayer, PAWN);
+    
     int numberOfPawnsOnBoard = pawns.numberOfSetBits();
     for (int i = 0; i < numberOfPawnsOnBoard; i++)
     {
@@ -31,6 +31,9 @@ std::vector<Move> MoveGenerator::generatePawnMoves(const Chessboard & chessboard
         for (int j = 0; j < numberOfPsuedoLegalPawnMoves; j++)
         {
             int targetSquare = psuedoLegalPawnMoves.clearAndReturnLSB();
+            
+            // TODO: Remove moves that capture our own pieces
+
             Move m(activePlayer, PAWN, static_cast<Square>(startingSquare), static_cast<Square>(targetSquare));
             moveVector.push_back(m);
         }
