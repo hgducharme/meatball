@@ -29,6 +29,7 @@ void init()
         rookEntry.magicNumber = ROOK_MAGIC_NUMBERS[square];
 
         // Store the product between the occupancy mask and the magic number
+        // TODO: Generate magic numbers
         bishopEntry.occupancyMaskAndMagicProduct = bishopEntry.occupancyMask * bishopEntry.magicNumber;
         rookEntry.occupancyMaskAndMagicProduct = rookEntry.occupancyMask * rookEntry.magicNumber;
 
