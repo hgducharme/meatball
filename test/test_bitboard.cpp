@@ -431,5 +431,15 @@ TEST_F(BitboardTest, getNeighbor)
    EXPECT_EQ(d5.getNeighbor(SOUTH_EAST), e4_EXPECTED);
 }
 
+TEST_F(BitboardTest, bitboardCanBeMultipliedWith64BitIntegers)
+{
+   const u64 universe = 0xFFFFFFFFFFFFFFFF;
+   const u64 one = 1;
+   const Bitboard b(one);
+
+   EXPECT_EQ(b * universe, universe);
+   EXPECT_EQ(universe * b, universe);
+}
+
 }  // namespace
 }  // namespace meatball

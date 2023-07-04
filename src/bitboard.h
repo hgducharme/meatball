@@ -61,3 +61,6 @@ inline bool operator == (const Bitboard & lhs, const Bitboard & rhs) { return lh
 
 inline Bitboard operator << (const Bitboard & lhs, const unsigned int rhs) { return lhs.getBoard() << rhs; }
 inline Bitboard operator >> (const Bitboard & lhs, const unsigned int rhs) { return lhs.getBoard() >> rhs; }
+
+inline u64 operator * (const Bitboard & lhs, const u64 rhs) { return lhs.getBoard() * rhs; }
+inline u64 operator * (const u64 lhs, const Bitboard & rhs) { return lhs * rhs.getBoard(); }

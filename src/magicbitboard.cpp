@@ -5,6 +5,10 @@ namespace magic_bitboards
 
 MagicBitboardEntry BISHOP_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
 MagicBitboardEntry ROOK_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
+u64 BISHOP_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
+u64 ROOK_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
+Bitboard bishopAttacks[Square::NUMBER_OF_SQUARES][4096]; // TOOD: 4096 is just a place holder for the number of potential blocker configurations for each square
+Bitboard rookAttacks[Square::NUMBER_OF_SQUARES][4096]; // TOOD: 4096 is just a place holder for the number of potential blocker configurations for each square
 
 void init()
 {
@@ -25,9 +29,8 @@ void init()
         rookEntry.magicNumber = ROOK_MAGIC_NUMBERS[square];
 
         // Store the product between the occupancy mask and the magic number
-        // TODO: override * operator for bitboard and u64 object
-        // bishopEntry.occupancyMaskAndMagicProduct = bishopEntry.occupancyMask * bishopEntry.magicNumber;
-        // rookEntry.occupancyMaskAndMagicProduct = rookEntry.occupancyMask * rookEntry.magicNumber;
+        bishopEntry.occupancyMaskAndMagicProduct = bishopEntry.occupancyMask * bishopEntry.magicNumber;
+        rookEntry.occupancyMaskAndMagicProduct = rookEntry.occupancyMask * rookEntry.magicNumber;
 
         // Store the number of bits in the product of the occupancy mask and the magic number
         bishopEntry.numberOfBitsInProduct = bishopEntry.occupancyMaskAndMagicProduct.numberOfSetBits();
@@ -102,9 +105,8 @@ Bitboard getPotentialBishopAttacks(const int square, const Bitboard &boardState)
     MagicBitboardEntry bishopEntry = BISHOP_MAGIC_LOOKUP[square];
 
     Bitboard blockersToBishop = boardState & bishopEntry.occupancyMask;
-    // TODO: Allow for bitboard converstion to u64
-    // u64 hashedBlockerConfiguration = bishopEntry.occupancyMaskAndMagicProduct >> (Square::NUMBER_OF_SQUARES - bishopEntry.numberOfBitsInProduct);
-    // return bishopAttacks[square][hashedBlockerConfiguration];
+    u64 hashedBlockerConfiguration = bishopEntry.occupancyMaskAndMagicProduct.getBoard() >> (Square::NUMBER_OF_SQUARES - bishopEntry.numberOfBitsInProduct);
+    return bishopAttacks[square][hashedBlockerConfiguration];
 }
 
 } // namespace magic_bitboards
