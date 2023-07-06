@@ -10,9 +10,9 @@ namespace magic_bitboards
 struct MagicBitboardEntry
 {
     Square square;
-    Bitboard occupancyMask;
+    Bitboard blockerMask;
     u64 magicNumber;
-    Bitboard occupancyMaskAndMagicProduct;
+    Bitboard blockerMaskAndMagicProduct;
     int numberOfBitsInProduct;
 };
 
@@ -24,9 +24,18 @@ extern Bitboard bishopAttacks[Square::NUMBER_OF_SQUARES][4096]; // TOOD: 4096 is
 extern Bitboard rookAttacks[Square::NUMBER_OF_SQUARES][4096]; // TOOD: 4096 is just a place holder for the number of potential blocker configurations for each square
 
 void init();
-Bitboard calculateBishopOccupancyMask(const Bitboard &bitboard);
-Bitboard calculateRookOccupancyMask(const Bitboard &bitboard);
+
+namespace
+{
+
+void generateMagicNumbers();
+void generateMagicLookupTables();
+
+Bitboard calculateBishopBlockerMask(const Bitboard &bitboard);
+Bitboard calculateRookBlockerMask(const Bitboard &bitboard);
 u64 bitboardToHashedIndex(const Square square, const Bitboard &blockers);
 Bitboard getPotentialBishopAttacks(const int square, const Bitboard &blockers);
+
+} // anonymous namespace
 
 } // namespace magic_bitboards

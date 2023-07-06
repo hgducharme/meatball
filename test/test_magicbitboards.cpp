@@ -265,7 +265,7 @@ TEST_F(MagicBitboardsTest, bishopMagicLookup)
 {
    for (int square = 0; square < 64; square++)
    {
-      EXPECT_EQ(magic_bitboards::BISHOP_MAGIC_LOOKUP[square].occupancyMask.getBoard(), EXPECTED_BISHOP_MAGIC_LOOKUP[square]);
+      EXPECT_EQ(magic_bitboards::BISHOP_MAGIC_LOOKUP[square].blockerMask.getBoard(), EXPECTED_BISHOP_MAGIC_LOOKUP[square]);
    }
 }
 
@@ -273,7 +273,7 @@ TEST_F(MagicBitboardsTest, rookMagicLookup)
 {
    for (int square = 0; square < 64; square++)
    {
-      EXPECT_EQ(magic_bitboards::ROOK_MAGIC_LOOKUP[square].occupancyMask.getBoard(), EXPECTED_ROOK_MAGIC_LOOKUP[square]);
+      EXPECT_EQ(magic_bitboards::ROOK_MAGIC_LOOKUP[square].blockerMask.getBoard(), EXPECTED_ROOK_MAGIC_LOOKUP[square]);
    }
 }
 
