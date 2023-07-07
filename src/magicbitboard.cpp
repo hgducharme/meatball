@@ -12,47 +12,71 @@ Bitboard rookAttacks[Square::NUMBER_OF_SQUARES][4096]; // TOOD: 4096 is just a p
 
 void init()
 {
+    instantiateMagicBitboardEntries();
+    generateBlockerMasks();
     generateMagicNumbers();
-    generateMagicLookupTables();
+    computeBlockerMaskAndMagicNumberProducts();
 }
 
 namespace
 {
 
-void generateMagicNumbers()
+void instantiateMagicBitboardEntries()
 {
+    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
+    {
+        MagicBitboardEntry bishopEntry;
+        MagicBitboardEntry rookEntry;
 
+        BISHOP_MAGIC_LOOKUP[square] = bishopEntry;
+        ROOK_MAGIC_LOOKUP[square] = rookEntry;
+    }
 }
 
-void generateMagicLookupTables()
+void generateBlockerMasks()
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
         Bitboard squareBitboard(square);
 
-        // Initialize the magic bitboard entries
-        MagicBitboardEntry bishopEntry;
-        MagicBitboardEntry rookEntry;
+        BISHOP_MAGIC_LOOKUP[square].blockerMask = calculateBishopBlockerMask(squareBitboard);
+        ROOK_MAGIC_LOOKUP[square].blockerMask = calculateRookBlockerMask(squareBitboard);
+    }
+}
 
-        // Calculate the occupancy masks
-        bishopEntry.blockerMask = calculateBishopBlockerMask(squareBitboard);
-        rookEntry.blockerMask = calculateRookBlockerMask(squareBitboard);
+void generateMagicNumbers()
+{
+    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
+    {
+        BISHOP_MAGIC_LOOKUP[square].magicNumber = calculateBishopMagicNumber(BISHOP_MAGIC_LOOKUP[square].blockerMask);
+        ROOK_MAGIC_LOOKUP[square].magicNumber = calculateRookMagicNumber(ROOK_MAGIC_LOOKUP[square].blockerMask);
+    }
+}
 
-        // Attach the magic number to this magic bitboard entry
-        bishopEntry.magicNumber = BISHOP_MAGIC_NUMBERS[square];
-        rookEntry.magicNumber = ROOK_MAGIC_NUMBERS[square];
+u64 calculateBishopMagicNumber(const Bitboard & blockerMask)
+{
 
-        // Store the product between the occupancy mask and the magic number
+}
+
+u64 calculateRookMagicNumber(const Bitboard & blockerMask)
+{
+
+}
+
+void computeBlockerMaskAndMagicNumberProducts()
+{
+    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
+    {
+        MagicBitboardEntry bishopEntry = BISHOP_MAGIC_LOOKUP[square];
+        MagicBitboardEntry rookEntry = ROOK_MAGIC_LOOKUP[square];
+
+        // Calculate and store the product between then blocker mask and the magic number
         bishopEntry.blockerMaskAndMagicProduct = bishopEntry.blockerMask * bishopEntry.magicNumber;
         rookEntry.blockerMaskAndMagicProduct = rookEntry.blockerMask * rookEntry.magicNumber;
 
-        // Store the number of bits in the product of the occupancy mask and the magic number
+        // Calculate and store how many bits are set in the product
         bishopEntry.numberOfBitsInProduct = bishopEntry.blockerMaskAndMagicProduct.numberOfSetBits();
         rookEntry.numberOfBitsInProduct = rookEntry.blockerMaskAndMagicProduct.numberOfSetBits();
-
-        // Add the entry to the lookup table
-        BISHOP_MAGIC_LOOKUP[square] = bishopEntry;
-        ROOK_MAGIC_LOOKUP[square] = rookEntry;
     }
 }
 

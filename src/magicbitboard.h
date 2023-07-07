@@ -28,12 +28,14 @@ void init();
 namespace
 {
 
-void generateMagicNumbers();
-void generateMagicLookupTables();
-
+void instantiateMagicBitboardEntries();
+void generateBlockerMasks();
 Bitboard calculateBishopBlockerMask(const Bitboard &bitboard);
 Bitboard calculateRookBlockerMask(const Bitboard &bitboard);
-u64 bitboardToHashedIndex(const Square square, const Bitboard &blockers);
+void generateMagicNumbers();
+u64 calculateBishopMagicNumber(const Bitboard & blockerMask);
+u64 calculateRookMagicNumber(const Bitboard & blockerMask);
+void computeBlockerMaskAndMagicNumberProducts();
 Bitboard getPotentialBishopAttacks(const int square, const Bitboard &blockers);
 
 } // anonymous namespace
