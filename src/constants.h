@@ -32,6 +32,10 @@ namespace constants
    constexpr u64 DEFAULT_QUEEN_STRUCTURE = DEFAULT_BLACK_QUEEN_STRUCTURE | DEFAULT_WHITE_QUEEN_STRUCTURE;
    constexpr u64 DEFAULT_KING_STRUCTURE = DEFAULT_BLACK_KING_STRUCTURE | DEFAULT_WHITE_KING_STRUCTURE;
 
+   constexpr int INDEX_OF_THIRD_BYTE = 16;
+   constexpr int INDEX_OF_FIFTH_BYTE = 32;
+   constexpr int INDEX_OF_SEVENTH_BYTE = 48;
+
    namespace bit_masks
    {
       constexpr u64 FILE_A = 0x101010101010101;

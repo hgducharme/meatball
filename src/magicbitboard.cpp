@@ -5,21 +5,23 @@ namespace magic_bitboards
 
 MagicBitboardEntry BISHOP_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
 MagicBitboardEntry ROOK_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
-u64 BISHOP_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
-u64 ROOK_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
-Bitboard bishopAttacks[Square::NUMBER_OF_SQUARES][4096]; // TOOD: 4096 is just a place holder for the number of potential blocker configurations for each square
-Bitboard rookAttacks[Square::NUMBER_OF_SQUARES][4096]; // TOOD: 4096 is just a place holder for the number of potential blocker configurations for each square
+Bitboard BISHOP_ATTACKS[Square::NUMBER_OF_SQUARES][4096];
+Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][4096];
 
 void init()
 {
     instantiateMagicBitboardEntries();
     generateBlockerMasks();
     generateMagicNumbers();
-    computeBlockerMaskAndMagicNumberProducts();
+    generateAttackBoard(PieceType::BISHOP);
+    generateAttackBoard(PieceType::ROOK);
 }
 
 namespace
 {
+
+u64 BISHOP_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
+u64 ROOK_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
 
 void instantiateMagicBitboardEntries()
 {
@@ -48,36 +50,61 @@ void generateMagicNumbers()
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
-        BISHOP_MAGIC_LOOKUP[square].magicNumber = calculateBishopMagicNumber(BISHOP_MAGIC_LOOKUP[square].blockerMask);
-        ROOK_MAGIC_LOOKUP[square].magicNumber = calculateRookMagicNumber(ROOK_MAGIC_LOOKUP[square].blockerMask);
+        BISHOP_MAGIC_LOOKUP[square].magicNumber = getRandom64BitInteger();
+        ROOK_MAGIC_LOOKUP[square].magicNumber = getRandom64BitInteger();
     }
 }
 
-u64 calculateBishopMagicNumber(const Bitboard & blockerMask)
+u64 getRandom64BitInteger()
 {
+    u64 bytes1And2, bytes3And4, bytes5And6, bytes7and8;
 
+    // Generate random integers, cast them to a 64-bit integer, and only take the first 2 bytes (16 bits)
+    bytes1And2 = (u64)(random()) & 0xFFFF;
+    bytes3And4 = (u64)(random()) & 0xFFFF;
+    bytes5And6 = (u64)(random()) & 0xFFFF;
+    bytes7and8 = (u64)(random()) & 0xFFFF;
+
+    // Create the random 64 bit integer by mix and matching the two-byte snippets or "words"
+    return bytes1And2 | (bytes3And4 << constants::INDEX_OF_THIRD_BYTE) | (bytes5And6 << constants::INDEX_OF_FIFTH_BYTE) | (bytes7and8 << constants::INDEX_OF_SEVENTH_BYTE);
 }
 
-u64 calculateRookMagicNumber(const Bitboard & blockerMask)
-{
-
-}
-
-void computeBlockerMaskAndMagicNumberProducts()
+void generateAttackBoard(PieceType pieceType)
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
-        MagicBitboardEntry bishopEntry = BISHOP_MAGIC_LOOKUP[square];
-        MagicBitboardEntry rookEntry = ROOK_MAGIC_LOOKUP[square];
+        MagicBitboardEntry entry;
 
-        // Calculate and store the product between then blocker mask and the magic number
-        bishopEntry.blockerMaskAndMagicProduct = bishopEntry.blockerMask * bishopEntry.magicNumber;
-        rookEntry.blockerMaskAndMagicProduct = rookEntry.blockerMask * rookEntry.magicNumber;
+        switch (pieceType)
+        {
+            case BISHOP:
+                entry = BISHOP_MAGIC_LOOKUP[square];
+            case ROOK:
+                entry = ROOK_MAGIC_LOOKUP[square];
+            default:
+                throw std::invalid_argument("generateAttackBoard is only defined for BISHOP and ROOK.");
+        }
 
-        // Calculate and store how many bits are set in the product
-        bishopEntry.numberOfBitsInProduct = bishopEntry.blockerMaskAndMagicProduct.numberOfSetBits();
-        rookEntry.numberOfBitsInProduct = rookEntry.blockerMaskAndMagicProduct.numberOfSetBits();
+        std::vector<Bitboard> allBlockerVariations = calculateAllBlockerVariations(entry.blockerMask);
+
+        // for each blocker variation, generate the attack board
+        // take the blocker variation and multiply it by the magic number and right shift by number of set bits in product
+        // attempt to store the attack board using the index just computed
+        // if the index already has an entry we need to create a new magic number
+
+        // entry.blockerMaskAndMagicProduct = entry.blockerMask * entry.magicNumber;
+        // entry.numberOfBitsInProduct = entry.blockerMaskAndMagicProduct.numberOfSetBits();
     }
+}
+
+std::vector<Bitboard> calculateAllBlockerVariations(Bitboard blockerMask)
+{
+    std::vector<Bitboard> blockerVariations;
+
+    
+
+
+    return blockerVariations;
 }
 
 Bitboard calculateBishopBlockerMask(const Bitboard &bitboard)
@@ -148,7 +175,7 @@ Bitboard getPotentialBishopAttacks(const int square, const Bitboard &boardState)
 
     Bitboard blockersToBishop = boardState & bishopEntry.blockerMask;
     u64 hashedBlockerConfiguration = bishopEntry.blockerMaskAndMagicProduct.getBoard() >> (Square::NUMBER_OF_SQUARES - bishopEntry.numberOfBitsInProduct);
-    return bishopAttacks[square][hashedBlockerConfiguration];
+    return BISHOP_ATTACKS[square][hashedBlockerConfiguration];
 }
 
 } // anonymous namespace
