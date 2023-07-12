@@ -47,8 +47,8 @@ Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitb
     }
 
     // If we perform a move and end up on the opposite side of the board, that is an off-board move and we need to exclude that move
-    potentialPawnAttacks |= utils::shiftPieceOnBitboard(bitboard, eastDirection) & constants::bit_masks::EXCLUDE_FILE_A;
-    potentialPawnAttacks |= utils::shiftPieceOnBitboard(bitboard, westDirection) & constants::bit_masks::EXCLUDE_FILE_H;
+    potentialPawnAttacks |= utils::shiftCurrentSquareByDirection(bitboard, eastDirection) & constants::bit_masks::EXCLUDE_FILE_A;
+    potentialPawnAttacks |= utils::shiftCurrentSquareByDirection(bitboard, westDirection) & constants::bit_masks::EXCLUDE_FILE_H;
 
     return potentialPawnAttacks;
 }
@@ -58,14 +58,14 @@ Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard)
     Bitboard potentialKnightAttacks;
 
     // If we perform a move and end up on the opposite side of the board, that is an off-board move and we need to exclude that move
-    potentialKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, 2 * NORTH + EAST) & constants::bit_masks::EXCLUDE_FILE_A;    
-    potentialKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, 2 * SOUTH + EAST) & constants::bit_masks::EXCLUDE_FILE_A;
-    potentialKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, 2 * NORTH + WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-    potentialKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, 2 * SOUTH + WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-    potentialKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, NORTH + 2 * EAST) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
-    potentialKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, SOUTH + 2 * EAST) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
-    potentialKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, NORTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
-    potentialKnightAttacks |= utils::shiftPieceOnBitboard(bitboard, SOUTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
+    potentialKnightAttacks |= utils::shiftCurrentSquareByDirection(bitboard, 2 * NORTH + EAST) & constants::bit_masks::EXCLUDE_FILE_A;    
+    potentialKnightAttacks |= utils::shiftCurrentSquareByDirection(bitboard, 2 * SOUTH + EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+    potentialKnightAttacks |= utils::shiftCurrentSquareByDirection(bitboard, 2 * NORTH + WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+    potentialKnightAttacks |= utils::shiftCurrentSquareByDirection(bitboard, 2 * SOUTH + WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+    potentialKnightAttacks |= utils::shiftCurrentSquareByDirection(bitboard, NORTH + 2 * EAST) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
+    potentialKnightAttacks |= utils::shiftCurrentSquareByDirection(bitboard, SOUTH + 2 * EAST) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
+    potentialKnightAttacks |= utils::shiftCurrentSquareByDirection(bitboard, NORTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
+    potentialKnightAttacks |= utils::shiftCurrentSquareByDirection(bitboard, SOUTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
 
     return potentialKnightAttacks;
 }
@@ -80,10 +80,10 @@ Bitboard calculateBishopAttacksFromSquareClassical(const Bitboard & bitboard)
     int numberOfMovesSouthEast = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_EAST);
     int numberOfMovesSouthWest = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_WEST);
 
-    for (int i = 1; i <= numberOfMovesNorthEast; i++) { potentialBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_EAST); }
-    for (int i = 1; i <= numberOfMovesNorthWest; i++) { potentialBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_WEST); }
-    for (int i = 1; i <= numberOfMovesSouthEast; i++) { potentialBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * SOUTH_EAST); }
-    for (int i = 1; i <= numberOfMovesSouthWest; i++) { potentialBishopAttacks |= utils::shiftPieceOnBitboard(bitboard, i * SOUTH_WEST); }
+    for (int i = 1; i <= numberOfMovesNorthEast; i++) { potentialBishopAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * NORTH_EAST); }
+    for (int i = 1; i <= numberOfMovesNorthWest; i++) { potentialBishopAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * NORTH_WEST); }
+    for (int i = 1; i <= numberOfMovesSouthEast; i++) { potentialBishopAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * SOUTH_EAST); }
+    for (int i = 1; i <= numberOfMovesSouthWest; i++) { potentialBishopAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * SOUTH_WEST); }
 
     return potentialBishopAttacks;
 }
@@ -98,10 +98,10 @@ Bitboard calculateRookAttacksFromSquareClassical(const Bitboard & bitboard)
     int numberOfMovesEast = utils::calculateDistanceFromEdgeOfBoard(square, EAST);
     int numberOfMovesWest = utils::calculateDistanceFromEdgeOfBoard(square, WEST);
 
-    for (int i = 1; i <= numberOfMovesNorth; i++) { potentialRookAttacks |= utils::shiftPieceOnBitboard(bitboard, i * NORTH); }
-    for (int i = 1; i <= numberOfMovesSouth; i++) { potentialRookAttacks |= utils::shiftPieceOnBitboard(bitboard, i * SOUTH); }
-    for (int i = 1; i <= numberOfMovesEast; i++)  { potentialRookAttacks |= utils::shiftPieceOnBitboard(bitboard, i * EAST); }
-    for (int i = 1; i <= numberOfMovesWest; i++)  { potentialRookAttacks |= utils::shiftPieceOnBitboard(bitboard, i * WEST); }
+    for (int i = 1; i <= numberOfMovesNorth; i++) { potentialRookAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * NORTH); }
+    for (int i = 1; i <= numberOfMovesSouth; i++) { potentialRookAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * SOUTH); }
+    for (int i = 1; i <= numberOfMovesEast; i++)  { potentialRookAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * EAST); }
+    for (int i = 1; i <= numberOfMovesWest; i++)  { potentialRookAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * WEST); }
 
     return potentialRookAttacks;
 }
@@ -111,14 +111,14 @@ Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard)
     Bitboard legalKingAttacks;
 
     // If we perform a move and end up on the opposite side of the board, that is an off-board move and we need to exclude that move
-    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, NORTH);
-    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, SOUTH);
-    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, EAST) & constants::bit_masks::EXCLUDE_FILE_A;
-    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, NORTH_WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, SOUTH_WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, NORTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
-    legalKingAttacks |= utils::shiftPieceOnBitboard(bitboard, SOUTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+    legalKingAttacks |= utils::shiftCurrentSquareByDirection(bitboard, NORTH);
+    legalKingAttacks |= utils::shiftCurrentSquareByDirection(bitboard, SOUTH);
+    legalKingAttacks |= utils::shiftCurrentSquareByDirection(bitboard, EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+    legalKingAttacks |= utils::shiftCurrentSquareByDirection(bitboard, WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+    legalKingAttacks |= utils::shiftCurrentSquareByDirection(bitboard, NORTH_WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+    legalKingAttacks |= utils::shiftCurrentSquareByDirection(bitboard, SOUTH_WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+    legalKingAttacks |= utils::shiftCurrentSquareByDirection(bitboard, NORTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+    legalKingAttacks |= utils::shiftCurrentSquareByDirection(bitboard, SOUTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
 
     return legalKingAttacks;
 }

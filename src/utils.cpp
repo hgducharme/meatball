@@ -3,7 +3,7 @@
 namespace utils
 {
 
-Bitboard shiftPieceOnBitboard(const Bitboard & oldPosition, const int numberOfBits)
+Bitboard shiftCurrentSquareByDirection(const Bitboard & oldPosition, const int numberOfBits)
 {
    Bitboard newPosition;
 

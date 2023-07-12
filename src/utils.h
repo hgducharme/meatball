@@ -10,7 +10,7 @@
 namespace utils
 {
 
-Bitboard shiftPieceOnBitboard(const Bitboard & oldPosition, const int numberOfBits);
+Bitboard shiftCurrentSquareByDirection(const Bitboard & oldPosition, const int numberOfBits);
 
 int calculateDistanceFromEdgeOfBoard(Square square, Direction direction);
 
