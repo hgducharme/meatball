@@ -14,4 +14,6 @@ Bitboard shiftPieceOnBitboard(const Bitboard & oldPosition, const int numberOfBi
 
 int calculateDistanceFromEdgeOfBoard(Square square, Direction direction);
 
+u64 getRandom64BitInteger();
+
 } // namespace utils

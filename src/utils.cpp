@@ -56,4 +56,16 @@ int calculateDistanceFromEdgeOfBoard(Square square, Direction direction)
     return std::min(horizontalDistanceFromEdge, verticalDistanceFromEdge);
 }
 
+u64 getRandom64BitInteger()
+{
+    // Generate random integers, cast them to a 64-bit integer, and only take the first 2 bytes (16 bits)
+    u64 bytes1And2 = (u64)(random()) & 0xFFFF;
+    u64 bytes3And4 = (u64)(random()) & 0xFFFF;
+    u64 bytes5And6 = (u64)(random()) & 0xFFFF;
+    u64 bytes7and8 = (u64)(random()) & 0xFFFF;
+
+    // Create the random 64 bit integer by mix and matching the two-byte snippets or "words"
+    return bytes1And2 | (bytes3And4 << constants::INDEX_OF_THIRD_BYTE) | (bytes5And6 << constants::INDEX_OF_FIFTH_BYTE) | (bytes7and8 << constants::INDEX_OF_SEVENTH_BYTE);
+}
+
 } // namespace utils
