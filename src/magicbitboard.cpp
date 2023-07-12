@@ -57,21 +57,31 @@ void generateMagicNumbers()
 
 void generateAttackBoard(PieceType pieceType)
 {
+    // A pointer to either BISHOP_MAGIC_LOOKUP or ROOK_MAGIC_LOOKUP
+    MagicBitboardEntry * MAGIC_LOOKUP_TABLE;
+
+    // A pointer to a function that either calculates rook attacks or bishop attacks
+    Bitboard (*calculateAttackBoard)(const Square &, const Bitboard &);
+
+    // Depending on the piece type, determine which lookup table and which function to use
+    switch (pieceType)
+    {
+        case BISHOP:
+            MAGIC_LOOKUP_TABLE = BISHOP_MAGIC_LOOKUP;
+            calculateAttackBoard = calculateBishopAttackBoard;
+            break;
+        case ROOK:
+            MAGIC_LOOKUP_TABLE = ROOK_MAGIC_LOOKUP;
+            // calculateAttackBoard = calculateRookAttackBoard;
+            break;
+        default:
+            throw std::invalid_argument("generateAttackBoard() is only defined for the arguments: 'BISHOP' and 'ROOK'.");
+    }
+
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
-        MagicBitboardEntry entry;
-
-        switch (pieceType)
-        {
-            case BISHOP:
-                entry = BISHOP_MAGIC_LOOKUP[square];
-                break;
-            case ROOK:
-                entry = ROOK_MAGIC_LOOKUP[square];
-                break;
-            default:
-                throw std::invalid_argument("generateAttackBoard() is only defined for the arguments: 'BISHOP' and 'ROOK'.");
-        }
+        // Index the magic lookup table to get the magic entry for this square
+        MagicBitboardEntry entry = *(MAGIC_LOOKUP_TABLE + square);
 
         // Calculate the blocker variations for this blocker mask
         std::vector<Bitboard> allBlockerVariations = calculateAllBlockerVariations(entry.blockerMask);
@@ -81,6 +91,9 @@ void generateAttackBoard(PieceType pieceType)
         std::vector<Bitboard> attackBoards(numberOfBlockerVariations);
         for (int i = 0; i < numberOfBlockerVariations; i++)
         {
+            // TODO: Maybe we don't need to make this a pointer and we can generalize this function?
+            // calculateAttackBoard<ROOK>(square, blockerVariation)
+            // calculateAttackBoard<BISHOP>(square, blockerVariation)
             attackBoards[i] = calculateAttackBoard((Square)square, allBlockerVariations[i]);
         }
 
@@ -113,11 +126,104 @@ std::vector<Bitboard> calculateAllBlockerVariations(Bitboard blockerMask)
     return allBlockerVariations;
 }
 
-Bitboard calculateAttackBoard(Square square, Bitboard blockerVariation)
+Bitboard calculateBishopAttackBoard(const Square & square, const Bitboard & blockerVariation)
 {
+    Bitboard attackBoard;
+    Bitboard squareBitboard(square);
+
+    int numberOfMovesNorthEast = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_EAST);
+    int numberOfMovesNorthWest = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_WEST);
+    int numberOfMovesSouthEast = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_EAST);
+    int numberOfMovesSouthWest = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_WEST);
+
+    // TODO: maybe we can implement a function like the following?
+    // attackBoard |= calculateAttacksInDirection(NORTH_EAST, numberOfMovesNorthEast, squareBitboard, blockerVariation);
+
+    // Attacks to the north east
+    for (int i = 1; i < numberOfMovesNorthEast; i++)
+    {
+        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * NORTH_EAST);
+        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
+        else { attackBoard |= targetSquare; }
+    }
+
+    // Attacks to the north west
+    for (int i = 1; i < numberOfMovesNorthWest; i++)
+    {
+        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * NORTH_WEST);
+        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
+        else { attackBoard |= targetSquare; }
+    }
+
+    // Attacks to the south east
+    for (int i = 1; i < numberOfMovesSouthEast; i++)
+    {
+        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * SOUTH_EAST);
+        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
+        else { attackBoard |= targetSquare; }
+    }
+
+    // Attacks to the south west
+    for (int i = 1; i < numberOfMovesSouthWest; i++)
+    {
+        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * SOUTH_WEST);
+        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
+        else { attackBoard |= targetSquare; }
+    }
 }
 
-Bitboard calculateBishopBlockerMask(const Bitboard &bitboard)
+Bitboard calculateRookAttackBoard(const Square & square, const Bitboard & blockerVariation)
+{
+    Bitboard attackBoard;
+    Bitboard squareBitboard(square);
+
+    int numberOfMovesNorth = utils::calculateDistanceFromEdgeOfBoard(square, NORTH);
+    int numberOfMovesSouth = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH);
+    int numberOfMovesEast = utils::calculateDistanceFromEdgeOfBoard(square, EAST);
+    int numberOfMovesWest = utils::calculateDistanceFromEdgeOfBoard(square, WEST);
+
+    // TODO: maybe we can implement a function like the following?
+    // attackBoard |= calculateAttacksInDirection(NORTH_EAST, numberOfMovesNorthEast, squareBitboard, blockerVariation);
+
+    // Attacks to the north east
+    for (int i = 1; i < numberOfMovesNorth; i++)
+    {
+        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * NORTH);
+        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
+        else { attackBoard |= targetSquare; }
+    }
+
+    // Attacks to the north west
+    for (int i = 1; i < numberOfMovesSouth; i++)
+    {
+        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * SOUTH);
+        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
+        else { attackBoard |= targetSquare; }
+    }
+
+    // Attacks to the south east
+    for (int i = 1; i < numberOfMovesEast; i++)
+    {
+        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * EAST);
+        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
+        else { attackBoard |= targetSquare; }
+    }
+
+    // Attacks to the south west
+    for (int i = 1; i < numberOfMovesWest; i++)
+    {
+        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * WEST);
+        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
+        else { attackBoard |= targetSquare; }
+    }
+}
+
+bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares)
+{
+    return ( (targetSquare & occupiedSquares).numberOfSetBits() == 1 );
+}
+
+Bitboard calculateBishopBlockerMask(const Bitboard & bitboard)
 {
     Bitboard potentialBlockersToTheBishop;
     Square square = static_cast<Square>(bitboard.findIndexLSB());
@@ -130,19 +236,19 @@ Bitboard calculateBishopBlockerMask(const Bitboard &bitboard)
 
     for (int i = 1; i <= numberOfMovesNorthEast; i++)
     {
-        potentialBlockersToTheBishop |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_EAST);
+        potentialBlockersToTheBishop |= utils::shiftCurrentSquareByDirection(bitboard, i * NORTH_EAST);
     }
     for (int i = 1; i <= numberOfMovesNorthWest; i++)
     {
-        potentialBlockersToTheBishop |= utils::shiftPieceOnBitboard(bitboard, i * NORTH_WEST);
+        potentialBlockersToTheBishop |= utils::shiftCurrentSquareByDirection(bitboard, i * NORTH_WEST);
     }
     for (int i = 1; i <= numberOfMovesSouthEast; i++)
     {
-        potentialBlockersToTheBishop |= utils::shiftPieceOnBitboard(bitboard, i * SOUTH_EAST);
+        potentialBlockersToTheBishop |= utils::shiftCurrentSquareByDirection(bitboard, i * SOUTH_EAST);
     }
     for (int i = 1; i <= numberOfMovesSouthWest; i++)
     {
-        potentialBlockersToTheBishop |= utils::shiftPieceOnBitboard(bitboard, i * SOUTH_WEST);
+        potentialBlockersToTheBishop |= utils::shiftCurrentSquareByDirection(bitboard, i * SOUTH_WEST);
     }
 
     return potentialBlockersToTheBishop;
@@ -161,19 +267,19 @@ Bitboard calculateRookBlockerMask(const Bitboard &bitboard)
 
     for (int i = 1; i <= numberOfMovesNorth; i++)
     {
-        potentialBlockersToTheRook |= utils::shiftPieceOnBitboard(bitboard, i * NORTH);
+        potentialBlockersToTheRook |= utils::shiftCurrentSquareByDirection(bitboard, i * NORTH);
     }
     for (int i = 1; i <= numberOfMovesSouth; i++)
     {
-        potentialBlockersToTheRook |= utils::shiftPieceOnBitboard(bitboard, i * SOUTH);
+        potentialBlockersToTheRook |= utils::shiftCurrentSquareByDirection(bitboard, i * SOUTH);
     }
     for (int i = 1; i <= numberOfMovesEast; i++)
     {
-        potentialBlockersToTheRook |= utils::shiftPieceOnBitboard(bitboard, i * EAST);
+        potentialBlockersToTheRook |= utils::shiftCurrentSquareByDirection(bitboard, i * EAST);
     }
     for (int i = 1; i <= numberOfMovesWest; i++)
     {
-        potentialBlockersToTheRook |= utils::shiftPieceOnBitboard(bitboard, i * WEST);
+        potentialBlockersToTheRook |= utils::shiftCurrentSquareByDirection(bitboard, i * WEST);
     }
 
     return potentialBlockersToTheRook;

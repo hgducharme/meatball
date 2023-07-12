@@ -68,6 +68,9 @@ void generateMagicNumbers();
 u64 getRandom64BitInteger();
 void generateAttackBoard(PieceType pieceType);
 std::vector<Bitboard> calculateAllBlockerVariations(Bitboard blockerMask);
+Bitboard calculateBishopAttackBoard(const Square & square, const Bitboard & blockerVariation);
+Bitboard calculateRookAttackBoard(const Square & square, const Bitboard & blockerVariation);
+bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares);
 Bitboard getPotentialBishopAttacks(const int square, const Bitboard &blockers);
 
 } // anonymous namespace
