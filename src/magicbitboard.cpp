@@ -5,7 +5,7 @@ namespace magic_bitboards
 
 MagicBitboardEntry BISHOP_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
 MagicBitboardEntry ROOK_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
-Bitboard BISHOP_ATTACKS[Square::NUMBER_OF_SQUARES][4096];
+Bitboard BISHOP_ATTACKS[Square::NUMBER_OF_SQUARES][512];
 Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][4096];
 
 void init()
@@ -50,23 +50,9 @@ void generateMagicNumbers()
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
-        BISHOP_MAGIC_LOOKUP[square].magicNumber = getRandom64BitInteger();
-        ROOK_MAGIC_LOOKUP[square].magicNumber = getRandom64BitInteger();
+        BISHOP_MAGIC_LOOKUP[square].magicNumber = utils::getRandom64BitInteger();
+        ROOK_MAGIC_LOOKUP[square].magicNumber = utils::getRandom64BitInteger();
     }
-}
-
-u64 getRandom64BitInteger()
-{
-    u64 bytes1And2, bytes3And4, bytes5And6, bytes7and8;
-
-    // Generate random integers, cast them to a 64-bit integer, and only take the first 2 bytes (16 bits)
-    bytes1And2 = (u64)(random()) & 0xFFFF;
-    bytes3And4 = (u64)(random()) & 0xFFFF;
-    bytes5And6 = (u64)(random()) & 0xFFFF;
-    bytes7and8 = (u64)(random()) & 0xFFFF;
-
-    // Create the random 64 bit integer by mix and matching the two-byte snippets or "words"
-    return bytes1And2 | (bytes3And4 << constants::INDEX_OF_THIRD_BYTE) | (bytes5And6 << constants::INDEX_OF_FIFTH_BYTE) | (bytes7and8 << constants::INDEX_OF_SEVENTH_BYTE);
 }
 
 void generateAttackBoard(PieceType pieceType)
@@ -79,15 +65,25 @@ void generateAttackBoard(PieceType pieceType)
         {
             case BISHOP:
                 entry = BISHOP_MAGIC_LOOKUP[square];
+                break;
             case ROOK:
                 entry = ROOK_MAGIC_LOOKUP[square];
+                break;
             default:
-                throw std::invalid_argument("generateAttackBoard is only defined for BISHOP and ROOK.");
+                throw std::invalid_argument("generateAttackBoard() is only defined for the arguments: 'BISHOP' and 'ROOK'.");
         }
 
+        // Calculate the blocker variations for this blocker mask
         std::vector<Bitboard> allBlockerVariations = calculateAllBlockerVariations(entry.blockerMask);
+        int numberOfBlockerVariations = allBlockerVariations.size();
 
-        // for each blocker variation, generate the attack board
+        // Calculate the attack board for each blocker variation
+        std::vector<Bitboard> attackBoards(numberOfBlockerVariations);
+        for (int i = 0; i < numberOfBlockerVariations; i++)
+        {
+            attackBoards[i] = calculateAttackBoard((Square)square, allBlockerVariations[i]);
+        }
+
         // take the blocker variation and multiply it by the magic number and right shift by number of set bits in product
         // attempt to store the attack board using the index just computed
         // if the index already has an entry we need to create a new magic number
@@ -99,12 +95,26 @@ void generateAttackBoard(PieceType pieceType)
 
 std::vector<Bitboard> calculateAllBlockerVariations(Bitboard blockerMask)
 {
-    std::vector<Bitboard> blockerVariations;
+    /*
+     * This solved problem is also known as: enumerate all submasks of a bitmask.
+     * Here is a link with some explanation: https://www.geeksforgeeks.org/print-all-submasks-of-a-given-mask/
+     * One with better explanation: https://cp-algorithms.com/algebra/all-submasks.html
+     */
+    std::uint16_t numberOfBlockerVariations = pow(2, blockerMask.numberOfSetBits());
+    std::vector<Bitboard> allBlockerVariations(numberOfBlockerVariations);
 
-    
+    std::uint16_t i = 0;
+    for (u64 blockerVariation = blockerMask.getBoard(); blockerVariation; blockerVariation = (blockerVariation - 1) & blockerMask.getBoard())
+    {
+        allBlockerVariations[i] = blockerVariation;
+        i++;
+    }
 
+    return allBlockerVariations;
+}
 
-    return blockerVariations;
+Bitboard calculateAttackBoard(Square square, Bitboard blockerVariation)
+{
 }
 
 Bitboard calculateBishopBlockerMask(const Bitboard &bitboard)
