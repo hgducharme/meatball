@@ -5,8 +5,8 @@
 
 int main ()
 {
-  ChessBoard chessboard;
-  std::cout << chessboard.getPieceBitboard(WHITE, PAWN).getBoard() << std::endl;
+  Chessboard chessboard;
+  std::cout << chessboard.getBitboard(WHITE, PAWN).getBoard() << std::endl;
 
   // chessboard.setState(FEN);
   // chessboard.generateMoves();

@@ -22,7 +22,7 @@ CXX := clang++
 
 # Compiler flags
 DEBUG = -g
-COVERAGE := -O1 -fPIC --coverage # (--coverage is a synonym for: -fprofile-arcs -ftest-coverage)
+COVERAGE := -O0 -fPIC --coverage # (--coverage is a synonym for: -fprofile-arcs -ftest-coverage)
 CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -std=c++17 $(DEBUG) $(COVERAGE)
 
 # C PreProcessor flags, generally used for path management, dependency file generation, and dumping preprocessor state
@@ -93,6 +93,7 @@ tests: $(objectfiles_without_main) $(test_objectfiles) | $(BIN_DIR)
 	@echo "Building: $@"
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(GOOGLETEST) --output $(TEST_EXECUTABLE)
+	./$(TEST_EXECUTABLE)
 
 # Compile .cpp into .o
 $(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
@@ -103,13 +104,10 @@ $(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
 
 coverage: tests | $(COVERAGE_DIR)
 	@echo
-	@echo "Running test executable..."
-	./$(TEST_EXECUTABLE)
-	@echo
 	@echo "Generating test coverage data..."
 	gcov --color $(sourcefiles_without_main) -o=$(BUILD_DIR)/src
-	mv *.gcov $(COVERAGE_DIR)/
-	gcovr --html-details $(COVERAGE_DIR)/coverage.html $(BUILD_DIR)/src
+	mv *.gcov $(COVERAGE_DIR)/gcov
+	gcovr --exclude-unreachable-branches --exclude-throw-branches --decisions --html-details $(COVERAGE_DIR)/html/coverage.html $(BUILD_DIR)/src
 
 # -------------------------------------- #
 # Folder targets
@@ -121,7 +119,8 @@ $(BUILD_DIR):
 	mkdir -p $@
 
 $(COVERAGE_DIR):
-	mkdir -p $@
+	mkdir -p $@/gcov
+	mkdir -p $@/html
 
 # -------------------------------------- #
 # Clean
