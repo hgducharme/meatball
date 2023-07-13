@@ -61,18 +61,18 @@ void generateAttackBoard(PieceType pieceType)
     MagicBitboardEntry * MAGIC_LOOKUP_TABLE;
 
     // A pointer to a function that either calculates rook attacks or bishop attacks
-    Bitboard (*calculateAttackBoard)(const Square &, const Bitboard &);
+    Bitboard (*calculateSliderPieceAttackBoard)(const Square &, const Bitboard &);
 
     // Depending on the piece type, determine which lookup table and which function to use
     switch (pieceType)
     {
         case BISHOP:
             MAGIC_LOOKUP_TABLE = BISHOP_MAGIC_LOOKUP;
-            calculateAttackBoard = calculateBishopAttackBoard;
+            calculateSliderPieceAttackBoard = calculateBishopAttackBoard;
             break;
         case ROOK:
             MAGIC_LOOKUP_TABLE = ROOK_MAGIC_LOOKUP;
-            // calculateAttackBoard = calculateRookAttackBoard;
+            // calculateSliderPieceAttackBoard = calculateRookAttackBoard;
             break;
         default:
             throw std::invalid_argument("generateAttackBoard() is only defined for the arguments: 'BISHOP' and 'ROOK'.");
@@ -92,9 +92,9 @@ void generateAttackBoard(PieceType pieceType)
         for (int i = 0; i < numberOfBlockerVariations; i++)
         {
             // TODO: Maybe we don't need to make this a pointer and we can generalize this function?
-            // calculateAttackBoard<ROOK>(square, blockerVariation)
-            // calculateAttackBoard<BISHOP>(square, blockerVariation)
-            attackBoards[i] = calculateAttackBoard((Square)square, allBlockerVariations[i]);
+            // calculateSliderPieceAttackBoard<ROOK>(square, blockerVariation)
+            // calculateSliderPieceAttackBoard<BISHOP>(square, blockerVariation)
+            attackBoards[i] = calculateSliderPieceAttackBoard((Square)square, allBlockerVariations[i]);
         }
 
         // take the blocker variation and multiply it by the magic number and right shift by number of set bits in product
