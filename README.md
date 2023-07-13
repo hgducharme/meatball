@@ -4,17 +4,14 @@ This is a hobbyist's attempt at machine learning by creating a chess engine.
 
 # Features
 
-## Board Representation
-- [Bitboards](https://www.chessprogramming.org/Bitboards)
-
-## Move Generation
-- [Magic bitboards](https://www.chessprogramming.org/Magic_Bitboards)
-
-## Search
-- [Monte Carlo Tree Search (MCTS)](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search)
-
-## Evaluation
-- [Deep neural network](https://en.wikipedia.org/wiki/Deep_learning)
+- Board Representation
+  - [Bitboards](https://www.chessprogramming.org/Bitboards)
+- Move Generation
+  - [Magic bitboards](https://www.chessprogramming.org/Magic_Bitboards)
+- Search
+  - [Monte Carlo Tree Search (MCTS)](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search)
+- Evaluation
+  - [Deep neural network](https://en.wikipedia.org/wiki/Deep_learning)
 
 # Installation
 
