@@ -2,11 +2,19 @@
 
 This is a hobbyist's attempt at machine learning by creating a chess engine.
 
-The brains of the chess engine can be broken up into three distinct categories:
+# Features
 
-1. Board representation - bitboard
-2. Search - Monte Carlo Tree Search (MCTS)
-3. Evaluation - deep neural network
+## Board Representation
+- [Bitboards](https://www.chessprogramming.org/Bitboards)
+
+## Move Generation
+- [Magic bitboards](https://www.chessprogramming.org/Magic_Bitboards)
+
+## Search
+- [Monte Carlo Tree Search (MCTS)](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search)
+
+## Evaluation
+- [Deep neural network](https://en.wikipedia.org/wiki/Deep_learning)
 
 # Installation
 
