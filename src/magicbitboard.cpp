@@ -5,8 +5,8 @@ namespace magic_bitboards
 
 MagicBitboardEntry BISHOP_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
 MagicBitboardEntry ROOK_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
-Bitboard BISHOP_ATTACKS[Square::NUMBER_OF_SQUARES][512];
-Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][4096];
+Bitboard BISHOP_ATTACKS[Square::NUMBER_OF_SQUARES][512] = {Bitboard(0)};
+Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][4096] = {Bitboard(0)};
 
 void init()
 {
@@ -60,6 +60,9 @@ void generateAttackBoard(PieceType pieceType)
     // A pointer to either BISHOP_MAGIC_LOOKUP or ROOK_MAGIC_LOOKUP
     MagicBitboardEntry * MAGIC_LOOKUP_TABLE;
 
+    // A pointer to either BISHOP_ATTACKS or ROOK_ATTACKS
+    Bitboard * ATTACK_TABLE;
+
     // A pointer to a function that either calculates rook attacks or bishop attacks
     Bitboard (*calculateSliderPieceAttackBoard)(const Square &, const Bitboard &);
 
@@ -72,7 +75,7 @@ void generateAttackBoard(PieceType pieceType)
             break;
         case ROOK:
             MAGIC_LOOKUP_TABLE = ROOK_MAGIC_LOOKUP;
-            // calculateSliderPieceAttackBoard = calculateRookAttackBoard;
+            calculateSliderPieceAttackBoard = calculateRookAttackBoard;
             break;
         default:
             throw std::invalid_argument("generateAttackBoard() is only defined for the arguments: 'BISHOP' and 'ROOK'.");
@@ -97,7 +100,22 @@ void generateAttackBoard(PieceType pieceType)
             attackBoards[i] = calculateSliderPieceAttackBoard((Square)square, allBlockerVariations[i]);
         }
 
-        // take the blocker variation and multiply it by the magic number and right shift by number of set bits in product
+        // Calculate the blocker variation and magic number products and right shift by number of set bits in product
+        for (int i = 0; i < numberOfBlockerVariations; i++)
+        {
+            entry.blockerMaskAndMagicProduct = allBlockerVariations[i] * entry.magicNumber;
+
+            // Check if this hashed index already has an entry in the database
+            // If it does, then regenerate the magic number for this square
+            // Otherwise store the attack board using this hashed index
+
+            // TODO: I think we're indexing the database wrong. I'm supposed to use the hashed index AS AN INDEX
+            if ( *(ATTACK_TABLE + square + i) == 0)
+            {
+                // 
+            }
+        }
+
         // attempt to store the attack board using the index just computed
         // if the index already has an entry we need to create a new magic number
 
@@ -185,7 +203,7 @@ Bitboard calculateRookAttackBoard(const Square & square, const Bitboard & blocke
     // TODO: maybe we can implement a function like the following?
     // attackBoard |= calculateAttacksInDirection(NORTH_EAST, numberOfMovesNorthEast, squareBitboard, blockerVariation);
 
-    // Attacks to the north east
+    // Attacks to the north
     for (int i = 1; i < numberOfMovesNorth; i++)
     {
         Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * NORTH);
@@ -193,7 +211,7 @@ Bitboard calculateRookAttackBoard(const Square & square, const Bitboard & blocke
         else { attackBoard |= targetSquare; }
     }
 
-    // Attacks to the north west
+    // Attacks to the south
     for (int i = 1; i < numberOfMovesSouth; i++)
     {
         Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * SOUTH);
@@ -201,7 +219,7 @@ Bitboard calculateRookAttackBoard(const Square & square, const Bitboard & blocke
         else { attackBoard |= targetSquare; }
     }
 
-    // Attacks to the south east
+    // Attacks to the east
     for (int i = 1; i < numberOfMovesEast; i++)
     {
         Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * EAST);
@@ -209,7 +227,7 @@ Bitboard calculateRookAttackBoard(const Square & square, const Bitboard & blocke
         else { attackBoard |= targetSquare; }
     }
 
-    // Attacks to the south west
+    // Attacks to the west
     for (int i = 1; i < numberOfMovesWest; i++)
     {
         Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * WEST);
