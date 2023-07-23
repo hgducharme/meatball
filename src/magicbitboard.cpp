@@ -5,16 +5,18 @@ namespace magic_bitboards
 
 MagicBitboardEntry BISHOP_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
 MagicBitboardEntry ROOK_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
-Bitboard BISHOP_ATTACKS[Square::NUMBER_OF_SQUARES][512] = {Bitboard(0)};
-Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][4096] = {Bitboard(0)};
+Bitboard BISHOP_ATTACKS[Square::NUMBER_OF_SQUARES][LARGEST_POSSIBLE_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS] = {{Bitboard(0)}};
+Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][LARGEST_POSSIBLE_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS] = {{Bitboard(0)}};
 
 void init()
 {
     instantiateMagicBitboardEntries();
     generateBlockerMasks();
-    generateMagicNumbers();
-    generateAttackBoard(PieceType::BISHOP);
-    generateAttackBoard(PieceType::ROOK);
+    generateInitialMagicNumbers();
+    generateBishopMagics();
+    // generateRookMagics();
+    // generateAttackBoard(PieceType::BISHOP);
+    // generateAttackBoard(PieceType::ROOK);
 }
 
 namespace
@@ -46,7 +48,7 @@ void generateBlockerMasks()
     }
 }
 
-void generateMagicNumbers()
+void generateInitialMagicNumbers()
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
@@ -55,36 +57,12 @@ void generateMagicNumbers()
     }
 }
 
-void generateAttackBoard(PieceType pieceType)
+void generateBishopMagics()
 {
-    // A pointer to either BISHOP_MAGIC_LOOKUP or ROOK_MAGIC_LOOKUP
-    MagicBitboardEntry * MAGIC_LOOKUP_TABLE;
-
-    // A pointer to either BISHOP_ATTACKS or ROOK_ATTACKS
-    Bitboard * ATTACK_TABLE;
-
-    // A pointer to a function that either calculates rook attacks or bishop attacks
-    Bitboard (*calculateSliderPieceAttackBoard)(const Square &, const Bitboard &);
-
-    // Depending on the piece type, determine which lookup table and which function to use
-    switch (pieceType)
-    {
-        case BISHOP:
-            MAGIC_LOOKUP_TABLE = BISHOP_MAGIC_LOOKUP;
-            calculateSliderPieceAttackBoard = calculateBishopAttackBoard;
-            break;
-        case ROOK:
-            MAGIC_LOOKUP_TABLE = ROOK_MAGIC_LOOKUP;
-            calculateSliderPieceAttackBoard = calculateRookAttackBoard;
-            break;
-        default:
-            throw std::invalid_argument("generateAttackBoard() is only defined for the arguments: 'BISHOP' and 'ROOK'.");
-    }
-
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
         // Index the magic lookup table to get the magic entry for this square
-        MagicBitboardEntry entry = *(MAGIC_LOOKUP_TABLE + square);
+        MagicBitboardEntry entry = BISHOP_MAGIC_LOOKUP[square];
 
         // Calculate the blocker variations for this blocker mask
         std::vector<Bitboard> allBlockerVariations = calculateAllBlockerVariations(entry.blockerMask);
@@ -94,35 +72,107 @@ void generateAttackBoard(PieceType pieceType)
         std::vector<Bitboard> attackBoards(numberOfBlockerVariations);
         for (int i = 0; i < numberOfBlockerVariations; i++)
         {
-            // TODO: Maybe we don't need to make this a pointer and we can generalize this function?
-            // calculateSliderPieceAttackBoard<ROOK>(square, blockerVariation)
-            // calculateSliderPieceAttackBoard<BISHOP>(square, blockerVariation)
-            attackBoards[i] = calculateSliderPieceAttackBoard((Square)square, allBlockerVariations[i]);
+            attackBoards[i] = calculateBishopAttackBoard((Square)square, allBlockerVariations[i]);
         }
 
         // Calculate the blocker variation and magic number products and right shift by number of set bits in product
+        /*
+        * NOTE: The following function hints at some recursion. The recursive call would exist in the else statement
+        */
         for (int i = 0; i < numberOfBlockerVariations; i++)
         {
             entry.blockerMaskAndMagicProduct = allBlockerVariations[i] * entry.magicNumber;
+            entry.numberOfBitsInProduct = entry.blockerMaskAndMagicProduct.numberOfSetBits();
+            u64 hashedIndex = entry.blockerMaskAndMagicProduct.getBoard() >> (Square::NUMBER_OF_SQUARES - entry.numberOfBitsInProduct);
 
             // Check if this hashed index already has an entry in the database
             // If it does, then regenerate the magic number for this square
             // Otherwise store the attack board using this hashed index
-
-            // TODO: I think we're indexing the database wrong. I'm supposed to use the hashed index AS AN INDEX
-            if ( *(ATTACK_TABLE + square + i) == 0)
+            // TODO: Indexing using the hashed index here causes a segfault
+            if (BISHOP_ATTACKS[square][hashedIndex] == 0)
             {
-                // 
+                BISHOP_ATTACKS[square][hashedIndex] = attackBoards[i];
             }
+            else
+            {
+                // Regenerate a magic number and try a new hashed index
+                for (int retry = 0; retry < 999; retry++)
+                {
+                    BISHOP_MAGIC_LOOKUP[square].magicNumber = utils::getRandom64BitInteger();
+                    entry.blockerMaskAndMagicProduct = allBlockerVariations[i] * entry.magicNumber;
+                    entry.numberOfBitsInProduct = entry.blockerMaskAndMagicProduct.numberOfSetBits();
+                    u64 hashedIndex = entry.blockerMaskAndMagicProduct.getBoard() >> entry.numberOfBitsInProduct;
+                    if (BISHOP_ATTACKS[square][hashedIndex] == 0)
+                    {
+                        BISHOP_ATTACKS[square][hashedIndex] = attackBoards[i];
+                        break;
+                    }
+                }
+            }
+
         }
-
-        // attempt to store the attack board using the index just computed
-        // if the index already has an entry we need to create a new magic number
-
-        // entry.blockerMaskAndMagicProduct = entry.blockerMask * entry.magicNumber;
-        // entry.numberOfBitsInProduct = entry.blockerMaskAndMagicProduct.numberOfSetBits();
     }
+
 }
+
+// void generateAttackBoard(PieceType pieceType)
+// {
+//     // A pointer to either BISHOP_MAGIC_LOOKUP or ROOK_MAGIC_LOOKUP
+//     MagicBitboardEntry * MAGIC_LOOKUP_TABLE;
+
+//     // A pointer to either BISHOP_ATTACKS or ROOK_ATTACKS
+//     Bitboard * ATTACK_TABLE;
+//     // const int (&selectedArray)[BISHOP_SIZE][BISHOP_SIZE] = (piece == "bishop") ? bishopArray : rookArray;
+
+//     // A pointer to a function that either calculates rook attacks or bishop attacks
+//     Bitboard (*calculateSliderPieceAttackBoard)(const Square &, const Bitboard &);
+
+//     // Depending on the piece type, determine which lookup table and which function to use
+//     switch (pieceType)
+//     {
+//         case BISHOP:
+//             MAGIC_LOOKUP_TABLE = BISHOP_MAGIC_LOOKUP;
+//             calculateSliderPieceAttackBoard = calculateBishopAttackBoard;
+//             break;
+//         case ROOK:
+//             MAGIC_LOOKUP_TABLE = ROOK_MAGIC_LOOKUP;
+//             calculateSliderPieceAttackBoard = calculateRookAttackBoard;
+//             break;
+//         default:
+//             throw std::invalid_argument("generateAttackBoard() is only defined for the arguments: 'BISHOP' and 'ROOK'.");
+//     }
+
+//     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
+//     {
+//         // Index the magic lookup table to get the magic entry for this square
+//         MagicBitboardEntry entry = *(MAGIC_LOOKUP_TABLE + square);
+
+//         // Calculate the blocker variations for this blocker mask
+//         std::vector<Bitboard> allBlockerVariations = calculateAllBlockerVariations(entry.blockerMask);
+//         int numberOfBlockerVariations = allBlockerVariations.size();
+
+//         // Calculate the attack board for each blocker variation
+//         std::vector<Bitboard> attackBoards(numberOfBlockerVariations);
+//         for (int i = 0; i < numberOfBlockerVariations; i++)
+//         {
+//             // TODO: Maybe we don't need to make this a pointer and we can generalize this function?
+//             // calculateSliderPieceAttackBoard<ROOK>(square, blockerVariation)
+//             // calculateSliderPieceAttackBoard<BISHOP>(square, blockerVariation)
+//             attackBoards[i] = calculateSliderPieceAttackBoard((Square)square, allBlockerVariations[i]);
+//         }
+
+//         // Calculate the blocker variation and magic number products and right shift by number of set bits in product
+//         for (int i = 0; i < numberOfBlockerVariations; i++)
+//         {
+//             entry.blockerMaskAndMagicProduct = allBlockerVariations[i] * entry.magicNumber;
+//             entry.numberOfBitsInProduct = entry.blockerMaskAndMagicProduct.numberOfSetBits();
+//             u64 hashedIndex = entry.blockerMaskAndMagicProduct.getBoard() >> entry.numberOfBitsInProduct;
+
+//             // attempt to store the attack board using the index just computed
+//             // if the index already has an entry we need to create a new magic number
+//         }
+//     }
+// }
 
 std::vector<Bitboard> calculateAllBlockerVariations(Bitboard blockerMask)
 {
@@ -188,6 +238,8 @@ Bitboard calculateBishopAttackBoard(const Square & square, const Bitboard & bloc
         if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
         else { attackBoard |= targetSquare; }
     }
+
+    return attackBoard;
 }
 
 Bitboard calculateRookAttackBoard(const Square & square, const Bitboard & blockerVariation)
@@ -303,6 +355,8 @@ Bitboard calculateRookBlockerMask(const Bitboard &bitboard)
     return potentialBlockersToTheRook;
 }
 
+// This is an example of a function that would be used in movegen.cpp
+// And how we would use the magic bitboards as an end user
 Bitboard getPotentialBishopAttacks(const int square, const Bitboard &boardState)
 {
     MagicBitboardEntry bishopEntry = BISHOP_MAGIC_LOOKUP[square];
