@@ -22,13 +22,12 @@ struct MagicBitboardEntry
 extern MagicBitboardEntry BISHOP_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
 extern MagicBitboardEntry ROOK_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
 
+// Bishops have between 32 and 512 unique possible blocker variations depending on the square
+// Rooks have between 1024 and 4096 unique possible blocker variations depending on the square
 constexpr int LARGEST_POSSIBLE_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS = 512;
 constexpr int LARGEST_POSSIBLE_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS = 4096;
 
-// Bishops have between 32 and 512 unique possible blocker variations depending on the square
 extern Bitboard BISHOP_ATTACKS[Square::NUMBER_OF_SQUARES][LARGEST_POSSIBLE_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS];
-
-// Rooks have between 1024 and 4096 unique possible blocker variations depending on the square
 extern Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][LARGEST_POSSIBLE_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS];
 
 void init();

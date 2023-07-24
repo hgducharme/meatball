@@ -82,14 +82,14 @@ void generateBishopMagics()
         for (int i = 0; i < numberOfBlockerVariations; i++)
         {
             entry.blockerMaskAndMagicProduct = allBlockerVariations[i] * entry.magicNumber;
-            entry.numberOfBitsInProduct = entry.blockerMaskAndMagicProduct.numberOfSetBits();
+            entry.numberOfBitsInProduct = NUMBER_OF_SET_BITS_IN_BISHOP_BLOCKER_MASK[square];
             u64 hashedIndex = entry.blockerMaskAndMagicProduct.getBoard() >> (Square::NUMBER_OF_SQUARES - entry.numberOfBitsInProduct);
 
             // Check if this hashed index already has an entry in the database
             // If it does, then regenerate the magic number for this square
             // Otherwise store the attack board using this hashed index
             // TODO: Indexing using the hashed index here causes a segfault
-            if (BISHOP_ATTACKS[square][hashedIndex] == 0)
+            if (BISHOP_ATTACKS[square][hashedIndex].getBoard() == 0)
             {
                 BISHOP_ATTACKS[square][hashedIndex] = attackBoards[i];
             }
@@ -100,9 +100,9 @@ void generateBishopMagics()
                 {
                     BISHOP_MAGIC_LOOKUP[square].magicNumber = utils::getRandom64BitInteger();
                     entry.blockerMaskAndMagicProduct = allBlockerVariations[i] * entry.magicNumber;
-                    entry.numberOfBitsInProduct = entry.blockerMaskAndMagicProduct.numberOfSetBits();
+                    entry.numberOfBitsInProduct = NUMBER_OF_SET_BITS_IN_BISHOP_BLOCKER_MASK[square];
                     u64 hashedIndex = entry.blockerMaskAndMagicProduct.getBoard() >> entry.numberOfBitsInProduct;
-                    if (BISHOP_ATTACKS[square][hashedIndex] == 0)
+                    if (BISHOP_ATTACKS[square][hashedIndex].getBoard() == 0)
                     {
                         BISHOP_ATTACKS[square][hashedIndex] = attackBoards[i];
                         break;
