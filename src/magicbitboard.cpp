@@ -1,5 +1,7 @@
 #include "magicbitboard.h"
 
+#include <iostream>
+
 namespace magic_bitboards
 {
 
@@ -82,35 +84,42 @@ void generateBishopMagics()
         for (int i = 0; i < numberOfBlockerVariations; i++)
         {
             entry.blockerMaskAndMagicProduct = allBlockerVariations[i] * entry.magicNumber;
-            entry.numberOfBitsInProduct = NUMBER_OF_SET_BITS_IN_BISHOP_BLOCKER_MASK[square];
+            entry.numberOfBitsInProduct = allBlockerVariations[i].numberOfSetBits();
             u64 hashedIndex = entry.blockerMaskAndMagicProduct.getBoard() >> (Square::NUMBER_OF_SQUARES - entry.numberOfBitsInProduct);
 
             // Check if this hashed index already has an entry in the database
             // If it does, then regenerate the magic number for this square
             // Otherwise store the attack board using this hashed index
-            // TODO: Indexing using the hashed index here causes a segfault
             if (BISHOP_ATTACKS[square][hashedIndex].getBoard() == 0)
             {
                 BISHOP_ATTACKS[square][hashedIndex] = attackBoards[i];
             }
             else
             {
+                u64 hashedIndex2;
+
                 // Regenerate a magic number and try a new hashed index
                 for (int retry = 0; retry < 999; retry++)
                 {
-                    BISHOP_MAGIC_LOOKUP[square].magicNumber = utils::getRandom64BitInteger();
+                    entry.magicNumber = utils::getRandom64BitInteger();
                     entry.blockerMaskAndMagicProduct = allBlockerVariations[i] * entry.magicNumber;
-                    entry.numberOfBitsInProduct = NUMBER_OF_SET_BITS_IN_BISHOP_BLOCKER_MASK[square];
-                    u64 hashedIndex = entry.blockerMaskAndMagicProduct.getBoard() >> entry.numberOfBitsInProduct;
-                    if (BISHOP_ATTACKS[square][hashedIndex].getBoard() == 0)
+                    entry.numberOfBitsInProduct = allBlockerVariations[i].numberOfSetBits();
+                    hashedIndex2 = entry.blockerMaskAndMagicProduct.getBoard() >> (Square::NUMBER_OF_SQUARES - entry.numberOfBitsInProduct);
+                    if (BISHOP_ATTACKS[square][hashedIndex2].getBoard() == 0)
                     {
-                        BISHOP_ATTACKS[square][hashedIndex] = attackBoards[i];
+                        BISHOP_ATTACKS[square][hashedIndex2] = attackBoards[i];
                         break;
                     }
                 }
-            }
 
+                if (BISHOP_ATTACKS[square][hashedIndex2].getBoard() == 0)
+                {
+                    std::cout << "ERROR: no magic number found for square " << square << std::endl;
+                }
+            }
         }
+
+        std::cout << "Magic number for square " << square << ": " << entry.magicNumber << std::endl;
     }
 
 }
