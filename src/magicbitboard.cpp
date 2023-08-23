@@ -14,7 +14,7 @@ void init()
 {
     instantiateMagicBitboardEntries();
     generateBlockerMasks();
-    generateInitialMagicNumbers();
+    // generateInitialMagicNumbers();
     generateBishopMagics();
     // generateRookMagics();
     // generateAttackBoard(PieceType::BISHOP);
@@ -50,14 +50,18 @@ void generateBlockerMasks()
     }
 }
 
-void generateInitialMagicNumbers()
-{
-    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
-    {
-        BISHOP_MAGIC_LOOKUP[square].magicNumber = utils::getRandom64BitInteger();
-        ROOK_MAGIC_LOOKUP[square].magicNumber = utils::getRandom64BitInteger();
-    }
-}
+/*
+ * This is commented out because instead of doing an inital magic number generation loop at the beginning,
+ * i'm going to just fold this into the whole process of finding magic numbers for each piece.
+*/
+// void generateInitialMagicNumbers()
+// {
+//     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
+//     {
+//         BISHOP_MAGIC_LOOKUP[square].magicNumber = utils::getRandom64BitInteger();
+//         ROOK_MAGIC_LOOKUP[square].magicNumber = utils::getRandom64BitInteger();
+//     }
+// }
 
 void generateBishopMagics()
 {
@@ -65,6 +69,9 @@ void generateBishopMagics()
     {
         // Index the magic lookup table to get the magic entry for this square
         MagicBitboardEntry entry = BISHOP_MAGIC_LOOKUP[square];
+
+        // Calculate a magic number for this square
+        entry.magicNumber = utils::getRandom64BitInteger();
 
         // Calculate the blocker variations for this blocker mask
         std::vector<Bitboard> allBlockerVariations = calculateAllBlockerVariations(entry.blockerMask);
@@ -77,10 +84,8 @@ void generateBishopMagics()
             attackBoards[i] = calculateBishopAttackBoard((Square)square, allBlockerVariations[i]);
         }
 
-        // Calculate the blocker variation and magic number products and right shift by number of set bits in product
-        /*
-        * NOTE: The following function hints at some recursion. The recursive call would exist in the else statement
-        */
+        // Hash each blocker variation and attempt to store the attack boards
+        // NOTE: The following function hints at some recursion. The recursive call would exist in the else statement
         for (int i = 0; i < numberOfBlockerVariations; i++)
         {
             entry.blockerMaskAndMagicProduct = allBlockerVariations[i] * entry.magicNumber;
@@ -124,6 +129,16 @@ void generateBishopMagics()
 
 }
 
+/*
+ * This is commented out so that I can focus on improving the magic number generation functions.
+ * This function has also gotten needlessly complex by trying to make it usable for both rooks and bishops
+ * My adherence to the liskov substitution principle here I think is getting messy, and there is 
+ * most likely a more efficient way to perform this algorithm on difference piece types.
+ * The use of a switch statement to look up data depending on the piece type feels like
+ * a bit of a code smell. This was an attempt to fold 
+ * generateBishopAttackBoard() and generateRookAttackBoard() into one function so as not to duplicate
+ * code.
+*/
 // void generateAttackBoard(PieceType pieceType)
 // {
 //     // A pointer to either BISHOP_MAGIC_LOOKUP or ROOK_MAGIC_LOOKUP
