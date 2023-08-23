@@ -4,6 +4,8 @@ This is a hobbyist's attempt at machine learning by creating a chess engine in C
 
 # Features
 
+Consider reading [the wiki](https://github.com/hgducharme/meatball/wiki/) for more information on the theory behind some of the engine's components.
+
 - Board Representation
   - [Bitboards](https://www.chessprogramming.org/Bitboards)
 - Move Generation
