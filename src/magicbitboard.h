@@ -16,7 +16,7 @@ struct MagicBitboardEntry
     Bitboard blockerMask;
     u64 magicNumber;
     Bitboard blockerMaskAndMagicProduct;
-    int numberOfBitsInProduct;
+    int shiftAmount;
 };
 
 extern MagicBitboardEntry BISHOP_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
@@ -24,11 +24,11 @@ extern MagicBitboardEntry ROOK_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
 
 // Bishops have between 32 and 512 unique possible blocker variations depending on the square
 // Rooks have between 1024 and 4096 unique possible blocker variations depending on the square
-constexpr int LARGEST_POSSIBLE_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS = 512;
-constexpr int LARGEST_POSSIBLE_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS = 4096;
+constexpr int LARGEST_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS = 512;
+constexpr int LARGEST_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS = 4096;
 
-extern Bitboard BISHOP_ATTACKS[Square::NUMBER_OF_SQUARES][LARGEST_POSSIBLE_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS];
-extern Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][LARGEST_POSSIBLE_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS];
+extern Bitboard BISHOP_ATTACKS[Square::NUMBER_OF_SQUARES][LARGEST_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS];
+extern Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][LARGEST_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS];
 
 void init();
 
@@ -62,6 +62,7 @@ constexpr int NUMBER_OF_SET_BITS_IN_ROOK_BLOCKER_MASK[Square::NUMBER_OF_SQUARES]
     12, 11, 11, 11, 11, 11, 11, 12,
 };
 
+void initializeAttackDatabases();
 void instantiateMagicBitboardEntries();
 void generateBlockerMasks();
 Bitboard calculateBishopBlockerMask(const Bitboard &bitboard);
