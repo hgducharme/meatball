@@ -1,5 +1,7 @@
 # meatball
 
+## If you're from chess.com, go to the branch [10-movegen](https://github.com/hgducharme/meatball/tree/10-movegen) to see the current state of development.
+
 This is a hobbyist's attempt at machine learning by creating a chess engine in C++.
 
 # Features
