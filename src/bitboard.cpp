@@ -34,7 +34,7 @@ int Bitboard::getBit(int n) const
 
 void Bitboard::raiseExceptionIfBitIsOutOfRange(int n) const
 {
-    if ( !(n >= 0) || !(n < Square::NUMBER_OF_SQUARES) )
+    if ( !((n >= 0) && (n < Square::NUMBER_OF_SQUARES)) )
     {
         throw std::out_of_range("Bitboard can only manipulate bits in the inclusive range [0, 63]. Received: " + std::to_string(n));
     }
