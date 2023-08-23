@@ -1,6 +1,6 @@
 # meatball
 
-This is a hobbyist's attempt at machine learning by creating a chess engine in C++17.
+This is a hobbyist's attempt at machine learning by creating a chess engine in C++.
 
 # Features
 
