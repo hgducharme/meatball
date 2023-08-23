@@ -123,6 +123,7 @@ void generateBishopMagics()
                 std::cout << "(" << square << ") COLLISION, starting with magic: " << entry.magicNumber << std::endl;
 
                 // Regenerate a magic number and try a new hashed index
+                // TODO: THIS GETS STUCK IN A WHILE LOOP. Also, magic number generation seems to be deterministic??
                 while (BISHOP_ATTACKS[square][hashedIndex2].getBoard() != constants::UNIVERSE)
                 {
                     u64 magicNumber2 = utils::getRandom64BitInteger();
