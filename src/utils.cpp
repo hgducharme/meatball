@@ -68,4 +68,14 @@ u64 getRandom64BitInteger()
     return bytes1And2 | (bytes3And4 << constants::INDEX_OF_THIRD_BYTE) | (bytes5And6 << constants::INDEX_OF_FIFTH_BYTE) | (bytes7and8 << constants::INDEX_OF_SEVENTH_BYTE);
 }
 
+u64 getRandom64BitInteger_2()
+{
+    // https://stackoverflow.com/questions/21096015/how-to-generate-64-bit-random-numbers
+    std::random_device rd;
+    std::mt19937_64 e2(rd());
+    std::uniform_int_distribution<long long int> dist(std::llround(std::pow(2,61)), std::llround(std::pow(2,62)));
+
+    return dist(e2);
+}
+
 } // namespace utils
