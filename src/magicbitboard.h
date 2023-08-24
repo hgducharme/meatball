@@ -63,7 +63,7 @@ constexpr int NUMBER_OF_SET_BITS_IN_ROOK_BLOCKER_MASK[Square::NUMBER_OF_SQUARES]
 };
 
 void initializeAttackDatabases();
-void instantiateMagicBitboardEntries();
+void initializeMagicBitboardEntries();
 void generateBlockerMasks();
 Bitboard calculateBishopBlockerMask(const Bitboard &bitboard);
 Bitboard calculateRookBlockerMask(const Bitboard &bitboard);

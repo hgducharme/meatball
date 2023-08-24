@@ -13,7 +13,7 @@ Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][LARGEST_AMOUNT_OF_ROOK_BLOCKER_
 void init()
 {
     initializeAttackDatabases();
-    instantiateMagicBitboardEntries();
+    initializeMagicBitboardEntries();
     generateBlockerMasks();
     // generateInitialMagicNumbers();
     generateBishopMagics();
@@ -39,7 +39,7 @@ void initializeAttackDatabases()
               Bitboard(constants::UNIVERSE));
 }
 
-void instantiateMagicBitboardEntries()
+void initializeMagicBitboardEntries()
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
@@ -83,7 +83,7 @@ void generateBishopMagics()
         MagicBitboardEntry entry = BISHOP_MAGIC_LOOKUP[square];
 
         // Calculate a magic number for this square
-        entry.magicNumber = utils::getRandom64BitInteger();
+        entry.magicNumber = utils::getRandom64BitInteger_2();
         std::cout << "(" << square << ") TRYING magic number: " << entry.magicNumber << std::endl;
 
         // Calculate the blocker variations for this blocker mask
@@ -102,7 +102,8 @@ void generateBishopMagics()
         for (int i = 0; i < numberOfBlockerVariations; i++)
         {
             entry.blockerMaskAndMagicProduct = allBlockerVariations[i] * entry.magicNumber;
-            entry.shiftAmount = allBlockerVariations[i].numberOfSetBits();
+            // We must ensure the shiftAmount is at least a certain size in order to generate enough hashed indicies
+            entry.shiftAmount = 17;//std::max(19, allBlockerVariations[i].numberOfSetBits());
             u64 hashedIndex = entry.blockerMaskAndMagicProduct.getBoard() >> (Square::NUMBER_OF_SQUARES - entry.shiftAmount);
 
             // When allocating space for the database, we made every bitboard entry equal to the universe set
@@ -120,34 +121,40 @@ void generateBishopMagics()
             {
                 u64 hashedIndex2 = hashedIndex;
 
-                std::cout << "(" << square << ") COLLISION, starting with magic: " << entry.magicNumber << std::endl;
+                std::cout << "(" << square << ", " << i << ") COLLISION, starting with magic: " << entry.magicNumber << std::endl;
 
                 // Regenerate a magic number and try a new hashed index
-                // TODO: THIS GETS STUCK IN A WHILE LOOP. Also, magic number generation seems to be deterministic??
+                /*
+                 * This gets stuck in an infinite loop because the entry.shiftAmount remains constant.
+                 * For the i = 19 case, we're keeping only the top 3 or so bits of the blocker mask and magic product,
+                 * and you can only represent 2^3 = 8 possible integers with a 3 bit number, and if all of those 8 indexes
+                 * have already been used to store an attack board, then we get stuck in an infinite loop because we can't generate
+                 * an index that hasn't already been used.
+                 * 
+                 * Possible solutions:
+                 * - Require a minimum amount of bits in the hashed index, say like 13 bits, and then we can generate
+                 *   8192 indexes for each square, which should be more than enough.
+                 */
                 while (BISHOP_ATTACKS[square][hashedIndex2].getBoard() != constants::UNIVERSE)
                 {
-                    u64 magicNumber2 = utils::getRandom64BitInteger();
+                    u64 magicNumber2 = utils::getRandom64BitInteger_2();
                     Bitboard blockerMaskAndMagicProduct = allBlockerVariations[i] * magicNumber2;
                     hashedIndex2 = blockerMaskAndMagicProduct.getBoard() >> (Square::NUMBER_OF_SQUARES - entry.shiftAmount);
                     if (BISHOP_ATTACKS[square][hashedIndex2].getBoard() == constants::UNIVERSE)
                     {
-                        entry.blockerMaskAndMagicProduct = allBlockerVariations[i] * magicNumber2;
                         entry.magicNumber = magicNumber2;
+                        entry.blockerMaskAndMagicProduct = allBlockerVariations[i] * magicNumber2;
                         BISHOP_ATTACKS[square][hashedIndex2] = attackBoards[i];
-                        std::cout << "(" << square << ") FOUND new magic number: " << entry.magicNumber << std::endl;
+                        std::cout << "(" << square << ", " << i << ") FOUND new magic number: " << entry.magicNumber << std::endl;
+                        break;
                     }
                 }
 
                 if (BISHOP_ATTACKS[square][hashedIndex2].getBoard() == constants::UNIVERSE)
                 {
-                    std::cout << "(" << square << ") ERROR: no magic number found" << std::endl;
+                    std::cout << "(" << square << ", " << i << ") ERROR: no magic number found" << std::endl;
                 }
-                if(BISHOP_ATTACKS[square][hashedIndex2] == attackBoards[i])
-                {
-                    std::cout << "(" << square << ") FOUND new magic number: " << entry.magicNumber << std::endl;
-                }
-
-                std::cout << "(" << square << ") ENDING retry with magic: " << entry.magicNumber << std::endl;
+                std::cout << "(" << square << ", " << i << ") ENDING retry with magic: " << entry.magicNumber << std::endl;
             }
         }
 
