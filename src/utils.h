@@ -6,7 +6,7 @@
 
 #include <cmath>     // std::abs
 #include <algorithm> // std::math
-#include <random>
+#include <random>    // random number generation
 
 namespace utils
 {
@@ -17,6 +17,6 @@ int calculateDistanceFromEdgeOfBoard(Square square, Direction direction);
 
 u64 getRandom64BitInteger();
 
-u64 getRandom64BitInteger_2();
+u64 getSparselyPopulatedRandom64BitInteger();
 
 } // namespace utils

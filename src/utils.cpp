@@ -58,24 +58,16 @@ int calculateDistanceFromEdgeOfBoard(Square square, Direction direction)
 
 u64 getRandom64BitInteger()
 {
-    // Generate random integers, cast them to a 64-bit integer, and only take the first 2 bytes (16 bits)
-    u64 bytes1And2 = (u64)(random()) & 0xFFFF;
-    u64 bytes3And4 = (u64)(random()) & 0xFFFF;
-    u64 bytes5And6 = (u64)(random()) & 0xFFFF;
-    u64 bytes7and8 = (u64)(random()) & 0xFFFF;
+    std::random_device randomSeed;
+    std::mt19937_64 mersenneTwisterAlgorithm(randomSeed());
+    std::uniform_int_distribution<u64> distribution(2, std::pow(2,64) - 1);
 
-    // Create the random 64 bit integer by mix and matching the two-byte snippets or "words"
-    return bytes1And2 | (bytes3And4 << constants::INDEX_OF_THIRD_BYTE) | (bytes5And6 << constants::INDEX_OF_FIFTH_BYTE) | (bytes7and8 << constants::INDEX_OF_SEVENTH_BYTE);
+    return distribution(mersenneTwisterAlgorithm);
 }
 
-u64 getRandom64BitInteger_2()
+u64 getSparselyPopulatedRandom64BitInteger()
 {
-    // https://stackoverflow.com/questions/21096015/how-to-generate-64-bit-random-numbers
-    std::random_device rd;
-    std::mt19937_64 e2(rd());
-    std::uniform_int_distribution<long long int> dist(std::llround(std::pow(2,61)), std::llround(std::pow(2,62)));
-
-    return dist(e2);
+    return getRandom64BitInteger() & getRandom64BitInteger() & getRandom64BitInteger();
 }
 
 } // namespace utils
