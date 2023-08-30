@@ -92,145 +92,123 @@ void generateBishopMagics()
             attackBoards[i] = calculateBishopAttackBoard((Square)square, allBlockerVariations[i]);
         }
 
+        std::cout << "(" << square << ") SEARCHING for magic number..." << std::endl;
+
+        entry.magicNumber = searchForBishopMagicNumbers(square, allBlockerVariations, attackBoards);
+
         /*
          * CHESS PROGRAMMING WIKI STRUCTURE
         */
 
-        int hasFailed, nthVariation;
-        int numberOfRetries = 1000000;
-        // Attempt to search for a magic number
-        for (int retry = 0; retry < numberOfRetries; retry++)
-        {
-            // Calculate a magic number for this square
-            u64 magicNumber = utils::getSparselyPopulatedRandom64BitInteger();
-
-            // Make sure the magic number efficiently maps bits from the blocker mask to the most significant bit positons
-            // This aids in minimizing the size of the hashed index
-            if (Bitboard( (entry.blockerMask * magicNumber) & 0xFF00000000000000ULL ).numberOfSetBits() < 6) continue;
-
-            // Make sure the magic number works for all blocker variations, if not, restart with a new magic number
-            for (nthVariation, hasFailed = 0; !hasFailed && nthVariation < numberOfBlockerVariations; nthVariation++)
-            {
-                // Hash the index and check if this causes a collission
-                u64 hashedIndex = (allBlockerVariations[nthVariation] * magicNumber) >> (64 - entry.blockerMask.numberOfSetBits());
-                if (BISHOP_ATTACKS[square][hashedIndex].getBoard() == constants::UNIVERSE)
-                {
-                    BISHOP_ATTACKS[square][hashedIndex] = attackBoards[nthVariation];
-                }
-
-                // If we get a collision, then initiate the fail condition and start over with a new magic number
-                else if (BISHOP_ATTACKS[square][hashedIndex].getBoard() != attackBoards[nthVariation].getBoard())
-                {
-                    hasFailed = 1;
-                    if (retry == (numberOfRetries - 1))
-                    {
-                        std::cout << "(" << square << ", " << nthVariation << ") ERROR: no magic number found" << std::endl;
-                    }
-                }
-            }
-            
-            // If we made stored all the attack boards and a fail condition was never met, then we successfully found a magic number
-            if (!hasFailed)
-            {
-                entry.magicNumber = magicNumber;
-                break;
-            }
-        }
-
-        if (!hasFailed)
-        {
-            std::cout << "(" << square << ", " << nthVariation << ") FOUND magic number: " << entry.magicNumber << std::endl;
-        }
-        else 
-        {
-            std::cout << "(" << square << ", " << nthVariation << ") ERROR: no magic number found" << std::endl;
-        }
-
-        /*
-         * MY STRUCTURE
-        */
-
-        /*
-         * This is commented out so that I can attempt to change the structure to that of the one
-         * on the chess programming wiki
-        */
-        // // Calculate a magic number for this square
-        // entry.magicNumber = utils::getSparselyPopulatedRandom64BitInteger();
-        // std::cout << "(" << square << ") TRYING magic number: " << entry.magicNumber << std::endl;
-        // Hash each blocker variation and attempt to store the attack boards
-        // for (int i = 0; i < numberOfBlockerVariations; i++)
+        // int hasFailed, nthVariation;
+        // int numberOfRetries = 1000000;
+        // // Attempt to search for a magic number
+        // for (int retry = 0; retry < numberOfRetries; retry++)
         // {
-        //     // We must ensure the shiftAmount is at least a certain size in order to generate enough hashed indicies
-        //     entry.shiftAmount = entry.blockerMask.numberOfSetBits(); //13; // std::max(9, allBlockerVariations[i].numberOfSetBits()); // 17
+        //     // Calculate a magic number for this square
+        //     u64 magicNumber = utils::getSparselyPopulatedRandom64BitInteger();
 
-        //     entry.blockerVariationAndMagicProduct = allBlockerVariations[i] * entry.magicNumber;
+        //     // Make sure the magic number efficiently maps bits from the blocker mask to the most significant bit positons
+        //     // This aids in minimizing the size of the hashed index
+        //     if (Bitboard( (entry.blockerMask * magicNumber) & 0xFF00000000000000ULL ).numberOfSetBits() < 6) continue;
 
-        //     u64 hashedIndex = hashBlockerVariation(allBlockerVariations[i], entry.magicNumber, entry.shiftAmount);
-
-        //     // When allocating space for the database, we made every bitboard entry equal to the universe set
-        //     // If we find an entry that is equal to the universe set, then it hasn't been modified because
-        //     // the universe set is not a legal attack set for any chess piece. This is how we can
-        //     // find if the current entry is an already computed attack set or if its an entry that can be replaced.
-        //     // Check if this hashed index already has an entry in the database
-        //     // If it doesn't, then store the attack board for this hashed index
-        //     // otherwise, regenerate the magic number for this square and recompute a hashed index
-        //     if (BISHOP_ATTACKS[square][hashedIndex].getBoard() == constants::UNIVERSE)
+        //     // Make sure the magic number works for all blocker variations, if not, restart with a new magic number
+        //     for (nthVariation, hasFailed = 0; !hasFailed && nthVariation < numberOfBlockerVariations; nthVariation++)
         //     {
-        //         BISHOP_ATTACKS[square][hashedIndex] = attackBoards[i];
-        //     }
-        //     else
-        //     {
-        //         std::cout << "(" << square << ", " << i << ") COLLISION, starting with magic: " << entry.magicNumber << std::endl;
-
-        //         u64 hashedIndexRetry = hashedIndex;
-        //         bool magicNumberFound = false;
-
-        //         /*
-        //          * This gets stuck in an infinite loop because when the blockerVariation is an empty board, the
-        //          * hashed index always gets mapped to 0, and since this spot might already be occupied,
-        //          * this while loop will indefinitely try to use 0 as the hashed index, because for no matter
-        //          * what magic number gets generated, the product of blockerVariation * magicNumber always = 0.
-        //          * 
-        //          * Solutions?
-        //          * - Maybe somehow reserve that the 0 index be used for the case when the blocker board is empty?
-        //          * - The chess programming wiki enacts a condition where if the most significant byte of the 
-        //          *   magic number and blocker variation product has less than 6 bits, it searches for a new magic number.
-        //          *   What is the point of this? Also, it seems like they just accept the failed condition and exit after
-        //          *   so many retries. Is it possible to force the discovery of a set of working magic numbers in one go?
-        //          *   Also maybe adopt their search structure. Instead of an if else, and putting the retry in the else statement
-        //          *   They indicate a failure in the else statement which breaks the attempt loop and then gives control back to
-        //          *   the retry loop.
-        //          * - I can't think of any other solutions right now.
-        //         */
-        //         // Regenerate a magic number and try a new hashed index
-        //         while (magicNumberFound == false)
+        //         // Hash the index and check if this causes a collission
+        //         u64 hashedIndex = (allBlockerVariations[nthVariation] * magicNumber) >> (64 - entry.blockerMask.numberOfSetBits());
+        //         if (BISHOP_ATTACKS[square][hashedIndex].getBoard() == constants::UNIVERSE)
         //         {
-        //             // Recompute the hashed index (this hints the hashing process can be a function)
-        //             u64 magicNumberRetry = utils::getSparselyPopulatedRandom64BitInteger();
-        //             hashedIndexRetry = hashBlockerVariation(allBlockerVariations[i], magicNumberRetry, entry.shiftAmount);
-                    
-        //             if (BISHOP_ATTACKS[square][hashedIndexRetry].getBoard() == constants::UNIVERSE)
+        //             BISHOP_ATTACKS[square][hashedIndex] = attackBoards[nthVariation];
+        //         }
+
+        //         // If we get a collision, then initiate the fail condition and start over with a new magic number
+        //         else if (BISHOP_ATTACKS[square][hashedIndex].getBoard() != attackBoards[nthVariation].getBoard())
+        //         {
+        //             hasFailed = 1;
+        //             if (retry == (numberOfRetries - 1))
         //             {
-        //                 entry.magicNumber = magicNumberRetry;
-        //                 entry.blockerVariationAndMagicProduct = allBlockerVariations[i] * magicNumberRetry;
-        //                 BISHOP_ATTACKS[square][hashedIndexRetry] = attackBoards[i];
-        //                 magicNumberFound = true;
-        //                 std::cout << "(" << square << ", " << i << ") FOUND new magic number: " << entry.magicNumber << std::endl;
+        //                 std::cout << "(" << square << ", " << nthVariation << ") ERROR: no magic number found" << std::endl;
         //             }
         //         }
-
-        //         if (BISHOP_ATTACKS[square][hashedIndexRetry].getBoard() == constants::UNIVERSE)
-        //         {
-        //             std::cout << "(" << square << ", " << i << ") ERROR: no magic number found" << std::endl;
-        //         }
-
-        //         std::cout << "(" << square << ", " << i << ") ENDING retry with magic: " << entry.magicNumber << std::endl;
+        //     }
+            
+        //     // If we stored all the attack boards and a fail condition was never met, then we successfully found a magic number
+        //     if (!hasFailed)
+        //     {
+        //         entry.magicNumber = magicNumber;
+        //         break;
         //     }
         // }
 
-        // std::cout << "(" << square << ") FINAL magic number: " << entry.magicNumber << std::endl;
+        // if (!hasFailed)
+        // {
+        //     std::cout << "(" << square << ", " << nthVariation << ") FOUND magic number: " << entry.magicNumber << std::endl;
+        // }
+        // else 
+        // {
+        //     std::cout << "(" << square << ", " << nthVariation << ") ERROR: no magic number found" << std::endl;
+        // }
     }
 
+}
+
+u64 searchForBishopMagicNumbers(const int square, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards)
+{
+    MagicBitboardEntry entry = BISHOP_MAGIC_LOOKUP[square];
+
+    // TODO: Putting this into the parent function for some reason doesn't store the calculation in entry.shiftAmount
+    entry.shiftAmount = entry.blockerMask.numberOfSetBits();
+    
+    const int numberOfBlockerVariations = allBlockerVariations.size();
+
+    // TODO: This is stuck in an infinite loop
+    // u64 magicNumberCandidate;
+    bool foundMagicNumber = false;
+    while (foundMagicNumber == false)
+    {
+        bool currentMagicNumberIsValid = true;
+
+        // Calculate a magic number candidate for this square
+        u64 magicNumberCandidate = utils::getSparselyPopulatedRandom64BitInteger();
+        // std::cout << "(" << square << ") TRYING magic number: " << magicNumberCandidate << std::endl;
+
+        // Verify that it effeciently maps bits from the blocker mask to the most significant bit positions of the productr
+        if (Bitboard( (entry.blockerMask * magicNumberCandidate) & 0xFF00000000000000ULL ).numberOfSetBits() < 6) continue;
+
+        // Hash each blocker variation and attempt to store the attack boards
+        for (int i = 0; (i < numberOfBlockerVariations) && currentMagicNumberIsValid; i++)
+        {
+            u64 hashedIndex = hashBlockerVariation(allBlockerVariations[i], magicNumberCandidate, entry.shiftAmount);
+  
+            // When allocating space for the database, we made every bitboard entry equal to the universe set
+            // If we find an entry that is equal to the universe set, then it hasn't been modified because
+            // the universe set is not a legal attack set for any chess piece. This is how we can
+            // find if the current entry is an already computed attack set or if its an entry that can be replaced.
+            // Check if this hashed index already has an entry in the database
+            // If it doesn't, then store the attack board for this hashed index
+            // otherwise, regenerate the magic number for this square and recompute a hashed index
+            if (BISHOP_ATTACKS[square][hashedIndex].getBoard() == constants::UNIVERSE)
+            {
+                BISHOP_ATTACKS[square][hashedIndex] = attackBoards[i];
+            }
+
+            // If the collision gives us the same attack board, then we're fine
+            // If the collision gives us a different attack board, start over with a new magic number
+            else if (BISHOP_ATTACKS[square][hashedIndex].getBoard() != attackBoards[i].getBoard())
+            {
+                currentMagicNumberIsValid = false;
+            }
+        }
+
+        if (currentMagicNumberIsValid)
+        {
+            std::cout << "(" << square << ") FOUND magic number: " << magicNumberCandidate << std::endl;
+            foundMagicNumber = true;
+            return magicNumberCandidate;
+        }
+    }
+    // return magicNumberCandidate;
 }
 
 u64 hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount)
