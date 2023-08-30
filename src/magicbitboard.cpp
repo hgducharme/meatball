@@ -15,7 +15,6 @@ void init()
     initializeAttackDatabases();
     initializeMagicBitboardEntries();
     generateBlockerMasks();
-    // generateInitialMagicNumbers();
     generateBishopMagics();
     // generateRookMagics();
     // generateAttackBoard(PieceType::BISHOP);
@@ -98,31 +97,43 @@ void generateBishopMagics()
         */
 
         int hasFailed, nthVariation;
-        for (int retry = 0; retry < 10000; retry++)
+        int numberOfRetries = 1000000;
+        // Attempt to search for a magic number
+        for (int retry = 0; retry < numberOfRetries; retry++)
         {
             // Calculate a magic number for this square
             u64 magicNumber = utils::getSparselyPopulatedRandom64BitInteger();
+
+            // Make sure the magic number efficiently maps bits from the blocker mask to the most significant bit positons
+            // This aids in minimizing the size of the hashed index
             if (Bitboard( (entry.blockerMask * magicNumber) & 0xFF00000000000000ULL ).numberOfSetBits() < 6) continue;
+
+            // Make sure the magic number works for all blocker variations, if not, restart with a new magic number
             for (nthVariation, hasFailed = 0; !hasFailed && nthVariation < numberOfBlockerVariations; nthVariation++)
             {
-                // Bitboard blockerVariationAndMagicNumberProduct = ;
+                // Hash the index and check if this causes a collission
                 u64 hashedIndex = (allBlockerVariations[nthVariation] * magicNumber) >> (64 - entry.blockerMask.numberOfSetBits());
                 if (BISHOP_ATTACKS[square][hashedIndex].getBoard() == constants::UNIVERSE)
                 {
                     BISHOP_ATTACKS[square][hashedIndex] = attackBoards[nthVariation];
                 }
+
+                // If we get a collision, then initiate the fail condition and start over with a new magic number
                 else if (BISHOP_ATTACKS[square][hashedIndex].getBoard() != attackBoards[nthVariation].getBoard())
                 {
                     hasFailed = 1;
-                    if (retry == (1000000 - 1))
+                    if (retry == (numberOfRetries - 1))
                     {
                         std::cout << "(" << square << ", " << nthVariation << ") ERROR: no magic number found" << std::endl;
                     }
                 }
             }
+            
+            // If we made stored all the attack boards and a fail condition was never met, then we successfully found a magic number
             if (!hasFailed)
             {
                 entry.magicNumber = magicNumber;
+                break;
             }
         }
 
@@ -150,7 +161,7 @@ void generateBishopMagics()
         // for (int i = 0; i < numberOfBlockerVariations; i++)
         // {
         //     // We must ensure the shiftAmount is at least a certain size in order to generate enough hashed indicies
-        //     entry.shiftAmount = 13; // std::max(9, allBlockerVariations[i].numberOfSetBits()); // 17
+        //     entry.shiftAmount = entry.blockerMask.numberOfSetBits(); //13; // std::max(9, allBlockerVariations[i].numberOfSetBits()); // 17
 
         //     entry.blockerVariationAndMagicProduct = allBlockerVariations[i] * entry.magicNumber;
 
