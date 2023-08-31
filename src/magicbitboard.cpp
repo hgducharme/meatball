@@ -94,6 +94,8 @@ void generateBishopMagics()
 
         std::cout << "(" << square << ") SEARCHING for magic number..." << std::endl;
 
+        // TODO: This change doesn't persist once we enter into the following function
+        // entry.shiftAmount = entry.blockerMask.numberOfSetBits();
         entry.magicNumber = searchForBishopMagicNumbers(square, allBlockerVariations, attackBoards);
 
         /*
@@ -156,22 +158,24 @@ void generateBishopMagics()
 u64 searchForBishopMagicNumbers(const int square, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards)
 {
     MagicBitboardEntry entry = BISHOP_MAGIC_LOOKUP[square];
+    Bitboard attacks[LARGEST_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS];
 
     // TODO: Putting this into the parent function for some reason doesn't store the calculation in entry.shiftAmount
     entry.shiftAmount = entry.blockerMask.numberOfSetBits();
     
     const int numberOfBlockerVariations = allBlockerVariations.size();
 
-    // TODO: This is stuck in an infinite loop
-    // u64 magicNumberCandidate;
+    u64 magicNumberCandidate;
     bool foundMagicNumber = false;
     while (foundMagicNumber == false)
     {
         bool currentMagicNumberIsValid = true;
 
+        std::fill(std::begin(attacks), std::end(attacks), Bitboard(constants::UNIVERSE));
+        
         // Calculate a magic number candidate for this square
-        u64 magicNumberCandidate = utils::getSparselyPopulatedRandom64BitInteger();
-        // std::cout << "(" << square << ") TRYING magic number: " << magicNumberCandidate << std::endl;
+        magicNumberCandidate = utils::getSparselyPopulatedRandom64BitInteger();
+        std::cout << "(" << square << ") TRYING magic number: " << magicNumberCandidate << std::endl;
 
         // Verify that it effeciently maps bits from the blocker mask to the most significant bit positions of the productr
         if (Bitboard( (entry.blockerMask * magicNumberCandidate) & 0xFF00000000000000ULL ).numberOfSetBits() < 6) continue;
@@ -188,14 +192,14 @@ u64 searchForBishopMagicNumbers(const int square, const std::vector<Bitboard> & 
             // Check if this hashed index already has an entry in the database
             // If it doesn't, then store the attack board for this hashed index
             // otherwise, regenerate the magic number for this square and recompute a hashed index
-            if (BISHOP_ATTACKS[square][hashedIndex].getBoard() == constants::UNIVERSE)
+            if (attacks[hashedIndex].getBoard() == constants::UNIVERSE)
             {
-                BISHOP_ATTACKS[square][hashedIndex] = attackBoards[i];
+                attacks[hashedIndex] = attackBoards[i];
             }
 
             // If the collision gives us the same attack board, then we're fine
             // If the collision gives us a different attack board, start over with a new magic number
-            else if (BISHOP_ATTACKS[square][hashedIndex].getBoard() != attackBoards[i].getBoard())
+            else if (attacks[hashedIndex].getBoard() != attackBoards[i].getBoard())
             {
                 currentMagicNumberIsValid = false;
             }
@@ -205,10 +209,10 @@ u64 searchForBishopMagicNumbers(const int square, const std::vector<Bitboard> & 
         {
             std::cout << "(" << square << ") FOUND magic number: " << magicNumberCandidate << std::endl;
             foundMagicNumber = true;
-            return magicNumberCandidate;
         }
     }
-    // return magicNumberCandidate;
+
+    return magicNumberCandidate;
 }
 
 u64 hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount)
