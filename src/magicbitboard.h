@@ -70,11 +70,9 @@ void generateBlockerMasks();
 Bitboard calculateBishopBlockerMask(const Bitboard &bitboard);
 Bitboard calculateRookBlockerMask(const Bitboard &bitboard);
 
-void generateInitialMagicNumbers();
-
-void generateBishopMagics();
+void generateBishopMagicsAndPopulateAttackDatabase();
 u64 hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount);
-u64 searchForBishopMagicNumbers(const int square, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards);
+u64 searchForBishopMagicNumber(const Square square, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards);
 
 void generateAttackBoard(PieceType pieceType);
 std::vector<Bitboard> calculateAllBlockerVariations(Bitboard blockerMask);
