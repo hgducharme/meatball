@@ -41,3 +41,14 @@ std::vector<Move> MoveGenerator::generatePawnMoves(const Chessboard & chessboard
 
     return moveVector;
 }
+
+// This is an example of a function that would be used in movegen.cpp
+// And how we would use the magic bitboards as an end user
+// Bitboard getPotentialBishopAttacks(const int square, const Bitboard & boardState)
+// {
+//     MagicBitboardEntry bishopEntry = BISHOP_MAGIC_LOOKUP[square];
+
+//     Bitboard blockersToBishop = boardState & bishopEntry.blockerMask;
+//     int hashedIndex = hashBlockerVariation(blockersToBishop, bishopEntry.magicNumber, bishopEntry.shiftAmount)
+//     return BISHOP_ATTACKS[square][hashedBlockerConfiguration];
+// }

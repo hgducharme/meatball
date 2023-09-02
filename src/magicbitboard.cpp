@@ -428,17 +428,6 @@ Bitboard calculateRookBlockerMask(const Bitboard &bitboard)
     return potentialBlockersToTheRook;
 }
 
-// This is an example of a function that would be used in movegen.cpp
-// And how we would use the magic bitboards as an end user
-Bitboard getPotentialBishopAttacks(const int square, const Bitboard &boardState)
-{
-    MagicBitboardEntry bishopEntry = BISHOP_MAGIC_LOOKUP[square];
-
-    Bitboard blockersToBishop = boardState & bishopEntry.blockerMask;
-    u64 hashedBlockerConfiguration = bishopEntry.blockerVariationAndMagicProduct.getBoard() >> (Square::NUMBER_OF_SQUARES - bishopEntry.shiftAmount);
-    return BISHOP_ATTACKS[square][hashedBlockerConfiguration];
-}
-
 } // anonymous namespace
 
 } // namespace magic_bitboards
