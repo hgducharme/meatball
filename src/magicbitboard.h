@@ -6,6 +6,7 @@
 #include "constants.h"
 
 #include <vector>
+#include <array>
 
 namespace magic_bitboards
 {
@@ -63,19 +64,20 @@ constexpr int NUMBER_OF_SET_BITS_IN_ROOK_BLOCKER_MASK[Square::NUMBER_OF_SQUARES]
     12, 11, 11, 11, 11, 11, 11, 12,
 };
 
-void initializeAttackDatabases();
 void initializeMagicBitboardEntries();
-
 void generateBlockerMasks();
 Bitboard calculateBishopBlockerMask(const Bitboard &bitboard);
 Bitboard calculateRookBlockerMask(const Bitboard &bitboard);
-
-void generateBishopMagicsAndPopulateAttackDatabase();
-u64 hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount);
+std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBishopBlockerVariations();
+std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBishopAttacks(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & bishopBlockerVariations);
+void generateBishopMagicNumbers(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
+                                const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
 u64 searchForBishopMagicNumber(const Square square, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards);
-
+void populateBishopAttackDatabase(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
+                                  const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
+int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount);
 void generateAttackBoard(PieceType pieceType);
-std::vector<Bitboard> calculateAllBlockerVariations(Bitboard blockerMask);
+std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask);
 Bitboard calculateBishopAttackBoard(const Square & square, const Bitboard & blockerVariation);
 Bitboard calculateRookAttackBoard(const Square & square, const Bitboard & blockerVariation);
 bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares);

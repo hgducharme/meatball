@@ -12,17 +12,24 @@ Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][LARGEST_AMOUNT_OF_ROOK_BLOCKER_
 
 void init()
 {
-    initializeAttackDatabases();
     initializeMagicBitboardEntries();
     generateBlockerMasks();
 
-    std::cout << "Searching for bishop magics, this could take up to 30 seconds..." << std::endl;
-    generateBishopMagicsAndPopulateAttackDatabase();
-    std::cout << "Found a set of working bishop magics." << std::endl;
+    // Bishop magic bitboard generation
+    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopBlockerVariations = calculateBishopBlockerVariations();
+    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopAttacks = calculateBishopAttacks(bishopBlockerVariations);
+    std::cout << "Searching for bishop magics, this could take up to 30 seconds... " << std::endl;
+    generateBishopMagicNumbers(bishopBlockerVariations, bishopAttacks);
+    std::cout << "DONE." << std::endl;
+    populateBishopAttackDatabase(bishopBlockerVariations, bishopAttacks);
 
-    // std::cout << "Searching for rook magics, this could take up to 30 seconds..." << std::endl;
-    // generateRookMagics();
-    // std::cout << "Found a set of working rook magics." << std::endl;
+    // Rook magic bitboard generation
+    // std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookBlockerVariations = calculateRookBlockerVariations();
+    // std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopAttacks = calculateRookAttacks(rookBlockerVariations);
+    // std::cout << "Searching for rook magic numbers, this could take up to 30 seconds... " << std::endl;
+    // generateRookMagicNumbers(rookBlockerVariations, rookAttacks);
+    // std::cout << "DONE." << std::endl;
+    // populateRookAttackDatabase(rookBlockerVariations, rookAttacks);
 }
 
 namespace
@@ -30,13 +37,6 @@ namespace
 
 u64 BISHOP_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
 u64 ROOK_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
-
-void initializeAttackDatabases()
-{
-    // Initialize every elementof BISHOP_ATTACKS and ROOK_ATTACKS to an empty bitboard
-    std::fill(&BISHOP_ATTACKS[0][0], &BISHOP_ATTACKS[0][0] + sizeof(BISHOP_ATTACKS) / sizeof(BISHOP_ATTACKS[0][0]), constants::EMPTY_BOARD);
-    std::fill(&ROOK_ATTACKS[0][0], &ROOK_ATTACKS[0][0] + sizeof(ROOK_ATTACKS) / sizeof(ROOK_ATTACKS[0][0]), constants::EMPTY_BOARD);
-}
 
 void initializeMagicBitboardEntries()
 {
@@ -66,23 +66,42 @@ void generateBlockerMasks()
     }
 }
 
-void generateBishopMagicsAndPopulateAttackDatabase()
+std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBishopBlockerVariations()
 {
+    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopBlockerVariations;
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
-        // Calculate the blocker variations for this blocker mask
-        std::vector<Bitboard> allBlockerVariations = calculateAllBlockerVariations(BISHOP_MAGIC_LOOKUP[square].blockerMask);
+        bishopBlockerVariations[square] = enumerateSubmasks(BISHOP_MAGIC_LOOKUP[square].blockerMask);
+    }
 
-        // Calculate the attack board for each blocker variation
-        int numberOfBlockerVariations = allBlockerVariations.size();
+    return bishopBlockerVariations;
+}
+
+std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBishopAttacks(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & bishopBlockerVariations)
+{
+    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopAttacks;
+
+    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
+    {
+        int numberOfBlockerVariations = bishopBlockerVariations[square].size();
         std::vector<Bitboard> attackBoards(numberOfBlockerVariations);
         for (int i = 0; i < numberOfBlockerVariations; i++)
         {
-            attackBoards[i] = calculateBishopAttackBoard((Square)square, allBlockerVariations[i]);
+            attackBoards[i] = calculateBishopAttackBoard((Square)square, bishopBlockerVariations[square][i]);
         }
 
-        // Store the magic number that was found
-        BISHOP_MAGIC_LOOKUP[square].magicNumber = searchForBishopMagicNumber((Square)square, allBlockerVariations, attackBoards);
+        bishopAttacks[square] = attackBoards;
+    }
+    
+    return bishopAttacks;
+}
+
+void generateBishopMagicNumbers(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
+                                const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards)
+{
+    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
+    {
+        BISHOP_MAGIC_LOOKUP[square].magicNumber = searchForBishopMagicNumber((Square)square, blockerVariations[square], attackBoards[square]);
     }
 }
 
@@ -99,7 +118,7 @@ u64 searchForBishopMagicNumber(const Square square, const std::vector<Bitboard> 
         bool currentMagicNumberIsValid = true;
 
         // Reset the attack database to all empty boards
-        std::fill(std::begin(tempAttackDatabase), std::end(tempAttackDatabase), constants::EMPTY_BOARD);
+        std::fill(std::begin(tempAttackDatabase), std::end(tempAttackDatabase), Bitboard(constants::UNIVERSE));
         
         // Calculate a magic number candidate for this square
         magicNumberCandidate = utils::getSparselyPopulatedRandom64BitInteger();
@@ -110,10 +129,10 @@ u64 searchForBishopMagicNumber(const Square square, const std::vector<Bitboard> 
         // Hash each blocker variation and attempt to store the attack boards
         for (int i = 0; (i < numberOfBlockerVariations) && currentMagicNumberIsValid; i++)
         {
-            u64 hashedIndex = hashBlockerVariation(allBlockerVariations[i], magicNumberCandidate, entry.shiftAmount);
+            int hashedIndex = hashBlockerVariation(allBlockerVariations[i], magicNumberCandidate, entry.shiftAmount);
 
             // Check if this spot in the database is empty
-            if (tempAttackDatabase[hashedIndex] == constants::EMPTY_BOARD) { tempAttackDatabase[hashedIndex] = attackBoards[i]; }
+            if (tempAttackDatabase[hashedIndex].getBoard() == constants::UNIVERSE) { tempAttackDatabase[hashedIndex] = attackBoards[i]; }
 
             // If the collision gives us the same attack board, then we're fine
             // If the collision gives us a different attack board, search for a new magic number 
@@ -121,19 +140,42 @@ u64 searchForBishopMagicNumber(const Square square, const std::vector<Bitboard> 
         }
 
         // If we made it through the previous for loop with no collisions then we found a magic number
-        if (currentMagicNumberIsValid)
-        {
-            foundMagicNumber = true;
-            std::copy(std::begin(tempAttackDatabase), std::end(tempAttackDatabase), std::begin(BISHOP_ATTACKS[square]));
-        }
+        if (currentMagicNumberIsValid) { foundMagicNumber = true; }
     }
+
+    #if DEBUG
+    if (foundMagicNumber)
+    {
+        std::cout << "(" << square << ") FOUND magic number: " << magicNumberCandidate << std::endl;
+    }
+    else
+    {
+        std::cout << "(" << square << ") ERROR, no magic number found" << magicNumberCandidate << std::endl;
+    }
+    #endif
 
     return magicNumberCandidate;
 }
 
-u64 hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount)
+int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount)
 {
     return (blockerVariation * magicNumber) >> (Square::NUMBER_OF_SQUARES - shiftAmount);
+}
+
+void populateBishopAttackDatabase(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
+                                  const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards)
+{
+    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
+    {
+        const MagicBitboardEntry & hashInfo = BISHOP_MAGIC_LOOKUP[square];
+        int numberOfBlockerVariations = blockerVariations[square].size();
+
+        for (int i = 0; i < numberOfBlockerVariations; i++)
+        {
+            int hashedIndex = hashBlockerVariation(blockerVariations[square][i], hashInfo.magicNumber, hashInfo.shiftAmount);
+            BISHOP_ATTACKS[square][hashedIndex] = attackBoards[square][i];
+        }
+    }
 }
 
 /*
@@ -179,7 +221,7 @@ u64 hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumbe
 //         MagicBitboardEntry entry = *(MAGIC_LOOKUP_TABLE + square);
 
 //         // Calculate the blocker variations for this blocker mask
-//         std::vector<Bitboard> allBlockerVariations = calculateAllBlockerVariations(entry.blockerMask);
+//         std::vector<Bitboard> allBlockerVariations = enumerateSubmasks(entry.blockerMask);
 //         int numberOfBlockerVariations = allBlockerVariations.size();
 
 //         // Calculate the attack board for each blocker variation
@@ -205,7 +247,7 @@ u64 hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumbe
 //     }
 // }
 
-std::vector<Bitboard> calculateAllBlockerVariations(Bitboard blockerMask)
+std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask)
 {
     /*
      * This solved problem is also known as: enumerate all submasks of a bitmask.
