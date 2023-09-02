@@ -15,6 +15,10 @@ void init()
     initializeMagicBitboardEntries();
     generateBlockerMasks();
 
+    // TODO: Go through each function and keep all terminology the same.
+    // Then work on getting rooks working.
+    // After that you can start trying to find nifty functions that can just take in the piece type as an argument.
+
     // Bishop magic bitboard generation
     std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopBlockerVariations = calculateBishopBlockerVariations();
     std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopAttacks = calculateBishopAttacks(bishopBlockerVariations);
