@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "constants.h"
 
+#include <iostream>
 #include <vector>
 #include <array>
 
@@ -13,10 +14,8 @@ namespace magic_bitboards
 
 struct MagicBitboardEntry
 {
-    Square square;
     Bitboard blockerMask;
     u64 magicNumber;
-    Bitboard blockerVariationAndMagicProduct;
     int shiftAmount;
 };
 
@@ -28,6 +27,9 @@ constexpr int LARGEST_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS = 512;
 
 // Rooks have between 1024 and 4096 unique possible blocker variations depending on the square
 constexpr int LARGEST_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS = 4096;
+
+constexpr int MINIMUM_NUMBER_OF_BITS_FOR_BISHOP_HASHING = 3;
+constexpr int MINIMUM_NUMBER_OF_BITS_FOR_ROOK_HASHING = 6;
 
 extern Bitboard BISHOP_ATTACKS[Square::NUMBER_OF_SQUARES][LARGEST_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS];
 extern Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][LARGEST_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS];
@@ -79,6 +81,8 @@ void generateBishopMagicNumbers(const std::array<std::vector<Bitboard>, Square::
                                 const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
 
 u64 searchForBishopMagicNumber(const Square square, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards);
+
+u64 searchForMagicNumber(PieceType pieceType, const Square square, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards);
 
 void populateBishopAttackDatabase(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
                                   const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
