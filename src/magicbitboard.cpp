@@ -20,7 +20,7 @@ void init()
 
     // Bishop magic bitboard generation
     std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopBlockerVariations = calculateBlockerVariations(BISHOP_MAGIC_LOOKUP);
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopAttacks = calculateBishopAttacks(bishopBlockerVariations);
+    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopAttacks = calculateAttacks(calculateBishopAttackBoard, bishopBlockerVariations);
     std::cout << "Searching for bishop magics, this could take up to 30 seconds... " << std::endl;
     generateBishopMagicNumbers(bishopBlockerVariations, bishopAttacks);
     std::cout << "DONE." << std::endl;
@@ -28,7 +28,7 @@ void init()
 
     // Rook magic bitboard generation
     std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookBlockerVariations = calculateBlockerVariations(ROOK_MAGIC_LOOKUP);
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookAttacks = calculateRookAttacks(rookBlockerVariations);
+    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookAttacks = calculateAttacks(calculateRookAttackBoard, rookBlockerVariations);
     std::cout << "Searching for rook magic numbers, this could take up to 30 seconds... " << std::endl;
     generateRookMagicNumbers(rookBlockerVariations, rookAttacks);
     std::cout << "DONE." << std::endl;
@@ -80,28 +80,7 @@ std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVar
     return blockerVariations;
 }
 
-std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBishopAttacks(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations)
-{
-    // Variables: calcuateBishopAttackBoard()
-
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> attacks;
-
-    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
-    {
-        int numberOfBlockerVariations = blockerVariations[square].size();
-        std::vector<Bitboard> attackBoards(numberOfBlockerVariations);
-        for (int i = 0; i < numberOfBlockerVariations; i++)
-        {
-            attackBoards[i] = calculateBishopAttackBoard((Square)square, blockerVariations[square][i]);
-        }
-
-        attacks[square] = attackBoards;
-    }
-    
-    return attacks;
-}
-
-std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateRookAttacks(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations)
+std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(calculateAttackBoardFunction calculateAttackBoard, const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations)
 {
     std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> attacks;
 
@@ -111,7 +90,7 @@ std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateRookAttack
         std::vector<Bitboard> attackBoards(numberOfBlockerVariations);
         for (int i = 0; i < numberOfBlockerVariations; i++)
         {
-            attackBoards[i] = calculateRookAttackBoard((Square)square, blockerVariations[square][i]);
+            attackBoards[i] = calculateAttackBoard((Square)square, blockerVariations[square][i]);
         }
 
         attacks[square] = attackBoards;

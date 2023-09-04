@@ -64,14 +64,16 @@ constexpr int NUMBER_OF_SET_BITS_IN_ROOK_BLOCKER_MASK[Square::NUMBER_OF_SQUARES]
     12, 11, 11, 11, 11, 11, 11, 12,
 };
 
+// Define an alias for passing calculate[Piece]AttackBoard() as a parameter to another function
+using calculateAttackBoardFunction = Bitboard (*)(const Square & square, const Bitboard & blockerVariation);
+
 void initializeMagicBitboardEntries();
 void generateBlockerMasks();
 Bitboard calculateBishopBlockerMask(const Bitboard &bitboard);
 Bitboard calculateRookBlockerMask(const Bitboard &bitboard);
 
 std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVariations(MagicBitboardEntry const * MAGIC_LOOKUP_TABLE);
-std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBishopAttacks(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations);
-std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateRookAttacks(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations);
+std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(calculateAttackBoardFunction calculateAttackBoard, const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations);
 
 void generateBishopMagicNumbers(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
                                 const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
