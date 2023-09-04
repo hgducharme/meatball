@@ -82,6 +82,8 @@ std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVar
 
 std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBishopAttacks(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations)
 {
+    // Variables: calcuateBishopAttackBoard()
+
     std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> attacks;
 
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
@@ -121,6 +123,8 @@ std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateRookAttack
 void generateBishopMagicNumbers(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
                                 const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards)
 {
+    // Variables: BISHOP_MAGIC_LOOKUP, (i'm going to exclude searchForBishopMagicNumber since that is easily turned into one function)
+
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
         BISHOP_MAGIC_LOOKUP[square].magicNumber = searchForBishopMagicNumber((Square)square, blockerVariations[square], attackBoards[square]);
@@ -138,6 +142,8 @@ void generateRookMagicNumbers(const std::array<std::vector<Bitboard>, Square::NU
 
 u64 searchForBishopMagicNumber(const Square square, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards)
 {
+    // Variables: BISHOP_MAGIC_LOOKUP, LARGEST_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS, < 3 number
+
     MagicBitboardEntry entry = BISHOP_MAGIC_LOOKUP[square];
     Bitboard tempAttackDatabase[LARGEST_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS];
     const int numberOfBlockerVariations = allBlockerVariations.size();
