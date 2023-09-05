@@ -42,7 +42,6 @@ class MoveGeneratorTest : public ::testing::Test
   static void SetUpTestSuite()
   {
    	// Code here will be called before the first test and will not be called again.
-      attack_tables::init();
   }
 
   static void TearDownTestSuite()
