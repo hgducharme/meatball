@@ -77,20 +77,14 @@ Bitboard calculateRookBlockerMask(const Bitboard &bitboard);
 std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVariations(MagicBitboardEntry const * MAGIC_LOOKUP_TABLE);
 std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(calculateAttackBoardFunction calculateAttackBoard, const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations);
 
-void generateBishopMagicNumbers(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
-                                const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
-
-u64 searchForBishopMagicNumber(const Square square, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards);
+void generateMagicNumbers(const PieceType pieceType,
+                          const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
+                          const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
 
 u64 searchForMagicNumber(PieceType pieceType, const Square square, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards);
 
 void populateBishopAttackDatabase(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
                                   const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
-
-void generateRookMagicNumbers(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
-                              const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
-
-u64 searchForRookMagicNumber(const Square square, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards);
 
 void populateRookAttackDatabase(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
                                 const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
