@@ -24,6 +24,9 @@ void init()
         queen[square] |= bishop[square] | rook[square];
         king[square] = calculateKingAttacksFromSquare(squareBitboard);
     }
+
+    // Initialize attack tables for slider pieces
+    magic_bitboards::init();
 }
 
 Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitboard)

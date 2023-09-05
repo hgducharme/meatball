@@ -5,6 +5,7 @@
 #include "bitboard.h"
 #include "chessboard.h"
 #include "utils.h"
+#include "magicbitboard.h"
 
 namespace attack_tables
 {
