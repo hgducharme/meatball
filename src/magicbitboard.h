@@ -83,13 +83,20 @@ std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(ca
                                                                               const std::array<std::vector<Bitboard>,
                                                                               Square::NUMBER_OF_SQUARES> & blockerVariations);
 
-void generateMagicNumbers(const PieceType pieceType,
+void generateMagicNumbers(HashInformation * hashInformationTable,
+                          const int minimumBitsRequiredForHashing,
                           const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
                           const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
 
-u64 searchForMagicNumber(PieceType pieceType, const Square square, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards);
+u64 searchForMagicNumber(const Square square,
+                         const HashInformation & hashInformation,
+                         const int minimumAmountOfBitsInLastByte,
+                         const std::vector<Bitboard> & allBlockerVariations,
+                         const std::vector<Bitboard> & attackBoards);
 
-void populateAttackDatabase(const PieceType pieceType,
+template <size_t rows, size_t columns>
+void populateAttackDatabase(Bitboard (&attackDatabase)[rows][columns],
+                            const HashInformation * hashInformationTable,
                             const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
                             const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
 
