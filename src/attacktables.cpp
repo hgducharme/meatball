@@ -5,13 +5,11 @@ namespace attack_tables
 
 Bitboard pawn[Color::NUMBER_OF_COLORS][Square::NUMBER_OF_SQUARES];
 Bitboard knight[Square::NUMBER_OF_SQUARES];
-Bitboard bishop[Square::NUMBER_OF_SQUARES];
-Bitboard rook[Square::NUMBER_OF_SQUARES];
-Bitboard queen[Square::NUMBER_OF_SQUARES];
 Bitboard king[Square::NUMBER_OF_SQUARES];
 
 void init()
 {
+    // Initialize attack tables for leaper pieces
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
         Bitboard squareBitboard(square);
@@ -19,9 +17,6 @@ void init()
         pawn[Color::WHITE][square] = calculatePawnAttacksFromSquare(Color::WHITE, squareBitboard);
         pawn[Color::BLACK][square] = calculatePawnAttacksFromSquare(Color::BLACK, squareBitboard);
         knight[square] = calculateKnightAttacksFromSquare(squareBitboard);
-        bishop[square] = calculateBishopAttacksFromSquareClassical(squareBitboard);
-        rook[square] = calculateRookAttacksFromSquareClassical(squareBitboard);
-        queen[square] |= bishop[square] | rook[square];
         king[square] = calculateKingAttacksFromSquare(squareBitboard);
     }
 
@@ -71,42 +66,6 @@ Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard)
     potentialKnightAttacks |= utils::shiftCurrentSquareByDirection(bitboard, SOUTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
 
     return potentialKnightAttacks;
-}
-
-Bitboard calculateBishopAttacksFromSquareClassical(const Bitboard & bitboard)
-{
-    Bitboard potentialBishopAttacks;
-    Square square = static_cast<Square>(bitboard.findIndexLSB());
-
-    int numberOfMovesNorthEast = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_EAST);
-    int numberOfMovesNorthWest = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_WEST);
-    int numberOfMovesSouthEast = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_EAST);
-    int numberOfMovesSouthWest = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_WEST);
-
-    for (int i = 1; i <= numberOfMovesNorthEast; i++) { potentialBishopAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * NORTH_EAST); }
-    for (int i = 1; i <= numberOfMovesNorthWest; i++) { potentialBishopAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * NORTH_WEST); }
-    for (int i = 1; i <= numberOfMovesSouthEast; i++) { potentialBishopAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * SOUTH_EAST); }
-    for (int i = 1; i <= numberOfMovesSouthWest; i++) { potentialBishopAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * SOUTH_WEST); }
-
-    return potentialBishopAttacks;
-}
-
-Bitboard calculateRookAttacksFromSquareClassical(const Bitboard & bitboard)
-{
-    Bitboard potentialRookAttacks;
-    Square square = static_cast<Square>(bitboard.findIndexLSB());
-
-    int numberOfMovesNorth = utils::calculateDistanceFromEdgeOfBoard(square, NORTH);
-    int numberOfMovesSouth = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH);
-    int numberOfMovesEast = utils::calculateDistanceFromEdgeOfBoard(square, EAST);
-    int numberOfMovesWest = utils::calculateDistanceFromEdgeOfBoard(square, WEST);
-
-    for (int i = 1; i <= numberOfMovesNorth; i++) { potentialRookAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * NORTH); }
-    for (int i = 1; i <= numberOfMovesSouth; i++) { potentialRookAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * SOUTH); }
-    for (int i = 1; i <= numberOfMovesEast; i++)  { potentialRookAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * EAST); }
-    for (int i = 1; i <= numberOfMovesWest; i++)  { potentialRookAttacks |= utils::shiftCurrentSquareByDirection(bitboard, i * WEST); }
-
-    return potentialRookAttacks;
 }
 
 Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard)
