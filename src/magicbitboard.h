@@ -12,15 +12,15 @@
 namespace magic_bitboards
 {
 
-struct MagicBitboardEntry
+struct HashInformation
 {
     Bitboard blockerMask;
     u64 magicNumber;
     int shiftAmount;
 };
 
-extern MagicBitboardEntry BISHOP_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
-extern MagicBitboardEntry ROOK_MAGIC_LOOKUP[Square::NUMBER_OF_SQUARES];
+extern HashInformation BISHOP_HASHING_INFORMATION[Square::NUMBER_OF_SQUARES];
+extern HashInformation ROOK_HASHING_INFORMATION[Square::NUMBER_OF_SQUARES];
 
 // Bishops have between 32 and 512 unique possible blocker variations depending on the square
 constexpr int LARGEST_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS = 512;
@@ -66,16 +66,22 @@ constexpr int NUMBER_OF_SET_BITS_IN_ROOK_BLOCKER_MASK[Square::NUMBER_OF_SQUARES]
     12, 11, 11, 11, 11, 11, 11, 12,
 };
 
-// Define an alias for passing calculate[Piece]AttackBoard() as a parameter to another function
+// Define an alias for passing calculate<Piece>AttackBoard() as a parameter to another function
 using calculateAttackBoardFunction = Bitboard (*)(const Square & square, const Bitboard & blockerVariation);
 
-void initializeMagicBitboardEntries();
+void initializeHashInformationEntries();
+
 void generateBlockerMasks();
+
 Bitboard calculateBishopBlockerMask(const Bitboard &bitboard);
+
 Bitboard calculateRookBlockerMask(const Bitboard &bitboard);
 
-std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVariations(MagicBitboardEntry const * MAGIC_LOOKUP_TABLE);
-std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(calculateAttackBoardFunction calculateAttackBoard, const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations);
+std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVariations(HashInformation const * HASH_INFORMATION_TABLE);
+
+std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(calculateAttackBoardFunction calculateAttackBoard,
+                                                                              const std::array<std::vector<Bitboard>,
+                                                                              Square::NUMBER_OF_SQUARES> & blockerVariations);
 
 void generateMagicNumbers(const PieceType pieceType,
                           const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
@@ -88,11 +94,17 @@ void populateAttackDatabase(const PieceType pieceType,
                             const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
 
 int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount);
+
 void generateAttackBoard(PieceType pieceType);
+
 std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask);
+
 Bitboard calculateBishopAttackBoard(const Square & square, const Bitboard & blockerVariation);
+
 Bitboard calculateRookAttackBoard(const Square & square, const Bitboard & blockerVariation);
+
 bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares);
+
 Bitboard getPotentialBishopAttacks(const int square, const Bitboard &blockers);
 
 } // anonymous namespace
