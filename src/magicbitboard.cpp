@@ -13,24 +13,22 @@ void init()
     initializeMagicBitboardEntries();
     generateBlockerMasks();
 
-    // TODO: Go through each function and find out what the variables are that need to become function parameters.
-    // Then work on making one function instead of having two that are doing the exact same thing
-
-    // Bishop magic bitboard generation
     std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopBlockerVariations = calculateBlockerVariations(BISHOP_MAGIC_LOOKUP);
+    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookBlockerVariations = calculateBlockerVariations(ROOK_MAGIC_LOOKUP);
+
     std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopAttacks = calculateAttacks(calculateBishopAttackBoard, bishopBlockerVariations);
+    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookAttacks = calculateAttacks(calculateRookAttackBoard, rookBlockerVariations);
+
     std::cout << "Searching for bishop magics, this could take up to 30 seconds... " << std::endl;
     generateMagicNumbers(PieceType::BISHOP, bishopBlockerVariations, bishopAttacks);
     std::cout << "DONE." << std::endl;
-    populateBishopAttackDatabase(bishopBlockerVariations, bishopAttacks);
 
-    // Rook magic bitboard generation
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookBlockerVariations = calculateBlockerVariations(ROOK_MAGIC_LOOKUP);
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookAttacks = calculateAttacks(calculateRookAttackBoard, rookBlockerVariations);
     std::cout << "Searching for rook magic numbers, this could take up to 30 seconds... " << std::endl;
     generateMagicNumbers(PieceType::ROOK, rookBlockerVariations, rookAttacks);
     std::cout << "DONE." << std::endl;
-    populateRookAttackDatabase(rookBlockerVariations, rookAttacks);
+
+    populateAttackDatabase(PieceType::BISHOP, bishopBlockerVariations, bishopAttacks);
+    populateAttackDatabase(PieceType::ROOK, rookBlockerVariations, rookAttacks);
 }
 
 namespace
@@ -194,34 +192,36 @@ int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumbe
     return (blockerVariation * magicNumber) >> (Square::NUMBER_OF_SQUARES - shiftAmount);
 }
 
-void populateBishopAttackDatabase(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
-                                  const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards)
+void populateAttackDatabase(const PieceType pieceType,
+                            const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
+                            const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards)
 {
-    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
-    {
-        const MagicBitboardEntry & hashInfo = BISHOP_MAGIC_LOOKUP[square];
-        int numberOfBlockerVariations = blockerVariations[square].size();
+    const MagicBitboardEntry * hashInformationTable;
+    Bitboard * attackDatabase;
 
-        for (int i = 0; i < numberOfBlockerVariations; i++)
-        {
-            int hashedIndex = hashBlockerVariation(blockerVariations[square][i], hashInfo.magicNumber, hashInfo.shiftAmount);
-            BISHOP_ATTACKS[square][hashedIndex] = attackBoards[square][i];
-        }
+    switch (pieceType)
+    {
+        case BISHOP:
+            hashInformationTable = BISHOP_MAGIC_LOOKUP;
+            attackDatabase = BISHOP_ATTACKS[0];
+            break;
+        case ROOK:
+            hashInformationTable = BISHOP_MAGIC_LOOKUP;
+            attackDatabase = ROOK_ATTACKS[0];
+            break;
+        default:
+            throw std::invalid_argument("searchForMagicNumber() is only defined for the PieceType arguments: 'BISHOP' and 'ROOK'.");
     }
-}
 
-void populateRookAttackDatabase(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
-                                const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards)
-{
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
-        const MagicBitboardEntry & hashInfo = ROOK_MAGIC_LOOKUP[square];
+        const MagicBitboardEntry & hashInfo = hashInformationTable[square];
         int numberOfBlockerVariations = blockerVariations[square].size();
 
         for (int i = 0; i < numberOfBlockerVariations; i++)
         {
             int hashedIndex = hashBlockerVariation(blockerVariations[square][i], hashInfo.magicNumber, hashInfo.shiftAmount);
-            ROOK_ATTACKS[square][hashedIndex] = attackBoards[square][i];
+            (attackDatabase + square)[hashedIndex] = attackBoards[square][i];
         }
     }
 }

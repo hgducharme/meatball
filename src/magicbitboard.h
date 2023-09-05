@@ -83,11 +83,9 @@ void generateMagicNumbers(const PieceType pieceType,
 
 u64 searchForMagicNumber(PieceType pieceType, const Square square, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards);
 
-void populateBishopAttackDatabase(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
-                                  const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
-
-void populateRookAttackDatabase(const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
-                                const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
+void populateAttackDatabase(const PieceType pieceType,
+                            const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
+                            const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
 
 int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount);
 void generateAttackBoard(PieceType pieceType);
