@@ -3,32 +3,32 @@
 namespace magic_bitboards
 {
 
-HashInformation BISHOP_HASHING_INFORMATION[Square::NUMBER_OF_SQUARES];
-HashInformation ROOK_HASHING_INFORMATION[Square::NUMBER_OF_SQUARES];
+HashingParameters BISHOP_HASHING_PARAMETERS_LOOKUP[Square::NUMBER_OF_SQUARES];
+HashingParameters ROOK_HASHING_PARAMETERS_LOOKUP[Square::NUMBER_OF_SQUARES];
 Bitboard BISHOP_ATTACKS[Square::NUMBER_OF_SQUARES][LARGEST_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS];
 Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][LARGEST_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS];
 
 void init()
 {
-    initializeHashInformationEntries();
+    initializeHashingParameters();
     generateBlockerMasks();
 
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopBlockerVariations = calculateBlockerVariations(BISHOP_HASHING_INFORMATION);
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookBlockerVariations = calculateBlockerVariations(ROOK_HASHING_INFORMATION);
+    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopBlockerVariations = calculateBlockerVariations(BISHOP_HASHING_PARAMETERS_LOOKUP);
+    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookBlockerVariations = calculateBlockerVariations(ROOK_HASHING_PARAMETERS_LOOKUP);
 
     std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopAttacks = calculateAttacks(calculateBishopAttackBoard, bishopBlockerVariations);
     std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookAttacks = calculateAttacks(calculateRookAttackBoard, rookBlockerVariations);
 
     std::cout << "Searching for bishop magics, this could take up to 30 seconds... " << std::endl;
-    generateMagicNumbers(BISHOP_HASHING_INFORMATION, MINIMUM_NUMBER_OF_BITS_FOR_BISHOP_HASHING, bishopBlockerVariations, bishopAttacks);
+    generateMagicNumbers(BISHOP_HASHING_PARAMETERS_LOOKUP, MINIMUM_NUMBER_OF_BITS_FOR_BISHOP_HASHING, bishopBlockerVariations, bishopAttacks);
     std::cout << "DONE." << std::endl;
 
     std::cout << "Searching for rook magic numbers, this could take up to 30 seconds... " << std::endl;
-    generateMagicNumbers(ROOK_HASHING_INFORMATION, MINIMUM_NUMBER_OF_BITS_FOR_ROOK_HASHING, rookBlockerVariations, rookAttacks);
+    generateMagicNumbers(ROOK_HASHING_PARAMETERS_LOOKUP, MINIMUM_NUMBER_OF_BITS_FOR_ROOK_HASHING, rookBlockerVariations, rookAttacks);
     std::cout << "DONE." << std::endl;
 
-    populateAttackDatabase(BISHOP_ATTACKS, BISHOP_HASHING_INFORMATION, bishopBlockerVariations, bishopAttacks);
-    populateAttackDatabase(ROOK_ATTACKS, ROOK_HASHING_INFORMATION, rookBlockerVariations, rookAttacks);
+    populateAttackDatabase(BISHOP_ATTACKS, BISHOP_HASHING_PARAMETERS_LOOKUP, bishopBlockerVariations, bishopAttacks);
+    populateAttackDatabase(ROOK_ATTACKS, ROOK_HASHING_PARAMETERS_LOOKUP, rookBlockerVariations, rookAttacks);
 }
 
 namespace
@@ -37,15 +37,15 @@ namespace
 u64 BISHOP_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
 u64 ROOK_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
 
-void initializeHashInformationEntries()
+void initializeHashingParameters()
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
-        HashInformation bishopEntry;
-        HashInformation rookEntry;
+        HashingParameters bishopEntry;
+        HashingParameters rookEntry;
 
-        BISHOP_HASHING_INFORMATION[square] = bishopEntry;
-        ROOK_HASHING_INFORMATION[square] = rookEntry;
+        BISHOP_HASHING_PARAMETERS_LOOKUP[square] = bishopEntry;
+        ROOK_HASHING_PARAMETERS_LOOKUP[square] = rookEntry;
     }
 }
 
@@ -56,21 +56,21 @@ void generateBlockerMasks()
         Bitboard squareBitboard(square);
 
         // Calculate the blocker mask for each piece on this square
-        BISHOP_HASHING_INFORMATION[square].blockerMask = calculateBishopBlockerMask(squareBitboard);
-        ROOK_HASHING_INFORMATION[square].blockerMask = calculateRookBlockerMask(squareBitboard);
+        BISHOP_HASHING_PARAMETERS_LOOKUP[square].blockerMask = calculateBishopBlockerMask(squareBitboard);
+        ROOK_HASHING_PARAMETERS_LOOKUP[square].blockerMask = calculateRookBlockerMask(squareBitboard);
 
         // Store the shift amount to be used in the hash function
-        BISHOP_HASHING_INFORMATION[square].shiftAmount = BISHOP_HASHING_INFORMATION[square].blockerMask.numberOfSetBits();
-        ROOK_HASHING_INFORMATION[square].shiftAmount = ROOK_HASHING_INFORMATION[square].blockerMask.numberOfSetBits();
+        BISHOP_HASHING_PARAMETERS_LOOKUP[square].shiftAmount = BISHOP_HASHING_PARAMETERS_LOOKUP[square].blockerMask.numberOfSetBits();
+        ROOK_HASHING_PARAMETERS_LOOKUP[square].shiftAmount = ROOK_HASHING_PARAMETERS_LOOKUP[square].blockerMask.numberOfSetBits();
     }
 }
 
-std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVariations(HashInformation const * hashInformationTable)
+std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVariations(HashingParameters const * hashingParametersLookup)
 {
     std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> blockerVariations;
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
-        blockerVariations[square] = enumerateSubmasks(hashInformationTable[square].blockerMask);
+        blockerVariations[square] = enumerateSubmasks(hashingParametersLookup[square].blockerMask);
     }
 
     return blockerVariations;
@@ -95,18 +95,18 @@ std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(ca
     return attacks;
 }
 
-void generateMagicNumbers(HashInformation * hashInformationTable,
+void generateMagicNumbers(HashingParameters * hashingParametersLookup,
                           const int minimumBitsRequiredForHashing,
                           const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
                           const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards)
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
-        hashInformationTable[square].magicNumber = searchForMagicNumber((Square)square, hashInformationTable[square], minimumBitsRequiredForHashing, blockerVariations[square], attackBoards[square]);
+        hashingParametersLookup[square].magicNumber = searchForMagicNumber((Square)square, hashingParametersLookup[square], minimumBitsRequiredForHashing, blockerVariations[square], attackBoards[square]);
     }
 }
 
-u64 searchForMagicNumber(const Square square, const HashInformation & hashInformation, const int minimumAmountOfBitsInLastByte, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards)
+u64 searchForMagicNumber(const Square square, const HashingParameters & hashingParameters, const int minimumAmountOfBitsInLastByte, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards)
 {
     Bitboard tempAttackDatabase[LARGEST_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS];
     const int numberOfBlockerVariations = allBlockerVariations.size();
@@ -124,12 +124,12 @@ u64 searchForMagicNumber(const Square square, const HashInformation & hashInform
         magicNumberCandidate = utils::getSparselyPopulatedRandom64BitInteger();
 
         // Verify the magic number effeciently maps bits from the blocker mask to the most significant bit positions of the product
-        if (Bitboard( (hashInformation.blockerMask * magicNumberCandidate) & 0xFF00000000000000ULL ).numberOfSetBits() < minimumAmountOfBitsInLastByte) { continue; }
+        if (Bitboard( (hashingParameters.blockerMask * magicNumberCandidate) & 0xFF00000000000000ULL ).numberOfSetBits() < minimumAmountOfBitsInLastByte) { continue; }
 
         // Hash each blocker variation and attempt to store the attack boards
         for (int i = 0; (i < numberOfBlockerVariations) && currentMagicNumberIsValid; i++)
         {
-            int hashedIndex = hashBlockerVariation(allBlockerVariations[i], magicNumberCandidate, hashInformation.shiftAmount);
+            int hashedIndex = hashBlockerVariation(allBlockerVariations[i], magicNumberCandidate, hashingParameters.shiftAmount);
 
             // Check if this spot in the database is empty
             if (tempAttackDatabase[hashedIndex].getBoard() == constants::UNIVERSE) { tempAttackDatabase[hashedIndex] = attackBoards[i]; }
@@ -164,18 +164,18 @@ int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumbe
 
 template <size_t rows, size_t columns>
 void populateAttackDatabase(Bitboard (&attackDatabase)[rows][columns],
-                            const HashInformation * hashInformationTable,
+                            const HashingParameters * hashingParametersLookup,
                             const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
                             const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards)
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
-        const HashInformation & hashInfo = hashInformationTable[square];
+        const HashingParameters & hashingParameters = hashingParametersLookup[square];
         int numberOfBlockerVariations = blockerVariations[square].size();
 
         for (int i = 0; i < numberOfBlockerVariations; i++)
         {
-            int hashedIndex = hashBlockerVariation(blockerVariations[square][i], hashInfo.magicNumber, hashInfo.shiftAmount);
+            int hashedIndex = hashBlockerVariation(blockerVariations[square][i], hashingParameters.magicNumber, hashingParameters.shiftAmount);
             attackDatabase[square][hashedIndex] = attackBoards[square][i];
         }
     }
@@ -193,8 +193,8 @@ void populateAttackDatabase(Bitboard (&attackDatabase)[rows][columns],
 */
 // void generateAttackBoard(PieceType pieceType)
 // {
-//     // A pointer to either BISHOP_HASHING_INFORMATION or ROOK_HASHING_INFORMATION
-//     HashInformation * hashInformationTable;
+//     // A pointer to either BISHOP_HASHING_PARAMETERS_LOOKUP or ROOK_HASHING_PARAMETERS_LOOKUP
+//     HashingParameters * hashingParametersLookup;
 
 //     // A pointer to either BISHOP_ATTACKS or ROOK_ATTACKS
 //     Bitboard * ATTACK_TABLE;
@@ -207,11 +207,11 @@ void populateAttackDatabase(Bitboard (&attackDatabase)[rows][columns],
 //     switch (pieceType)
 //     {
 //         case BISHOP:
-//             hashInformationTable = BISHOP_HASHING_INFORMATION;
+//             hashingParametersLookup = BISHOP_HASHING_PARAMETERS_LOOKUP;
 //             calculateSliderPieceAttackBoard = calculateBishopAttackBoard;
 //             break;
 //         case ROOK:
-//             hashInformationTable = ROOK_HASHING_INFORMATION;
+//             hashingParametersLookup = ROOK_HASHING_PARAMETERS_LOOKUP;
 //             calculateSliderPieceAttackBoard = calculateRookAttackBoard;
 //             break;
 //         default:
@@ -221,7 +221,7 @@ void populateAttackDatabase(Bitboard (&attackDatabase)[rows][columns],
 //     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
 //     {
 //         // Index the magic lookup table to get the magic entry for this square
-//         HashInformation entry = *(hashInformationTable + square);
+//         HashingParameters entry = *(hashingParametersLookup + square);
 
 //         // Calculate the blocker variations for this blocker mask
 //         std::vector<Bitboard> allBlockerVariations = enumerateSubmasks(entry.blockerMask);

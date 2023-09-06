@@ -46,7 +46,7 @@ std::vector<Move> MoveGenerator::generatePawnMoves(const Chessboard & chessboard
 // And how we would use the magic bitboards as an end user
 // Bitboard getPotentialBishopAttacks(const int square, const Bitboard & boardState)
 // {
-//     HashInformation bishopEntry = BISHOP_HASHING_INFORMATION[square];
+//     HashingParameters bishopEntry = BISHOP_HASHING_PARAMETERS_LOOKUP[square];
 
 //     Bitboard blockersToBishop = boardState & bishopEntry.blockerMask;
 //     int hashedIndex = hashBlockerVariation(blockersToBishop, bishopEntry.magicNumber, bishopEntry.shiftAmount)

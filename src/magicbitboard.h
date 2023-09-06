@@ -12,15 +12,15 @@
 namespace magic_bitboards
 {
 
-struct HashInformation
+struct HashingParameters
 {
     Bitboard blockerMask;
     u64 magicNumber;
     int shiftAmount;
 };
 
-extern HashInformation BISHOP_HASHING_INFORMATION[Square::NUMBER_OF_SQUARES];
-extern HashInformation ROOK_HASHING_INFORMATION[Square::NUMBER_OF_SQUARES];
+extern HashingParameters BISHOP_HASHING_PARAMETERS_LOOKUP[Square::NUMBER_OF_SQUARES];
+extern HashingParameters ROOK_HASHING_PARAMETERS_LOOKUP[Square::NUMBER_OF_SQUARES];
 
 // Bishops have between 32 and 512 unique possible blocker variations depending on the square
 constexpr int LARGEST_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS = 512;
@@ -69,7 +69,7 @@ constexpr int NUMBER_OF_SET_BITS_IN_ROOK_BLOCKER_MASK[Square::NUMBER_OF_SQUARES]
 // Define an alias for passing calculate<Piece>AttackBoard() as a parameter to another function
 using calculateAttackBoardFunction = Bitboard (*)(const Square & square, const Bitboard & blockerVariation);
 
-void initializeHashInformationEntries();
+void initializeHashingParameters();
 
 void generateBlockerMasks();
 
@@ -77,26 +77,26 @@ Bitboard calculateBishopBlockerMask(const Bitboard &bitboard);
 
 Bitboard calculateRookBlockerMask(const Bitboard &bitboard);
 
-std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVariations(HashInformation const * HASH_INFORMATION_TABLE);
+std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVariations(HashingParameters const * hashingParametersLookup);
 
 std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(calculateAttackBoardFunction calculateAttackBoard,
                                                                               const std::array<std::vector<Bitboard>,
                                                                               Square::NUMBER_OF_SQUARES> & blockerVariations);
 
-void generateMagicNumbers(HashInformation * hashInformationTable,
+void generateMagicNumbers(HashingParameters * hashingParametersLookup,
                           const int minimumBitsRequiredForHashing,
                           const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
                           const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
 
 u64 searchForMagicNumber(const Square square,
-                         const HashInformation & hashInformation,
+                         const HashingParameters & hashingParameters,
                          const int minimumAmountOfBitsInLastByte,
                          const std::vector<Bitboard> & allBlockerVariations,
                          const std::vector<Bitboard> & attackBoards);
 
 template <size_t rows, size_t columns>
 void populateAttackDatabase(Bitboard (&attackDatabase)[rows][columns],
-                            const HashInformation * hashInformationTable,
+                            const HashingParameters * hashingParametersLookup,
                             const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
                             const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
 
