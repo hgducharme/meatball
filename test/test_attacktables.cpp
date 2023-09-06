@@ -533,7 +533,7 @@ TEST_F(AttackTablesTest, whitePawnAttackTable)
 {
    for (int square = 0; square < 64; square++)
    {
-      EXPECT_EQ(attack_tables::pawn[0][square], EXPECTED_PAWN[0][square]);
+      EXPECT_EQ(attack_tables::PAWN_ATTACKS[0][square], EXPECTED_PAWN[0][square]);
    }
 }
 
@@ -541,7 +541,7 @@ TEST_F(AttackTablesTest, blackPawnAttackTable)
 {
    for (int square = 0; square < 64; square++)
    {
-      ASSERT_EQ(attack_tables::pawn[1][square], EXPECTED_PAWN[1][square]);
+      ASSERT_EQ(attack_tables::PAWN_ATTACKS[1][square], EXPECTED_PAWN[1][square]);
    }
 }
 
@@ -549,7 +549,7 @@ TEST_F(AttackTablesTest, knightAttackTable)
 {
    for (int square = 0; square < 64; square++)
    {
-      EXPECT_EQ(attack_tables::knight[square], EXPECTED_KNIGHT[square]);
+      EXPECT_EQ(attack_tables::KNIGHT_ATTACKS[square], EXPECTED_KNIGHT[square]);
    }
 }
 
@@ -582,7 +582,7 @@ TEST_F(AttackTablesTest, kingAttackTable)
 {
    for (int square = 0; square < 64; square++)
    {
-      EXPECT_EQ(attack_tables::king[square], EXPECTED_KING[square]);
+      EXPECT_EQ(attack_tables::KING_ATTACKS[square], EXPECTED_KING[square]);
    }
 }
 
