@@ -7,11 +7,11 @@
 namespace attack_tables
 {
 
-Bitboard pawn[Color::NUMBER_OF_COLORS][Square::NUMBER_OF_SQUARES];
-Bitboard knight[Square::NUMBER_OF_SQUARES];
+Bitboard PAWN_ATTACKS[Color::NUMBER_OF_COLORS][Square::NUMBER_OF_SQUARES];
+Bitboard KNIGHT_ATTACKS[Square::NUMBER_OF_SQUARES];
 Bitboard BISHOP_ATTACKS[Square::NUMBER_OF_SQUARES][magic_bitboards::LARGEST_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS];
 Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][magic_bitboards::LARGEST_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS];
-Bitboard king[Square::NUMBER_OF_SQUARES];
+Bitboard KING_ATTACKS[Square::NUMBER_OF_SQUARES];
 
 void init()
 {
@@ -89,10 +89,10 @@ void initializeAttacksForLeaperPieces()
     {
         Bitboard squareBitboard(square);
 
-        pawn[Color::WHITE][square] = calculatePawnAttacksFromSquare(Color::WHITE, squareBitboard);
-        pawn[Color::BLACK][square] = calculatePawnAttacksFromSquare(Color::BLACK, squareBitboard);
-        knight[square] = calculateKnightAttacksFromSquare(squareBitboard);
-        king[square] = calculateKingAttacksFromSquare(squareBitboard);
+        PAWN_ATTACKS[Color::WHITE][square] = calculatePawnAttacksFromSquare(Color::WHITE, squareBitboard);
+        PAWN_ATTACKS[Color::BLACK][square] = calculatePawnAttacksFromSquare(Color::BLACK, squareBitboard);
+        KNIGHT_ATTACKS[square] = calculateKnightAttacksFromSquare(squareBitboard);
+        KING_ATTACKS[square] = calculateKingAttacksFromSquare(squareBitboard);
     }
 }
 

@@ -27,7 +27,7 @@ std::vector<Move> MoveGenerator::generatePawnMoves(const Chessboard & chessboard
     {
         int startingSquare = pawns.clearAndReturnLSB();
 
-        Bitboard psuedoLegalPawnMoves = attack_tables::pawn[activePlayer][startingSquare];
+        Bitboard psuedoLegalPawnMoves = attack_tables::PAWN_ATTACKS[activePlayer][startingSquare];
 
         // Iterate over every psuedo legal pawn moves, encode the move into an object, and append the move to the vector
         int numberOfPsuedoLegalPawnMoves = psuedoLegalPawnMoves.numberOfSetBits();
