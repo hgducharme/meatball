@@ -5,11 +5,11 @@
 
 namespace attack_tables
 {
-    extern Bitboard pawn[Color::NUMBER_OF_COLORS][Square::NUMBER_OF_SQUARES];
-    extern Bitboard knight[Square::NUMBER_OF_SQUARES];
+    extern Bitboard PAWN_ATTACKS[Color::NUMBER_OF_COLORS][Square::NUMBER_OF_SQUARES];
+    extern Bitboard KNIGHT_ATTACKS[Square::NUMBER_OF_SQUARES];
     extern Bitboard BISHOP_ATTACKS[Square::NUMBER_OF_SQUARES][magic_bitboards::LARGEST_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS];
     extern Bitboard ROOK_ATTACKS[Square::NUMBER_OF_SQUARES][magic_bitboards::LARGEST_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS];
-    extern Bitboard king[Square::NUMBER_OF_SQUARES];
+    extern Bitboard KING_ATTACKS[Square::NUMBER_OF_SQUARES];
 
     void init();
     Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitboard);
