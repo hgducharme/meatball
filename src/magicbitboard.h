@@ -102,8 +102,6 @@ void populateAttackDatabase(Bitboard (&attackDatabase)[rows][columns],
 
 int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount);
 
-void generateAttackBoard(PieceType pieceType);
-
 std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask);
 
 Bitboard calculateBishopAttackBoard(const Square & square, const Bitboard & blockerVariation);
