@@ -19,4 +19,10 @@ namespace attack_tables
     Bitboard calculateBishopAttacksFromSquareClassical(const Bitboard & bitboard);
     Bitboard calculateRookAttacksFromSquareClassical(const Bitboard & bitboard);
     Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard);
-}
+
+namespace
+{
+    void initializeAttacksForLeaperPieces();
+    void initializeAttacksForSliderPieces();
+} // anonymous namespace
+} // attack_tables namespace

@@ -9,19 +9,8 @@ Bitboard king[Square::NUMBER_OF_SQUARES];
 
 void init()
 {
-    // Initialize attack tables for leaper pieces
-    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
-    {
-        Bitboard squareBitboard(square);
-
-        pawn[Color::WHITE][square] = calculatePawnAttacksFromSquare(Color::WHITE, squareBitboard);
-        pawn[Color::BLACK][square] = calculatePawnAttacksFromSquare(Color::BLACK, squareBitboard);
-        knight[square] = calculateKnightAttacksFromSquare(squareBitboard);
-        king[square] = calculateKingAttacksFromSquare(squareBitboard);
-    }
-
-    // Initialize attack tables for slider pieces
-    magic_bitboards::init();
+    initializeAttacksForLeaperPieces();
+    initializeAttacksForSliderPieces();
 }
 
 Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitboard)
@@ -85,4 +74,26 @@ Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard)
     return legalKingAttacks;
 }
 
-} // namespace attack_tables
+namespace
+{
+
+void initializeAttacksForLeaperPieces()
+{
+    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
+    {
+        Bitboard squareBitboard(square);
+
+        pawn[Color::WHITE][square] = calculatePawnAttacksFromSquare(Color::WHITE, squareBitboard);
+        pawn[Color::BLACK][square] = calculatePawnAttacksFromSquare(Color::BLACK, squareBitboard);
+        knight[square] = calculateKnightAttacksFromSquare(squareBitboard);
+        king[square] = calculateKingAttacksFromSquare(squareBitboard);
+    }
+}
+
+void initializeAttacksForSliderPieces()
+{
+    magic_bitboards::init();
+}
+
+} // anonymous namespace
+} // attack_tables namespace
