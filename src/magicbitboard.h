@@ -1,13 +1,7 @@
 #pragma once
 
-#include "types.h"
 #include "bitboard.h"
-#include "utils.h"
-#include "constants.h"
-
-#include <iostream>
 #include <vector>
-#include <array>
 
 namespace magic_bitboards
 {

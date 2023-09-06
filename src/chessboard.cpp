@@ -1,5 +1,7 @@
 #include "chessboard.h"
 
+#include "constants.h"
+
 File Chessboard::squareToFile(const int square)
 {
    /*

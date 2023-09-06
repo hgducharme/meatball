@@ -1,8 +1,6 @@
 #pragma once
 
 #include "chessboard.h"
-#include "move.h"
-#include "attacktables.h"
 
 #include <vector>
 

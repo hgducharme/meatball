@@ -3,10 +3,6 @@
 #include "types.h"
 #include "constants.h"
 
-#include <stdexcept>
-#include <cstdlib>
-#include <string>
-
 class Bitboard {
     private:
         u64 board_ = constants::EMPTY_BOARD;

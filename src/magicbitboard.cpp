@@ -1,6 +1,13 @@
 #include "magicbitboard.h"
 
 #include "attacktables.h"
+#include "types.h"
+#include "utils.h"
+#include "constants.h"
+
+#include <iostream>
+#include <array>
+#include <cmath>
 
 namespace magic_bitboards
 {
@@ -188,7 +195,7 @@ std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask)
      * Here is a link with some explanation: https://www.geeksforgeeks.org/print-all-submasks-of-a-given-mask/
      * One with better explanation: https://cp-algorithms.com/algebra/all-submasks.html
      */
-    std::uint16_t numberOfBlockerVariations = pow(2, blockerMask.numberOfSetBits());
+    std::uint16_t numberOfBlockerVariations = std::pow(2, blockerMask.numberOfSetBits());
     std::vector<Bitboard> allBlockerVariations(numberOfBlockerVariations);
 
     std::uint16_t i = 0;

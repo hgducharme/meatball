@@ -2,14 +2,13 @@
 
 #include "bitboard.h"
 #include "types.h"
-#include "constants.h"
 #include "move.h"
 
 class Chessboard {
     private:
-        Bitboard pieceBitboards_[NUMBER_OF_PIECES];
-        Bitboard colorBitboards_[NUMBER_OF_COLORS];
-        Color activePlayer_ = WHITE;
+        Bitboard pieceBitboards_[PieceType::NUMBER_OF_PIECES];
+        Bitboard colorBitboards_[Color::NUMBER_OF_COLORS];
+        Color activePlayer_ = Color::WHITE;
 
     public:
         File static squareToFile(const int square);

@@ -1,5 +1,9 @@
 #include "bitboard.h"
 
+#include <stdexcept>
+#include <cstdlib>
+#include <string>
+
 Bitboard::Bitboard(u64 boardState) : board_(boardState)
 {}
 

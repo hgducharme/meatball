@@ -1,5 +1,8 @@
 #include "movegenerator.h"
 
+#include "move.h"
+#include "attacktables.h"
+
 std::vector<Move> MoveGenerator::generatePsuedoLegalMoves(const Chessboard & chessboard) const
 {
     std::vector<Move> pawnMoves = generatePawnMoves(chessboard);
