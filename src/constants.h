@@ -36,6 +36,9 @@ namespace constants
    constexpr int INDEX_OF_FIFTH_BYTE = 32;
    constexpr int INDEX_OF_SEVENTH_BYTE = 48;
 
+   constexpr Direction BISHOP_DIRECTIONS[4] = { Direction::NORTH_EAST, Direction::NORTH_WEST, Direction::SOUTH_WEST, Direction::SOUTH_EAST };
+   constexpr Direction ROOK_DIRECTIONS[4] = { Direction::NORTH, Direction::WEST, Direction::SOUTH, Direction::EAST };
+
    namespace bit_masks
    {
       constexpr u64 FILE_A = 0x101010101010101;

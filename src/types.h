@@ -15,9 +15,9 @@ enum PieceType
     NUMBER_OF_PIECES = 6
 };
 
-// one move to the north west corresponds to the bit 7 positions larger than the current bit
-// one move to the north      corresponds to the bit 8 positions larger than the current bit
-// one move to the north east corresponds to the bit 9 positions larger than the current bit
+// - one move to the north west corresponds to the bit 7 positions larger than the current bit
+// - one move to the north      corresponds to the bit 8 positions larger than the current bit
+// - one move to the north east corresponds to the bit 9 positions larger than the current bit
 enum Direction
 {
     NORTH = 8,
