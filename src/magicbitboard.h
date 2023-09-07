@@ -101,8 +101,6 @@ Bitboard calculateRookAttackBoard(const Square & square, const Bitboard & blocke
 
 bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares);
 
-Bitboard getPotentialBishopAttacks(const int square, const Bitboard &blockers);
-
 } // anonymous namespace
 
 } // namespace magic_bitboards

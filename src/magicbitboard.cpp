@@ -124,7 +124,7 @@ u64 searchForMagicNumber(const Square square, const HashingParameters & hashingP
     {
         bool currentMagicNumberIsValid = true;
 
-        // Reset the attack database to all empty boards
+        // Reset the attack database
         std::fill(std::begin(tempAttackDatabase), std::end(tempAttackDatabase), Bitboard(constants::UNIVERSE));
         
         // Calculate a magic number candidate for this square
