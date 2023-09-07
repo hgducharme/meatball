@@ -26,7 +26,7 @@ Bitboard shiftCurrentSquareByDirection(const Bitboard & oldPosition, const int n
    return newPosition;
 }
 
-int calculateDistanceFromEdgeOfBoard(Square square, Direction direction, const bool includeEdgeSquare)
+int calculateDistanceToEdgeOfBoard(Square square, Direction direction, bool includeEdgeSquare)
 {
     Rank currentRank = Chessboard::squareToRank(square);
     File currentFile = Chessboard::squareToFile(square);

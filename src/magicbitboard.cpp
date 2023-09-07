@@ -218,10 +218,10 @@ Bitboard calculateBishopAttackBoard(const Square & square, const Bitboard & bloc
     Bitboard attackBoard;
     Bitboard squareBitboard(square);
 
-    int numberOfMovesNorthEast = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_EAST);
-    int numberOfMovesNorthWest = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_WEST);
-    int numberOfMovesSouthEast = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_EAST);
-    int numberOfMovesSouthWest = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_WEST);
+    int numberOfMovesNorthEast = utils::calculateDistanceToEdgeOfBoard(square, NORTH_EAST);
+    int numberOfMovesNorthWest = utils::calculateDistanceToEdgeOfBoard(square, NORTH_WEST);
+    int numberOfMovesSouthEast = utils::calculateDistanceToEdgeOfBoard(square, SOUTH_EAST);
+    int numberOfMovesSouthWest = utils::calculateDistanceToEdgeOfBoard(square, SOUTH_WEST);
 
     // TODO: maybe we can implement a function like the following?
     // attackBoard |= calculateAttacksInDirection(NORTH_EAST, numberOfMovesNorthEast, squareBitboard, blockerVariation);
@@ -266,10 +266,10 @@ Bitboard calculateRookAttackBoard(const Square & square, const Bitboard & blocke
     Bitboard attackBoard;
     Bitboard squareBitboard(square);
 
-    int numberOfMovesNorth = utils::calculateDistanceFromEdgeOfBoard(square, NORTH);
-    int numberOfMovesSouth = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH);
-    int numberOfMovesEast = utils::calculateDistanceFromEdgeOfBoard(square, EAST);
-    int numberOfMovesWest = utils::calculateDistanceFromEdgeOfBoard(square, WEST);
+    int numberOfMovesNorth = utils::calculateDistanceToEdgeOfBoard(square, NORTH);
+    int numberOfMovesSouth = utils::calculateDistanceToEdgeOfBoard(square, SOUTH);
+    int numberOfMovesEast = utils::calculateDistanceToEdgeOfBoard(square, EAST);
+    int numberOfMovesWest = utils::calculateDistanceToEdgeOfBoard(square, WEST);
 
     // TODO: maybe we can implement a function like the following?
     // attackBoard |= calculateAttacksInDirection(NORTH_EAST, numberOfMovesNorthEast, squareBitboard, blockerVariation);
@@ -319,7 +319,7 @@ Bitboard calculateBishopBlockerMask(const Bitboard & bitboard)
 
     for (const Direction direction : constants::BISHOP_DIRECTIONS)
     {
-        int numberOfSquares = utils::calculateDistanceFromEdgeOfBoard(square, direction, false);
+        int numberOfSquares = utils::calculateDistanceToEdgeOfBoard(square, direction, false);
 
         for (int i = 1; i <= numberOfSquares; i++)
         {
@@ -337,7 +337,7 @@ Bitboard calculateRookBlockerMask(const Bitboard &bitboard)
 
     for (const Direction direction : constants::ROOK_DIRECTIONS)
     {
-        int numberOfMoves = utils::calculateDistanceFromEdgeOfBoard(square, direction, false);
+        int numberOfMoves = utils::calculateDistanceToEdgeOfBoard(square, direction, false);
 
         for (int i = 1; i <= numberOfMoves; i++)
         {

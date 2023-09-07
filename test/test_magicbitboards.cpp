@@ -261,21 +261,21 @@ u64 MagicBitboardsTest::EXPECTED_BISHOP_BLOCKER_MASKS[64];
 u64 MagicBitboardsTest::EXPECTED_ROOK_BLOCKER_MASKS[64];
 u64 MagicBitboardsTest::EXPECTED_QUEEN_BLOCKER_MASKS[64];
 
-// TEST_F(MagicBitboardsTest, bishopHashInformation)
-// {
-//    for (int square = 0; square < 64; square++)
-//    {
-//       EXPECT_EQ(magic_bitboards::BISHOP_HASHING_PARAMETERS_LOOKUP[square].blockerMask.getBoard(), EXPECTED_BISHOP_BLOCKER_MASKS[square]);
-//    }
-// }
+TEST_F(MagicBitboardsTest, bishopHashInformation)
+{
+   for (int square = 0; square < 64; square++)
+   {
+      EXPECT_EQ(magic_bitboards::BISHOP_HASHING_PARAMETERS_LOOKUP[square].blockerMask.getBoard(), EXPECTED_BISHOP_BLOCKER_MASKS[square]);
+   }
+}
 
-// TEST_F(MagicBitboardsTest, rookHashInformation)
-// {
-//    for (int square = 0; square < 64; square++)
-//    {
-//       EXPECT_EQ(magic_bitboards::ROOK_HASHING_PARAMETERS_LOOKUP[square].blockerMask.getBoard(), EXPECTED_ROOK_BLOCKER_MASKS[square]);
-//    }
-// }
+TEST_F(MagicBitboardsTest, rookHashInformation)
+{
+   for (int square = 0; square < 64; square++)
+   {
+      EXPECT_EQ(magic_bitboards::ROOK_HASHING_PARAMETERS_LOOKUP[square].blockerMask.getBoard(), EXPECTED_ROOK_BLOCKER_MASKS[square]);
+   }
+}
 
 }  // namespace
 }  // namespace meatball
