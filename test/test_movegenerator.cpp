@@ -57,7 +57,7 @@ class MoveGeneratorTest : public ::testing::Test
 TEST_F(MoveGeneratorTest, generatePsuedoLegalMoves)
 {
    Chessboard chessboard;
-   MoveGenerator moveGenerator;
+   LegalMoveGenerator moveGenerator;
    
    // std::vector<Move> moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
 	// chessboard.applyMove(WHITE, PAWN, e2, e4);

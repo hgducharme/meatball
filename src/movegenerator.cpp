@@ -3,7 +3,7 @@
 #include "move.h"
 #include "attacktables.h"
 
-std::vector<Move> MoveGenerator::generatePsuedoLegalMoves(const Chessboard & chessboard) const
+std::vector<Move> LegalMoveGenerator::generatePsuedoLegalMoves(const Chessboard & chessboard) const
 {
     std::vector<Move> pawnMoves = generatePawnMoves(chessboard);
     // std::vector<Move> knightMoves = generateKnightMoves(chessboard);
@@ -15,7 +15,7 @@ std::vector<Move> MoveGenerator::generatePsuedoLegalMoves(const Chessboard & che
     return pawnMoves;
 }
 
-std::vector<Move> MoveGenerator::generatePawnMoves(const Chessboard & chessboard) const
+std::vector<Move> LegalMoveGenerator::generatePawnMoves(const Chessboard & chessboard) const
 {
     // What we use from chessboard: side to move, we get the position of the pawns, thats it
     std::vector<Move> moveVector;
@@ -36,6 +36,7 @@ std::vector<Move> MoveGenerator::generatePawnMoves(const Chessboard & chessboard
             int targetSquare = psuedoLegalPawnMoves.clearAndReturnLSB();
             
             // TODO: Remove moves that capture our own pieces
+            // psuedoLegalPawnMoves &= ~(white pieces & psuedoLegalPawnMoves)
 
             Move m(activePlayer, PAWN, static_cast<Square>(startingSquare), static_cast<Square>(targetSquare));
             moveVector.push_back(m);
@@ -45,13 +46,18 @@ std::vector<Move> MoveGenerator::generatePawnMoves(const Chessboard & chessboard
     return moveVector;
 }
 
+Bitboard LegalMoveGenerator::filterLegalPawnMoves(Bitboard & psuedoLegalPawnMoves)
+{}
+
+std::vector<Move> LegalMoveGenerator::generateLegalMoves(const Chessboard & chessboard) const
+{}
+
 // This is an example of a function that would be used in movegen.cpp
 // And how we would use the magic bitboards as an end user
-// Bitboard getPotentialBishopAttacks(const int square, const Bitboard & boardState)
+// Bitboard getBishopAttacks(const int square, const Bitboard & boardState)
 // {
-//     HashingParameters bishopEntry = BISHOP_HASHING_PARAMETERS_LOOKUP[square];
-
-//     Bitboard blockersToBishop = boardState & bishopEntry.blockerMask;
-//     int hashedIndex = hashBlockerVariation(blockersToBishop, bishopEntry.magicNumber, bishopEntry.shiftAmount)
-//     return BISHOP_ATTACKS[square][hashedBlockerConfiguration];
+//     HashingParameters bishopHashingParameters = magic_bitboards::BISHOP_HASHING_PARAMETERS_LOOKUP[square];
+//     Bitboard blockersToBishop = boardState & bishopHashingParameters.blockerMask;
+//     int hashedIndex = hashBlockerVariation(blockersToBishop, bishopHashingParameters.magicNumber, bishopHashingParameters.shiftAmount)
+//     return attack_tables::BISHOP_ATTACKS[square][hashedBlockerConfiguration];
 // }
