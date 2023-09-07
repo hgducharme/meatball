@@ -50,5 +50,6 @@ namespace constants
       constexpr u64 EXCLUDE_FILE_H = ~FILE_H;
       constexpr u64 EXCLUDE_FILES_A_AND_B = ~FILE_A & ~FILE_B; 
       constexpr u64 EXCLUDE_FILES_H_AND_G = ~FILE_H & ~FILE_G;
+      constexpr u64 LAST_EIGHT_BITS = 0xFF00000000000000;
    } // namespace bit_masks
 } //namespace constants
