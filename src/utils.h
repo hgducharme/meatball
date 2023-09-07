@@ -7,7 +7,7 @@ namespace utils
 
 Bitboard shiftCurrentSquareByDirection(const Bitboard & oldPosition, const int numberOfBits);
 
-int calculateDistanceFromEdgeOfBoard(Square square, Direction direction);
+int calculateDistanceFromEdgeOfBoard(const Square square, const Direction direction, const bool includeEdgeSquare = true);
 
 u64 getRandom64BitInteger();
 

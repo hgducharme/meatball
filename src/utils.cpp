@@ -26,7 +26,7 @@ Bitboard shiftCurrentSquareByDirection(const Bitboard & oldPosition, const int n
    return newPosition;
 }
 
-int calculateDistanceFromEdgeOfBoard(Square square, Direction direction)
+int calculateDistanceFromEdgeOfBoard(Square square, Direction direction, const bool includeEdgeSquare)
 {
     Rank currentRank = Chessboard::squareToRank(square);
     File currentFile = Chessboard::squareToFile(square);
@@ -58,6 +58,13 @@ int calculateDistanceFromEdgeOfBoard(Square square, Direction direction)
             return File::FILE_H - currentFile;
         case WEST:
             return currentFile;
+    }
+
+    if (includeEdgeSquare == false)
+    {
+        constexpr int EDGE_SQUARE = 1;
+        return std::min(horizontalDistanceFromEdge, verticalDistanceFromEdge) - EDGE_SQUARE;
+
     }
 
     return std::min(horizontalDistanceFromEdge, verticalDistanceFromEdge);

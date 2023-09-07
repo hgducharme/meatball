@@ -316,12 +316,10 @@ Bitboard calculateBishopBlockerMask(const Bitboard & bitboard)
 {
     Bitboard potentialBlockersToTheBishop;
     Square square = static_cast<Square>(bitboard.findIndexLSB());
-    constexpr int EDGE_SQUARE = 1;
 
     for (const Direction direction : constants::BISHOP_DIRECTIONS)
     {
-        // Subtract the edge of the board since it isn't considered a blocking square
-        int numberOfSquares = utils::calculateDistanceFromEdgeOfBoard(square, direction) - EDGE_SQUARE;
+        int numberOfSquares = utils::calculateDistanceFromEdgeOfBoard(square, direction, false);
 
         for (int i = 1; i <= numberOfSquares; i++)
         {
@@ -336,12 +334,10 @@ Bitboard calculateRookBlockerMask(const Bitboard &bitboard)
 {
     Bitboard potentialBlockersToTheRook;
     Square square = static_cast<Square>(bitboard.findIndexLSB());
-    constexpr int EDGE_SQUARE = 1;
 
     for (const Direction direction : constants::ROOK_DIRECTIONS)
     {
-        // Subtract the edge of the board since it isn't considered a blocking square
-        int numberOfMoves = utils::calculateDistanceFromEdgeOfBoard(square, direction) - EDGE_SQUARE;
+        int numberOfMoves = utils::calculateDistanceFromEdgeOfBoard(square, direction, false);
 
         for (int i = 1; i <= numberOfMoves; i++)
         {
