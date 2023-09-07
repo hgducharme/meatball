@@ -109,11 +109,15 @@ void generateMagicNumbers(HashingParameters * hashingParametersLookup,
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
-        hashingParametersLookup[square].magicNumber = searchForMagicNumber((Square)square, hashingParametersLookup[square], minimumBitsRequiredForHashing, blockerVariations[square], attackBoards[square]);
+        hashingParametersLookup[square].magicNumber = searchForMagicNumber(hashingParametersLookup[square], minimumBitsRequiredForHashing, blockerVariations[square], attackBoards[square]);
+
+        #if DEBUG
+        std::cout << "(Square " << square << ") Found magic number: " << hashingParametersLookup[square].magicNumber << std::endl;
+        #endif
     }
 }
 
-u64 searchForMagicNumber(const Square square, const HashingParameters & hashingParameters, const int minimumAmountOfBitsInLastByte, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards)
+u64 searchForMagicNumber(const HashingParameters & hashingParameters, const int minimumAmountOfBitsInLastByte, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards)
 {
     Bitboard tempAttackDatabase[LARGEST_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS];
     const int numberOfBlockerVariations = allBlockerVariations.size();
@@ -127,11 +131,14 @@ u64 searchForMagicNumber(const Square square, const HashingParameters & hashingP
         // Reset the attack database
         std::fill(std::begin(tempAttackDatabase), std::end(tempAttackDatabase), Bitboard(constants::UNIVERSE));
         
-        // Calculate a magic number candidate for this square
         magicNumberCandidate = utils::getSparselyPopulatedRandom64BitInteger();
 
         // Verify the magic number effeciently maps bits from the blocker mask to the most significant bit positions of the product
-        if (Bitboard( (hashingParameters.blockerMask * magicNumberCandidate) & 0xFF00000000000000ULL ).numberOfSetBits() < minimumAmountOfBitsInLastByte) { continue; }
+        Bitboard lastByteOfMagicProduct = Bitboard( (hashingParameters.blockerMask * magicNumberCandidate) & constants::bit_masks::LAST_EIGHT_BITS );
+        if (lastByteOfMagicProduct.numberOfSetBits() < minimumAmountOfBitsInLastByte)
+        {
+            continue;
+        }
 
         // Hash each blocker variation and attempt to store the attack boards
         for (int i = 0; (i < numberOfBlockerVariations) && currentMagicNumberIsValid; i++)
@@ -139,27 +146,25 @@ u64 searchForMagicNumber(const Square square, const HashingParameters & hashingP
             int hashedIndex = hashBlockerVariation(allBlockerVariations[i], magicNumberCandidate, hashingParameters.shiftAmount);
 
             // Check if this spot in the database is empty
-            if (tempAttackDatabase[hashedIndex].getBoard() == constants::UNIVERSE) { tempAttackDatabase[hashedIndex] = attackBoards[i]; }
+            if (tempAttackDatabase[hashedIndex].getBoard() == constants::UNIVERSE)
+            {
+                tempAttackDatabase[hashedIndex] = attackBoards[i];
+            }
 
             // If the collision gives us the same attack board, then we're fine
             // If the collision gives us a different attack board, search for a new magic number 
-            else if (tempAttackDatabase[hashedIndex].getBoard() != attackBoards[i].getBoard()) { currentMagicNumberIsValid = false; }
+            else if (tempAttackDatabase[hashedIndex].getBoard() != attackBoards[i].getBoard())
+            {
+                currentMagicNumberIsValid = false;
+            }
         }
 
         // If we made it through the previous for loop with no collisions then we found a magic number
-        if (currentMagicNumberIsValid) { foundMagicNumber = true; }
+        if (currentMagicNumberIsValid)
+        {
+            foundMagicNumber = true;
+        }
     }
-
-    #if DEBUG
-    if (foundMagicNumber)
-    {
-        std::cout << "(Square " << square << ") FOUND magic number: " << magicNumberCandidate << std::endl;
-    }
-    else
-    {
-        std::cout << "(Square " << square << ") ERROR, no magic number found" << magicNumberCandidate << std::endl;
-    }
-    #endif
 
     return magicNumberCandidate;
 }
@@ -311,28 +316,17 @@ Bitboard calculateBishopBlockerMask(const Bitboard & bitboard)
 {
     Bitboard potentialBlockersToTheBishop;
     Square square = static_cast<Square>(bitboard.findIndexLSB());
+    constexpr int EDGE_SQUARE = 1;
 
-    // This is for magic bitboards, subtract 1 since the edge of the board isn't considered a blocking square
-    int numberOfMovesNorthEast = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_EAST) - 1;
-    int numberOfMovesNorthWest = utils::calculateDistanceFromEdgeOfBoard(square, NORTH_WEST) - 1;
-    int numberOfMovesSouthEast = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_EAST) - 1;
-    int numberOfMovesSouthWest = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH_WEST) - 1;
+    for (const Direction direction : constants::BISHOP_DIRECTIONS)
+    {
+        // Subtract the edge of the board since it isn't considered a blocking square
+        int numberOfSquares = utils::calculateDistanceFromEdgeOfBoard(square, direction) - EDGE_SQUARE;
 
-    for (int i = 1; i <= numberOfMovesNorthEast; i++)
-    {
-        potentialBlockersToTheBishop |= utils::shiftCurrentSquareByDirection(bitboard, i * NORTH_EAST);
-    }
-    for (int i = 1; i <= numberOfMovesNorthWest; i++)
-    {
-        potentialBlockersToTheBishop |= utils::shiftCurrentSquareByDirection(bitboard, i * NORTH_WEST);
-    }
-    for (int i = 1; i <= numberOfMovesSouthEast; i++)
-    {
-        potentialBlockersToTheBishop |= utils::shiftCurrentSquareByDirection(bitboard, i * SOUTH_EAST);
-    }
-    for (int i = 1; i <= numberOfMovesSouthWest; i++)
-    {
-        potentialBlockersToTheBishop |= utils::shiftCurrentSquareByDirection(bitboard, i * SOUTH_WEST);
+        for (int i = 1; i <= numberOfSquares; i++)
+        {
+            potentialBlockersToTheBishop |= utils::shiftCurrentSquareByDirection(bitboard, i * direction);
+        }
     }
 
     return potentialBlockersToTheBishop;
@@ -342,33 +336,22 @@ Bitboard calculateRookBlockerMask(const Bitboard &bitboard)
 {
     Bitboard potentialBlockersToTheRook;
     Square square = static_cast<Square>(bitboard.findIndexLSB());
+    constexpr int EDGE_SQUARE = 1;
 
-    // This is for magic bitboards, subtract 1 since the edge of the board isn't considered a blocking square
-    int numberOfMovesNorth = utils::calculateDistanceFromEdgeOfBoard(square, NORTH) - 1;
-    int numberOfMovesSouth = utils::calculateDistanceFromEdgeOfBoard(square, SOUTH) - 1;
-    int numberOfMovesEast = utils::calculateDistanceFromEdgeOfBoard(square, EAST) - 1;
-    int numberOfMovesWest = utils::calculateDistanceFromEdgeOfBoard(square, WEST) - 1;
+    for (const Direction direction : constants::ROOK_DIRECTIONS)
+    {
+        // Subtract the edge of the board since it isn't considered a blocking square
+        int numberOfMoves = utils::calculateDistanceFromEdgeOfBoard(square, direction) - EDGE_SQUARE;
 
-    for (int i = 1; i <= numberOfMovesNorth; i++)
-    {
-        potentialBlockersToTheRook |= utils::shiftCurrentSquareByDirection(bitboard, i * NORTH);
-    }
-    for (int i = 1; i <= numberOfMovesSouth; i++)
-    {
-        potentialBlockersToTheRook |= utils::shiftCurrentSquareByDirection(bitboard, i * SOUTH);
-    }
-    for (int i = 1; i <= numberOfMovesEast; i++)
-    {
-        potentialBlockersToTheRook |= utils::shiftCurrentSquareByDirection(bitboard, i * EAST);
-    }
-    for (int i = 1; i <= numberOfMovesWest; i++)
-    {
-        potentialBlockersToTheRook |= utils::shiftCurrentSquareByDirection(bitboard, i * WEST);
+        for (int i = 1; i <= numberOfMoves; i++)
+        {
+            potentialBlockersToTheRook |= utils::shiftCurrentSquareByDirection(bitboard, i * direction);
+        }
     }
 
     return potentialBlockersToTheRook;
 }
 
-} // anonymous namespace
 
+} // anonymous namespace
 } // namespace magic_bitboards

@@ -79,8 +79,7 @@ void generateMagicNumbers(HashingParameters * hashingParametersLookup,
                           const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
                           const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
 
-u64 searchForMagicNumber(const Square square,
-                         const HashingParameters & hashingParameters,
+u64 searchForMagicNumber(const HashingParameters & hashingParameters,
                          const int minimumAmountOfBitsInLastByte,
                          const std::vector<Bitboard> & allBlockerVariations,
                          const std::vector<Bitboard> & attackBoards);
