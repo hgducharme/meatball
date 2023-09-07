@@ -15,7 +15,7 @@ class LegalMoveGenerator : public MoveGenerator
 {
     public:
         LegalMoveGenerator() = default;
-        std::vector<Move> generateLegalMoves(const Chessboard & chessboard) const;
+        std::vector<Move> generateLegalMoves(const Chessboard & chessboard) override;
         std::vector<Move> generatePsuedoLegalMoves(const Chessboard & chessboard) const;
         std::vector<Move> generatePawnMoves(const Chessboard & chessboard) const;
         Bitboard filterLegalPawnMoves(Bitboard & psuedoLegalPawnMoves);

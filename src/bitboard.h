@@ -60,3 +60,5 @@ inline Bitboard operator >> (const Bitboard & lhs, const unsigned int rhs) { ret
 
 inline u64 operator * (const Bitboard & lhs, const u64 rhs) { return lhs.getBoard() * rhs; }
 inline u64 operator * (const u64 lhs, const Bitboard & rhs) { return lhs * rhs.getBoard(); }
+
+inline Bitboard operator ~ (const Bitboard & a) { return Bitboard( ~(a.getBoard()) ); }

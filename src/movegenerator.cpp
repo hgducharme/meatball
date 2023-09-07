@@ -21,6 +21,7 @@ std::vector<Move> LegalMoveGenerator::generatePawnMoves(const Chessboard & chess
     std::vector<Move> moveVector;
     Color activePlayer = chessboard.getActivePlayer();
     Bitboard pawns = chessboard.getBitboard(activePlayer, PAWN);
+    Bitboard sideToMovesPieces = chessboard.getBitboard(activePlayer);
     
     int numberOfPawnsOnBoard = pawns.numberOfSetBits();
     for (int i = 0; i < numberOfPawnsOnBoard; i++)
@@ -35,9 +36,11 @@ std::vector<Move> LegalMoveGenerator::generatePawnMoves(const Chessboard & chess
         {
             int targetSquare = psuedoLegalPawnMoves.clearAndReturnLSB();
             
-            // TODO: Remove moves that capture our own pieces
-            // psuedoLegalPawnMoves &= ~(white pieces & psuedoLegalPawnMoves)
+            // Remove any moves that attack our own pieces
+            psuedoLegalPawnMoves &= ~(sideToMovesPieces & psuedoLegalPawnMoves);
 
+            // TODO: Add pawn single and double push moves
+            
             Move m(activePlayer, PAWN, static_cast<Square>(startingSquare), static_cast<Square>(targetSquare));
             moveVector.push_back(m);
         }
@@ -49,8 +52,12 @@ std::vector<Move> LegalMoveGenerator::generatePawnMoves(const Chessboard & chess
 Bitboard LegalMoveGenerator::filterLegalPawnMoves(Bitboard & psuedoLegalPawnMoves)
 {}
 
-std::vector<Move> LegalMoveGenerator::generateLegalMoves(const Chessboard & chessboard) const
-{}
+std::vector<Move> LegalMoveGenerator::generateLegalMoves(const Chessboard & chessboard)
+{
+    std::vector<Move> moves;
+
+    return moves;
+}
 
 // This is an example of a function that would be used in movegen.cpp
 // And how we would use the magic bitboards as an end user

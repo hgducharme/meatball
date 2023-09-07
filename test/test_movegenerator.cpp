@@ -42,6 +42,7 @@ class MoveGeneratorTest : public ::testing::Test
   static void SetUpTestSuite()
   {
    	// Code here will be called before the first test and will not be called again.
+      attack_tables::init();
   }
 
   static void TearDownTestSuite()
@@ -59,9 +60,9 @@ TEST_F(MoveGeneratorTest, generatePsuedoLegalMoves)
    Chessboard chessboard;
    LegalMoveGenerator moveGenerator;
    
-   // std::vector<Move> moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
-	// chessboard.applyMove(WHITE, PAWN, e2, e4);
-	// moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
+   std::vector<Move> moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
+	chessboard.applyMove(WHITE, PAWN, e2, e4);
+	moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
 }
 
 }  // namespace
