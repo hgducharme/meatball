@@ -20,11 +20,11 @@ void init()
     initializeHashingParameters();
     generateBlockerMasks();
 
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopBlockerVariations = calculateBlockerVariations(BISHOP_HASHING_PARAMETERS_LOOKUP);
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookBlockerVariations = calculateBlockerVariations(ROOK_HASHING_PARAMETERS_LOOKUP);
+    ArrayOfBitboardVectors bishopBlockerVariations = calculateBlockerVariations(BISHOP_HASHING_PARAMETERS_LOOKUP);
+    ArrayOfBitboardVectors rookBlockerVariations = calculateBlockerVariations(ROOK_HASHING_PARAMETERS_LOOKUP);
 
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopAttacks = calculateAttacks(constants::BISHOP_DIRECTIONS, bishopBlockerVariations);
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookAttacks = calculateAttacks(constants::ROOK_DIRECTIONS, rookBlockerVariations);
+    ArrayOfBitboardVectors bishopAttacks = calculateAttacks(constants::BISHOP_DIRECTIONS, bishopBlockerVariations);
+    ArrayOfBitboardVectors rookAttacks = calculateAttacks(constants::ROOK_DIRECTIONS, rookBlockerVariations);
 
     std::cout << "Searching for bishop magics, this could take up to 30 seconds... " << std::endl;
     generateMagicNumbers(BISHOP_HASHING_PARAMETERS_LOOKUP, MINIMUM_NUMBER_OF_BITS_FOR_BISHOP_HASHING, bishopBlockerVariations, bishopAttacks);
@@ -92,9 +92,9 @@ Bitboard calculateBlockerMask(const Bitboard & position, const Direction (&slide
     return potentialBlockerSquares;
 }
 
-std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVariations(HashingParameters const * hashingParametersLookup)
+ArrayOfBitboardVectors calculateBlockerVariations(HashingParameters const * hashingParametersLookup)
 {
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> blockerVariations;
+    ArrayOfBitboardVectors blockerVariations;
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
         blockerVariations[square] = enumerateSubmasks(hashingParametersLookup[square].blockerMask);
@@ -124,9 +124,9 @@ std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask)
 }
 
 template <uint8_t size>
-std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(const Direction (&attackDirections)[size], const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations)
+ArrayOfBitboardVectors calculateAttacks(const Direction (&attackDirections)[size], const ArrayOfBitboardVectors & blockerVariations)
 {
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> attacks;
+    ArrayOfBitboardVectors attacks;
 
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
@@ -177,8 +177,8 @@ bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares)
 
 void generateMagicNumbers(HashingParameters * hashingParametersLookup,
                           const int minimumBitsRequiredForHashing,
-                          const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
-                          const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards)
+                          const ArrayOfBitboardVectors & blockerVariations,
+                          const ArrayOfBitboardVectors & attackBoards)
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
@@ -251,8 +251,8 @@ int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumbe
 template <size_t rows, size_t columns>
 void populateAttackDatabase(Bitboard (&attackDatabase)[rows][columns],
                             const HashingParameters * hashingParametersLookup,
-                            const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
-                            const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards)
+                            const ArrayOfBitboardVectors & blockerVariations,
+                            const ArrayOfBitboardVectors & attackBoards)
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {

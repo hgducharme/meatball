@@ -23,7 +23,7 @@ constexpr int LARGEST_AMOUNT_OF_BISHOP_BLOCKER_CONFIGURATIONS = 512;
 constexpr int LARGEST_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS = 4096;
 
 constexpr int MINIMUM_NUMBER_OF_BITS_FOR_BISHOP_HASHING = 3;
-constexpr int MINIMUM_NUMBER_OF_BITS_FOR_ROOK_HASHING = 5;
+constexpr int MINIMUM_NUMBER_OF_BITS_FOR_ROOK_HASHING = 4;
 
 void init();
 
@@ -60,6 +60,8 @@ constexpr int NUMBER_OF_SET_BITS_IN_ROOK_BLOCKER_MASK[Square::NUMBER_OF_SQUARES]
 // Define an alias for passing calculate<Piece>AttackBoard() as a parameter to another function
 using calculateAttackBoardFunction = Bitboard (*)(const Square & square, const Bitboard & blockerVariation);
 
+using ArrayOfBitboardVectors = std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES>;
+
 void initializeHashingParameters();
 
 void generateBlockerMasks();
@@ -67,14 +69,12 @@ void generateBlockerMasks();
 template <uint8_t size>
 Bitboard calculateBlockerMask(const Bitboard & position, const Direction (&sliderPieceDirections)[size]);
 
-std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVariations(HashingParameters const * hashingParametersLookup);
+ArrayOfBitboardVectors calculateBlockerVariations(HashingParameters const * hashingParametersLookup);
 
 std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask);
 
 template <uint8_t size>
-std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(const Direction (&attackDirections)[size],
-                                                                              const std::array<std::vector<Bitboard>,
-                                                                              Square::NUMBER_OF_SQUARES> & blockerVariations);
+ArrayOfBitboardVectors calculateAttacks(const Direction (&attackDirections)[size], const ArrayOfBitboardVectors & blockerVariations);
 
 template <uint8_t size>
 Bitboard calculateAttacksFromSquare(const Square & square, const Direction (&directionsToAttack)[size], const Bitboard & blockerVariation);
@@ -83,8 +83,8 @@ bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares);
 
 void generateMagicNumbers(HashingParameters * hashingParametersLookup,
                           const int minimumBitsRequiredForHashing,
-                          const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
-                          const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
+                          const ArrayOfBitboardVectors & blockerVariations,
+                          const ArrayOfBitboardVectors & attackBoards);
 
 u64 searchForMagicNumber(const HashingParameters & hashingParameters,
                          const int minimumAmountOfBitsInLastByte,
@@ -96,8 +96,8 @@ int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumbe
 template <size_t rows, size_t columns>
 void populateAttackDatabase(Bitboard (&attackDatabase)[rows][columns],
                             const HashingParameters * hashingParametersLookup,
-                            const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations,
-                            const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & attackBoards);
+                            const ArrayOfBitboardVectors & blockerVariations,
+                            const ArrayOfBitboardVectors & attackBoards);
 
 } // anonymous namespace
 
