@@ -70,7 +70,8 @@ Bitboard calculateRookBlockerMask(const Bitboard &bitboard);
 
 std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVariations(HashingParameters const * hashingParametersLookup);
 
-std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(calculateAttackBoardFunction calculateAttackBoard,
+template <uint8_t size>
+std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(const Direction (&attackDirections)[size],
                                                                               const std::array<std::vector<Bitboard>,
                                                                               Square::NUMBER_OF_SQUARES> & blockerVariations);
 
@@ -94,9 +95,8 @@ int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumbe
 
 std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask);
 
-Bitboard calculateBishopAttackBoard(const Square & square, const Bitboard & blockerVariation);
-
-Bitboard calculateRookAttackBoard(const Square & square, const Bitboard & blockerVariation);
+template <uint8_t size>
+Bitboard calculateAttacksFromSquare(const Square & square, const Direction (&directionsToAttack)[size], const Bitboard & blockerVariation);
 
 bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares);
 

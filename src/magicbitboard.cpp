@@ -23,8 +23,8 @@ void init()
     std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopBlockerVariations = calculateBlockerVariations(BISHOP_HASHING_PARAMETERS_LOOKUP);
     std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookBlockerVariations = calculateBlockerVariations(ROOK_HASHING_PARAMETERS_LOOKUP);
 
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopAttacks = calculateAttacks(calculateBishopAttackBoard, bishopBlockerVariations);
-    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookAttacks = calculateAttacks(calculateRookAttackBoard, rookBlockerVariations);
+    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> bishopAttacks = calculateAttacks(constants::BISHOP_DIRECTIONS, bishopBlockerVariations);
+    std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> rookAttacks = calculateAttacks(constants::ROOK_DIRECTIONS, rookBlockerVariations);
 
     std::cout << "Searching for bishop magics, this could take up to 30 seconds... " << std::endl;
     generateMagicNumbers(BISHOP_HASHING_PARAMETERS_LOOKUP, MINIMUM_NUMBER_OF_BITS_FOR_BISHOP_HASHING, bishopBlockerVariations, bishopAttacks);
@@ -83,7 +83,8 @@ std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVar
     return blockerVariations;
 }
 
-std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(calculateAttackBoardFunction calculateAttackBoard, const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations)
+template <uint8_t size>
+std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(const Direction (&attackDirections)[size], const std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> & blockerVariations)
 {
     std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> attacks;
 
@@ -93,7 +94,7 @@ std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(ca
         std::vector<Bitboard> attackBoards(numberOfBlockerVariations);
         for (int i = 0; i < numberOfBlockerVariations; i++)
         {
-            attackBoards[i] = calculateAttackBoard((Square)square, blockerVariations[square][i]);
+            attackBoards[i] = calculateAttacksFromSquare((Square)square, attackDirections, blockerVariations[square][i]);
         }
 
         attacks[square] = attackBoards;
@@ -111,12 +112,13 @@ void generateMagicNumbers(HashingParameters * hashingParametersLookup,
     {
         hashingParametersLookup[square].magicNumber = searchForMagicNumber(hashingParametersLookup[square], minimumBitsRequiredForHashing, blockerVariations[square], attackBoards[square]);
 
-        #if DEBUG
+        // #if DEBUG
         std::cout << "(Square " << square << ") Found magic number: " << hashingParametersLookup[square].magicNumber << std::endl;
-        #endif
+        // #endif
     }
 }
 
+// TODO: magic number search for rooks is extremely slow.
 u64 searchForMagicNumber(const HashingParameters & hashingParameters, const int minimumAmountOfBitsInLastByte, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards)
 {
     Bitboard tempAttackDatabase[LARGEST_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS];
@@ -213,98 +215,31 @@ std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask)
     return allBlockerVariations;
 }
 
-Bitboard calculateBishopAttackBoard(const Square & square, const Bitboard & blockerVariation)
+template <uint8_t size>
+Bitboard calculateAttacksFromSquare(const Square & square, const Direction (&attackDirections)[size], const Bitboard & blockerVariation)
 {
     Bitboard attackBoard;
     Bitboard squareBitboard(square);
 
-    int numberOfMovesNorthEast = utils::calculateDistanceToEdgeOfBoard(square, NORTH_EAST);
-    int numberOfMovesNorthWest = utils::calculateDistanceToEdgeOfBoard(square, NORTH_WEST);
-    int numberOfMovesSouthEast = utils::calculateDistanceToEdgeOfBoard(square, SOUTH_EAST);
-    int numberOfMovesSouthWest = utils::calculateDistanceToEdgeOfBoard(square, SOUTH_WEST);
-
-    // TODO: maybe we can implement a function like the following?
-    // attackBoard |= calculateAttacksInDirection(NORTH_EAST, numberOfMovesNorthEast, squareBitboard, blockerVariation);
-
-    // Attacks to the north east
-    for (int i = 1; i < numberOfMovesNorthEast; i++)
+    for (Direction direction : attackDirections)
     {
-        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * NORTH_EAST);
-        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
-        else { attackBoard |= targetSquare; }
-    }
+        int numberOfSquares = utils::calculateDistanceToEdgeOfBoard(square, direction);
 
-    // Attacks to the north west
-    for (int i = 1; i < numberOfMovesNorthWest; i++)
-    {
-        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * NORTH_WEST);
-        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
-        else { attackBoard |= targetSquare; }
-    }
-
-    // Attacks to the south east
-    for (int i = 1; i < numberOfMovesSouthEast; i++)
-    {
-        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * SOUTH_EAST);
-        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
-        else { attackBoard |= targetSquare; }
-    }
-
-    // Attacks to the south west
-    for (int i = 1; i < numberOfMovesSouthWest; i++)
-    {
-        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * SOUTH_WEST);
-        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
-        else { attackBoard |= targetSquare; }
+        for (int i = 1; i < numberOfSquares; i++)
+        {
+            Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * direction);
+            if (targetSquareIsBlocked(targetSquare, blockerVariation))
+            {
+                break;
+            }
+            else
+            {
+                attackBoard |= targetSquare;
+            }
+        }
     }
 
     return attackBoard;
-}
-
-Bitboard calculateRookAttackBoard(const Square & square, const Bitboard & blockerVariation)
-{
-    Bitboard attackBoard;
-    Bitboard squareBitboard(square);
-
-    int numberOfMovesNorth = utils::calculateDistanceToEdgeOfBoard(square, NORTH);
-    int numberOfMovesSouth = utils::calculateDistanceToEdgeOfBoard(square, SOUTH);
-    int numberOfMovesEast = utils::calculateDistanceToEdgeOfBoard(square, EAST);
-    int numberOfMovesWest = utils::calculateDistanceToEdgeOfBoard(square, WEST);
-
-    // TODO: maybe we can implement a function like the following?
-    // attackBoard |= calculateAttacksInDirection(NORTH_EAST, numberOfMovesNorthEast, squareBitboard, blockerVariation);
-
-    // Attacks to the north
-    for (int i = 1; i < numberOfMovesNorth; i++)
-    {
-        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * NORTH);
-        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
-        else { attackBoard |= targetSquare; }
-    }
-
-    // Attacks to the south
-    for (int i = 1; i < numberOfMovesSouth; i++)
-    {
-        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * SOUTH);
-        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
-        else { attackBoard |= targetSquare; }
-    }
-
-    // Attacks to the east
-    for (int i = 1; i < numberOfMovesEast; i++)
-    {
-        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * EAST);
-        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
-        else { attackBoard |= targetSquare; }
-    }
-
-    // Attacks to the west
-    for (int i = 1; i < numberOfMovesWest; i++)
-    {
-        Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * WEST);
-        if (targetSquareIsBlocked(targetSquare, blockerVariation)) { break; }
-        else { attackBoard |= targetSquare; }
-    }
 }
 
 bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares)
@@ -314,6 +249,8 @@ bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares)
 
 Bitboard calculateBishopBlockerMask(const Bitboard & bitboard)
 {
+    // variables: BISHOP_DIRECTIONS
+    
     Bitboard potentialBlockersToTheBishop;
     Square square = static_cast<Square>(bitboard.findIndexLSB());
 
