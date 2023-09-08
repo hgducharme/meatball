@@ -82,7 +82,7 @@ u64 getRandom64BitInteger()
 {
     std::random_device randomSeed;
     std::mt19937_64 mersenneTwisterAlgorithm(randomSeed());
-    std::uniform_int_distribution<u64> distribution(2, std::pow(2,64) - 1);
+    std::uniform_int_distribution<u64> distribution(2, UINT64_MAX);
 
     return distribution(mersenneTwisterAlgorithm);
 }
