@@ -30,44 +30,52 @@ int calculateDistanceToEdgeOfBoard(Square square, Direction direction, bool incl
 {
     Rank currentRank = Chessboard::squareToRank(square);
     File currentFile = Chessboard::squareToFile(square);
-
-    int horizontalDistanceFromEdge, verticalDistanceFromEdge;
+    
+    int horizontalDistanceToEdge, verticalDistanceToEdge, distance;
     switch (direction)
     {
         case NORTH_EAST:
-            verticalDistanceFromEdge = Rank::RANK_8 - currentRank;
-            horizontalDistanceFromEdge = File::FILE_H - Chessboard::squareToFile(square);
+            verticalDistanceToEdge = Rank::RANK_8 - currentRank;
+            horizontalDistanceToEdge = File::FILE_H - Chessboard::squareToFile(square);
+            distance = std::min(horizontalDistanceToEdge, verticalDistanceToEdge);
             break;
         case NORTH_WEST:
-            verticalDistanceFromEdge = Rank::RANK_8 - currentRank;
-            horizontalDistanceFromEdge = currentFile;
+            verticalDistanceToEdge = Rank::RANK_8 - currentRank;
+            horizontalDistanceToEdge = currentFile;
+            distance = std::min(horizontalDistanceToEdge, verticalDistanceToEdge);
             break;
         case SOUTH_EAST:
-            verticalDistanceFromEdge = currentRank;
-            horizontalDistanceFromEdge = File::FILE_H - currentFile;
+            verticalDistanceToEdge = currentRank;
+            horizontalDistanceToEdge = File::FILE_H - currentFile;
+            distance = std::min(horizontalDistanceToEdge, verticalDistanceToEdge);
             break;
         case SOUTH_WEST:
-            verticalDistanceFromEdge = currentRank;
-            horizontalDistanceFromEdge = currentFile;
+            verticalDistanceToEdge = currentRank;
+            horizontalDistanceToEdge = currentFile;
+            distance = std::min(horizontalDistanceToEdge, verticalDistanceToEdge);
             break;
         case NORTH:
-            return Rank::RANK_8 - currentRank;
+            distance = Rank::RANK_8 - currentRank;
+            break;
         case SOUTH:
-            return currentRank;
+            distance = currentRank;
+            break;
         case EAST:
-            return File::FILE_H - currentFile;
+            distance = File::FILE_H - currentFile;
+            break;
         case WEST:
-            return currentFile;
+            distance = currentFile;
+            break;
     }
 
     if (includeEdgeSquare == false)
     {
         constexpr int EDGE_SQUARE = 1;
-        return std::min(horizontalDistanceFromEdge, verticalDistanceFromEdge) - EDGE_SQUARE;
+        return distance - EDGE_SQUARE;
 
     }
 
-    return std::min(horizontalDistanceFromEdge, verticalDistanceFromEdge);
+    return distance;
 }
 
 u64 getRandom64BitInteger()
