@@ -223,9 +223,9 @@ Bitboard calculateAttacksFromSquare(const Square & square, const Direction (&att
 
     for (Direction direction : attackDirections)
     {
-        int numberOfSquares = utils::calculateDistanceToEdgeOfBoard(square, direction);
+        int distanceToEdge = utils::calculateDistanceToEdgeOfBoard(square, direction);
 
-        for (int i = 1; i < numberOfSquares; i++)
+        for (int i = 1; i < distanceToEdge; i++)
         {
             Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * direction);
             if (targetSquareIsBlocked(targetSquare, blockerVariation))
@@ -256,9 +256,9 @@ Bitboard calculateBishopBlockerMask(const Bitboard & bitboard)
 
     for (const Direction direction : constants::BISHOP_DIRECTIONS)
     {
-        int numberOfSquares = utils::calculateDistanceToEdgeOfBoard(square, direction, false);
+        int distanceToEdge = utils::calculateDistanceToEdgeOfBoard(square, direction);
 
-        for (int i = 1; i <= numberOfSquares; i++)
+        for (int i = 1; i < distanceToEdge; i++)
         {
             potentialBlockersToTheBishop |= utils::shiftCurrentSquareByDirection(bitboard, i * direction);
         }
@@ -274,9 +274,9 @@ Bitboard calculateRookBlockerMask(const Bitboard &bitboard)
 
     for (const Direction direction : constants::ROOK_DIRECTIONS)
     {
-        int numberOfMoves = utils::calculateDistanceToEdgeOfBoard(square, direction, false);
+        int distanceToEdge = utils::calculateDistanceToEdgeOfBoard(square, direction);
 
-        for (int i = 1; i <= numberOfMoves; i++)
+        for (int i = 1; i < distanceToEdge; i++)
         {
             potentialBlockersToTheRook |= utils::shiftCurrentSquareByDirection(bitboard, i * direction);
         }
