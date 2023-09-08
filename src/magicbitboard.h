@@ -93,6 +93,8 @@ u64 searchForMagicNumber(const HashingParameters & hashingParameters,
 
 int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount);
 
+void initializeMagicNumbers();
+
 template <size_t rows, size_t columns>
 void populateAttackDatabase(Bitboard (&attackDatabase)[rows][columns],
                             const HashingParameters * hashingParametersLookup,
