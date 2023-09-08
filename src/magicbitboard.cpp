@@ -63,13 +63,33 @@ void generateBlockerMasks()
         Bitboard squareBitboard(square);
 
         // Calculate the blocker mask for each piece on this square
-        BISHOP_HASHING_PARAMETERS_LOOKUP[square].blockerMask = calculateBishopBlockerMask(squareBitboard);
-        ROOK_HASHING_PARAMETERS_LOOKUP[square].blockerMask = calculateRookBlockerMask(squareBitboard);
+        BISHOP_HASHING_PARAMETERS_LOOKUP[square].blockerMask = calculateBlockerMask(squareBitboard, constants::BISHOP_DIRECTIONS);
+        ROOK_HASHING_PARAMETERS_LOOKUP[square].blockerMask = calculateBlockerMask(squareBitboard, constants::ROOK_DIRECTIONS);
 
         // Store the shift amount to be used in the hash function
         BISHOP_HASHING_PARAMETERS_LOOKUP[square].shiftAmount = BISHOP_HASHING_PARAMETERS_LOOKUP[square].blockerMask.numberOfSetBits();
         ROOK_HASHING_PARAMETERS_LOOKUP[square].shiftAmount = ROOK_HASHING_PARAMETERS_LOOKUP[square].blockerMask.numberOfSetBits();
     }
+}
+
+// TODO: verify this is correct
+template <uint8_t size>
+Bitboard calculateBlockerMask(const Bitboard & position, const Direction (&sliderPieceDirections)[size])
+{
+    Bitboard potentialBlockerSquares;
+    Square currentSquare = static_cast<Square>(position.findIndexLSB());
+
+    for (const Direction direction : sliderPieceDirections)
+    {
+        int distanceToEdge = utils::calculateDistanceToEdgeOfBoard(currentSquare, direction);
+
+        for (int i = 1; i < distanceToEdge; i++)
+        {
+            potentialBlockerSquares |= utils::shiftCurrentSquareByDirection(position, i * direction);
+        }
+    }
+
+    return potentialBlockerSquares;
 }
 
 std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVariations(HashingParameters const * hashingParametersLookup)
@@ -81,6 +101,26 @@ std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateBlockerVar
     }
 
     return blockerVariations;
+}
+
+std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask)
+{
+    /*
+     * This solved problem is also known as: enumerate all submasks of a bitmask.
+     * Here is a link with some explanation: https://www.geeksforgeeks.org/print-all-submasks-of-a-given-mask/
+     * One with better explanation: https://cp-algorithms.com/algebra/all-submasks.html
+     */
+    std::uint16_t numberOfBlockerVariations = std::pow(2, blockerMask.numberOfSetBits());
+    std::vector<Bitboard> allBlockerVariations(numberOfBlockerVariations);
+
+    std::uint16_t i = 0;
+    for (u64 blockerVariation = blockerMask.getBoard(); blockerVariation; blockerVariation = (blockerVariation - 1) & blockerMask.getBoard())
+    {
+        allBlockerVariations[i] = blockerVariation;
+        i++;
+    }
+
+    return allBlockerVariations;
 }
 
 template <uint8_t size>
@@ -101,6 +141,38 @@ std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES> calculateAttacks(co
     }
     
     return attacks;
+}
+
+template <uint8_t size>
+Bitboard calculateAttacksFromSquare(const Square & square, const Direction (&attackDirections)[size], const Bitboard & blockerVariation)
+{
+    Bitboard attackBoard;
+    Bitboard squareBitboard(square);
+
+    for (Direction direction : attackDirections)
+    {
+        int distanceToEdge = utils::calculateDistanceToEdgeOfBoard(square, direction);
+
+        for (int i = 1; i < distanceToEdge; i++)
+        {
+            Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * direction);
+            if (targetSquareIsBlocked(targetSquare, blockerVariation))
+            {
+                break;
+            }
+            else
+            {
+                attackBoard |= targetSquare;
+            }
+        }
+    }
+
+    return attackBoard;
+}
+
+bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares)
+{
+    return ( (targetSquare & occupiedSquares).numberOfSetBits() == 1 );
 }
 
 void generateMagicNumbers(HashingParameters * hashingParametersLookup,
@@ -194,97 +266,6 @@ void populateAttackDatabase(Bitboard (&attackDatabase)[rows][columns],
         }
     }
 }
-
-std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask)
-{
-    /*
-     * This solved problem is also known as: enumerate all submasks of a bitmask.
-     * Here is a link with some explanation: https://www.geeksforgeeks.org/print-all-submasks-of-a-given-mask/
-     * One with better explanation: https://cp-algorithms.com/algebra/all-submasks.html
-     */
-    std::uint16_t numberOfBlockerVariations = std::pow(2, blockerMask.numberOfSetBits());
-    std::vector<Bitboard> allBlockerVariations(numberOfBlockerVariations);
-
-    std::uint16_t i = 0;
-    for (u64 blockerVariation = blockerMask.getBoard(); blockerVariation; blockerVariation = (blockerVariation - 1) & blockerMask.getBoard())
-    {
-        allBlockerVariations[i] = blockerVariation;
-        i++;
-    }
-
-    return allBlockerVariations;
-}
-
-template <uint8_t size>
-Bitboard calculateAttacksFromSquare(const Square & square, const Direction (&attackDirections)[size], const Bitboard & blockerVariation)
-{
-    Bitboard attackBoard;
-    Bitboard squareBitboard(square);
-
-    for (Direction direction : attackDirections)
-    {
-        int distanceToEdge = utils::calculateDistanceToEdgeOfBoard(square, direction);
-
-        for (int i = 1; i < distanceToEdge; i++)
-        {
-            Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * direction);
-            if (targetSquareIsBlocked(targetSquare, blockerVariation))
-            {
-                break;
-            }
-            else
-            {
-                attackBoard |= targetSquare;
-            }
-        }
-    }
-
-    return attackBoard;
-}
-
-bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares)
-{
-    return ( (targetSquare & occupiedSquares).numberOfSetBits() == 1 );
-}
-
-Bitboard calculateBishopBlockerMask(const Bitboard & bitboard)
-{
-    // variables: BISHOP_DIRECTIONS
-    
-    Bitboard potentialBlockersToTheBishop;
-    Square square = static_cast<Square>(bitboard.findIndexLSB());
-
-    for (const Direction direction : constants::BISHOP_DIRECTIONS)
-    {
-        int distanceToEdge = utils::calculateDistanceToEdgeOfBoard(square, direction);
-
-        for (int i = 1; i < distanceToEdge; i++)
-        {
-            potentialBlockersToTheBishop |= utils::shiftCurrentSquareByDirection(bitboard, i * direction);
-        }
-    }
-
-    return potentialBlockersToTheBishop;
-}
-
-Bitboard calculateRookBlockerMask(const Bitboard &bitboard)
-{
-    Bitboard potentialBlockersToTheRook;
-    Square square = static_cast<Square>(bitboard.findIndexLSB());
-
-    for (const Direction direction : constants::ROOK_DIRECTIONS)
-    {
-        int distanceToEdge = utils::calculateDistanceToEdgeOfBoard(square, direction);
-
-        for (int i = 1; i < distanceToEdge; i++)
-        {
-            potentialBlockersToTheRook |= utils::shiftCurrentSquareByDirection(bitboard, i * direction);
-        }
-    }
-
-    return potentialBlockersToTheRook;
-}
-
 
 } // anonymous namespace
 } // namespace magic_bitboards
