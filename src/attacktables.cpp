@@ -3,6 +3,7 @@
 #include "types.h"
 #include "chessboard.h"
 #include "utils.h"
+#include "magicbitboard.h"
 
 namespace attack_tables
 {
@@ -17,6 +18,49 @@ void init()
 {
     initializeAttacksForLeaperPieces();
     initializeAttacksForSliderPieces();
+}
+
+Bitboard getSliderPieceAttacks(const SliderPiece sliderPiece, const Square square, const Bitboard & boardState)
+{
+    magic_bitboards::HashingParameters hashingParameters;
+    Bitboard * attackDatabase;
+
+    switch (sliderPiece)
+    {
+        case SliderPiece::BISHOP:
+            hashingParameters = magic_bitboards::BISHOP_HASHING_PARAMETERS_LOOKUP[square];
+            attackDatabase = BISHOP_ATTACKS[square];
+            break;
+        case SliderPiece::ROOK:
+            hashingParameters = magic_bitboards::ROOK_HASHING_PARAMETERS_LOOKUP[square];
+            attackDatabase = ROOK_ATTACKS[square];
+            break;
+        case SliderPiece::QUEEN:
+            Bitboard bishopAttacks = getSliderPieceAttacks(SliderPiece::BISHOP, square, boardState);
+            Bitboard rookAttacks = getSliderPieceAttacks(SliderPiece::ROOK, square, boardState);
+            return bishopAttacks | rookAttacks;
+    }
+
+    const Bitboard blockers = boardState & hashingParameters.blockerMask;
+    const int hashedIndex = magic_bitboards::hashBlockerVariation(blockers, hashingParameters.magicNumber, hashingParameters.shiftAmount);
+
+    return attackDatabase[hashedIndex];
+}
+
+namespace
+{
+
+void initializeAttacksForLeaperPieces()
+{
+    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
+    {
+        Bitboard squareBitboard(square);
+
+        PAWN_ATTACKS[Color::WHITE][square] = calculatePawnAttacksFromSquare(Color::WHITE, squareBitboard);
+        PAWN_ATTACKS[Color::BLACK][square] = calculatePawnAttacksFromSquare(Color::BLACK, squareBitboard);
+        KNIGHT_ATTACKS[square] = calculateKnightAttacksFromSquare(squareBitboard);
+        KING_ATTACKS[square] = calculateKingAttacksFromSquare(squareBitboard);
+    }
 }
 
 Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitboard)
@@ -78,22 +122,6 @@ Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard)
     legalKingAttacks |= utils::shiftCurrentSquareByDirection(bitboard, SOUTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
 
     return legalKingAttacks;
-}
-
-namespace
-{
-
-void initializeAttacksForLeaperPieces()
-{
-    for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
-    {
-        Bitboard squareBitboard(square);
-
-        PAWN_ATTACKS[Color::WHITE][square] = calculatePawnAttacksFromSquare(Color::WHITE, squareBitboard);
-        PAWN_ATTACKS[Color::BLACK][square] = calculatePawnAttacksFromSquare(Color::BLACK, squareBitboard);
-        KNIGHT_ATTACKS[square] = calculateKnightAttacksFromSquare(squareBitboard);
-        KING_ATTACKS[square] = calculateKingAttacksFromSquare(squareBitboard);
-    }
 }
 
 void initializeAttacksForSliderPieces()
