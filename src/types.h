@@ -15,6 +15,20 @@ enum PieceType
     NUMBER_OF_PIECES = 6
 };
 
+enum class SliderPiece
+{
+    BISHOP = PieceType::BISHOP,
+    ROOK = PieceType::ROOK,
+    QUEEN = PieceType::QUEEN
+};
+
+enum class LeaperPiece
+{
+    PAWN = PieceType::PAWN,
+    KNIGHT = PieceType::KNIGHT,
+    KING = PieceType::KING
+};
+
 // - one move to the north west corresponds to the bit 7 positions larger than the current bit
 // - one move to the north      corresponds to the bit 8 positions larger than the current bit
 // - one move to the north east corresponds to the bit 9 positions larger than the current bit
