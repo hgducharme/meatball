@@ -4,6 +4,8 @@
 
 #include <vector>
 
+using MoveVector = std::vector<Move>;
+
 // Move generation interface
 class MoveGenerator
 {
@@ -15,8 +17,10 @@ class LegalMoveGenerator : public MoveGenerator
 {
     public:
         LegalMoveGenerator() = default;
-        std::vector<Move> generateLegalMoves(const Chessboard & chessboard) override;
-        std::vector<Move> generatePsuedoLegalMoves(const Chessboard & chessboard) const;
-        std::vector<Move> generatePawnMoves(const Chessboard & chessboard) const;
+        MoveVector generateLegalMoves(const Chessboard & chessboard) override;
+        MoveVector generatePsuedoLegalMoves(const Chessboard & chessboard) const;
+        MoveVector generatePawnMoves(const Chessboard & chessboard) const;
+        MoveVector generateKnightMoves(const Chessboard & chessboard) const;
+        MoveVector generateBishopMoves(const Chessboard & gameState) const;
         Bitboard filterLegalPawnMoves(Bitboard & psuedoLegalPawnMoves);
 };
