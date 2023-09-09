@@ -31,13 +31,13 @@ MoveVector LegalMoveGenerator::generatePawnMoves(const Chessboard & gameState) c
 
         Bitboard psuedoLegalPawnMoves = attack_tables::PAWN_ATTACKS[activePlayer][startingSquare];
 
+        // Remove any moves that attack our own pieces
+        psuedoLegalPawnMoves &= ~(activePlayerPieces & psuedoLegalPawnMoves);
+
         // For every psuedo legal pawn move, remove attacks to our own pieces, and append the move to the move vector
         int numberOfPsuedoLegalPawnMoves = psuedoLegalPawnMoves.numberOfSetBits();
         for (int j = 0; j < numberOfPsuedoLegalPawnMoves; j++)
         {
-            // Remove any moves that attack our own pieces
-            psuedoLegalPawnMoves &= ~(activePlayerPieces & psuedoLegalPawnMoves);
-
             const Square targetSquare = (Square)(psuedoLegalPawnMoves.clearAndReturnLSB());
             Move m(activePlayer, PAWN, startingSquare, targetSquare);
             moves.push_back(m);
@@ -91,7 +91,7 @@ MoveVector LegalMoveGenerator::generateBishopMoves(const Chessboard & gameState)
     {
         const Square startingSquare = (Square)(activePlayerBishops.clearAndReturnLSB());
         Bitboard psuedoLegalBishopMoves = attack_tables::getSliderPieceAttacks(SliderPiece::BISHOP, startingSquare, gameState.getOccupiedSquares());
-        
+
         // Remove any moves that attack our own pieces
         psuedoLegalBishopMoves &= ~(activePlayerPieces & psuedoLegalBishopMoves);
 

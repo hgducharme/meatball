@@ -10,7 +10,7 @@ using MoveVector = std::vector<Move>;
 class MoveGenerator
 {
    public:
-      virtual std::vector<Move> generateLegalMoves(const Chessboard & chessboard) = 0;
+      virtual MoveVector generateLegalMoves(const Chessboard & chessboard) = 0;
 };
 
 class LegalMoveGenerator : public MoveGenerator
