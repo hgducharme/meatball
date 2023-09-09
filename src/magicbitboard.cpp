@@ -42,6 +42,11 @@ void init()
     populateAttackDatabase(attack_tables::ROOK_ATTACKS, ROOK_HASHING_PARAMETERS_LOOKUP, rookBlockerVariations, rookAttacks);
 }
 
+int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount)
+{
+    return (blockerVariation * magicNumber) >> (Square::NUMBER_OF_SQUARES - shiftAmount);
+}
+
 namespace
 {
 
@@ -243,11 +248,6 @@ u64 searchForMagicNumber(const HashingParameters & hashingParameters, const int 
     }
 
     return magicNumberCandidate;
-}
-
-int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount)
-{
-    return (blockerVariation * magicNumber) >> (Square::NUMBER_OF_SQUARES - shiftAmount);
 }
 
 void initializeMagicNumbers()

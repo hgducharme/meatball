@@ -27,6 +27,8 @@ constexpr int MINIMUM_NUMBER_OF_BITS_FOR_ROOK_HASHING = 4;
 
 void init();
 
+int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount);
+
 namespace
 {
 
@@ -84,8 +86,6 @@ u64 searchForMagicNumber(const HashingParameters & hashingParameters,
                          const int minimumAmountOfBitsInLastByte,
                          const std::vector<Bitboard> & allBlockerVariations,
                          const std::vector<Bitboard> & attackBoards);
-
-int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumber, const int shiftAmount);
 
 void initializeMagicNumbers();
 
