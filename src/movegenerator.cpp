@@ -5,6 +5,11 @@
 
 MoveVector LegalMoveGenerator::generatePsuedoLegalMoves(const Chessboard & gameState) const
 {
+    // TODO: Design considerations:
+    // - Can all of these be wrapped into one function generateMoves()?
+    // - Should a MoveGenerator class actually have PawnMoveGenerator, KnightMoveGenerator, ..., etc.
+    //   member variables to this? In enterprise code I would say yes. This is good dependency injection,
+    //   single responsiblity principle, etc. Are we gonna need it? Maybe do that later, if we feel like it'll help.
     MoveVector pawnMoves = generatePawnMoves(gameState);
     MoveVector knightMoves = generateKnightMoves(gameState);
     MoveVector bishopMoves = generateBishopMoves(gameState);
