@@ -26,7 +26,7 @@ void init()
     ArrayOfBitboardVectors bishopAttacks = calculateAttacks(constants::BISHOP_DIRECTIONS, bishopBlockerVariations);
     ArrayOfBitboardVectors rookAttacks = calculateAttacks(constants::ROOK_DIRECTIONS, rookBlockerVariations);
 
-    #ifdef GENERATE
+    #ifdef GENERATE_MAGICS
     std::cout << "Searching for bishop magics, this could take up to 30 seconds... " << std::endl;
     generateMagicNumbers(BISHOP_HASHING_PARAMETERS_LOOKUP, MINIMUM_NUMBER_OF_BITS_FOR_BISHOP_HASHING, bishopBlockerVariations, bishopAttacks);
     std::cout << "DONE." << std::endl;
@@ -44,9 +44,6 @@ void init()
 
 namespace
 {
-
-u64 BISHOP_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
-u64 ROOK_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
 
 void initializeHashingParameters()
 {
@@ -255,7 +252,6 @@ int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumbe
 
 void initializeMagicNumbers()
 {
-    // TODO: finish this. Use the std::cout statement in generateMagicNumbers() to make this easier.
     BISHOP_HASHING_PARAMETERS_LOOKUP[0].magicNumber = 9873895970016936192;
     BISHOP_HASHING_PARAMETERS_LOOKUP[1].magicNumber = 883277444818175001;
     BISHOP_HASHING_PARAMETERS_LOOKUP[2].magicNumber = 6764749619462208;

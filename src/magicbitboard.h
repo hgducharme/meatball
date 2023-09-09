@@ -30,9 +30,6 @@ void init();
 namespace
 {
 
-extern u64 BISHOP_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
-extern u64 ROOK_MAGIC_NUMBERS[Square::NUMBER_OF_SQUARES];
-
 // The number of set bits in the bishop blocker mask for each square
 constexpr int NUMBER_OF_SET_BITS_IN_BISHOP_BLOCKER_MASK[Square::NUMBER_OF_SQUARES] = {
     6, 5, 5, 5, 5, 5, 5, 6,
