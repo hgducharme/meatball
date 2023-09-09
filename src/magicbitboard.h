@@ -54,9 +54,6 @@ constexpr int NUMBER_OF_SET_BITS_IN_ROOK_BLOCKER_MASK[Square::NUMBER_OF_SQUARES]
     12, 11, 11, 11, 11, 11, 11, 12,
 };
 
-// Define an alias for passing calculate<Piece>AttackBoard() as a parameter to another function
-using calculateAttackBoardFunction = Bitboard (*)(const Square & square, const Bitboard & blockerVariation);
-
 using ArrayOfBitboardVectors = std::array<std::vector<Bitboard>, Square::NUMBER_OF_SQUARES>;
 
 void initializeHashingParameters();
