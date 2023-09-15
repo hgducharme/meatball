@@ -2,6 +2,7 @@
 
 #include "bitboard.h"
 #include "magicbitboard.h"
+#include "chessboard.h"
 
 namespace attack_tables
 {
@@ -13,6 +14,8 @@ namespace attack_tables
     extern Bitboard KING_ATTACKS[Square::NUMBER_OF_SQUARES];
 
     void init();
+    Bitboard getAttacks(const PieceType pieceType, const Square square, const Chessboard & gameState);
+    Bitboard getLeaperPieceAttacks(const LeaperPiece leaperPiece, const Square square, const Color activePlayer);
     Bitboard getSliderPieceAttacks(const SliderPiece sliderPiece, const Square square, const Bitboard & boardState);
 
 namespace

@@ -5,105 +5,47 @@
 
 MoveVector LegalMoveGenerator::generatePsuedoLegalMoves(const Chessboard & gameState) const
 {
-    // TODO: Design considerations:
-    // - Can all of these be wrapped into one function generateMoves()?
-    // - Should a MoveGenerator class actually have PawnMoveGenerator, KnightMoveGenerator, ..., etc.
-    //   member variables to this? In enterprise code I would say yes. This is good dependency injection,
-    //   single responsiblity principle, etc. Are we gonna need it? Maybe do that later, if we feel like it'll help.
-    MoveVector pawnMoves = generatePawnMoves(gameState);
-    MoveVector knightMoves = generateKnightMoves(gameState);
-    MoveVector bishopMoves = generateBishopMoves(gameState);
-    // MoveVector rookMoves = getRookMoves();
-    // MoveVector queenMoves = getQueenMoves();
-    // MoveVector kingMoves = getKingMoves();
+    MoveVector pawnMoves = getMovesByPiece(PieceType::PAWN, gameState);
+    MoveVector knightMoves = getMovesByPiece(PieceType::KNIGHT, gameState);
+    MoveVector bishopMoves = getMovesByPiece(PieceType::BISHOP, gameState);
+    MoveVector rookMoves = getMovesByPiece(PieceType::ROOK, gameState);
+    MoveVector queenMoves = getMovesByPiece(PieceType::QUEEN, gameState);
+    MoveVector kingMoves = getMovesByPiece(PieceType::KING, gameState);
 
-    return pawnMoves;
-}
-
-// TODO: This currently doesn't handle single push, double push, or en pessant
-MoveVector LegalMoveGenerator::generatePawnMoves(const Chessboard & gameState) const
-{
-    // What we use from gameState: side to move, we get the position of the pawns, thats it
-    MoveVector moves;
-    const Color activePlayer = gameState.getActivePlayer();
-    const Bitboard activePlayerPieces = gameState.getBitboard(activePlayer);
-    Bitboard activePlayerPawns = gameState.getBitboard(activePlayer, PieceType::PAWN);
-    
-    const int numberOfPawnsOnBoard = activePlayerPawns.numberOfSetBits();
-    for (int i = 0; i < numberOfPawnsOnBoard; i++)
+    // Concatenate all move vectors into one
+    MoveVector psuedoLegalMoves;
+    for (auto v : { &pawnMoves, &knightMoves, &bishopMoves, &rookMoves, &queenMoves, &kingMoves })
     {
-        const Square startingSquare = (Square)(activePlayerPawns.clearAndReturnLSB());
-
-        Bitboard psuedoLegalPawnMoves = attack_tables::PAWN_ATTACKS[activePlayer][startingSquare];
-
-        // Remove any moves that attack our own pieces
-        psuedoLegalPawnMoves &= ~(activePlayerPieces & psuedoLegalPawnMoves);
-
-        // For every psuedo legal pawn move, remove attacks to our own pieces, and append the move to the move vector
-        int numberOfPsuedoLegalPawnMoves = psuedoLegalPawnMoves.numberOfSetBits();
-        for (int j = 0; j < numberOfPsuedoLegalPawnMoves; j++)
-        {
-            const Square targetSquare = (Square)(psuedoLegalPawnMoves.clearAndReturnLSB());
-            Move m(activePlayer, PAWN, startingSquare, targetSquare);
-            moves.push_back(m);
-        }
+        psuedoLegalMoves.insert(psuedoLegalMoves.end(), (*v).begin(), (*v).end());
     }
 
-    return moves;
+    return psuedoLegalMoves;
 }
 
-MoveVector LegalMoveGenerator::generateKnightMoves(const Chessboard & gameState) const
+// TODO: This currently doesn't handle single push, double push, or en pessant for pawns
+MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const Chessboard & gameState) const
 {
-    // variables: PieceType::KNIGHT, KNIGHT_ATTACKS (and how to index it)
-
     MoveVector moves;
     const Color activePlayer = gameState.getActivePlayer();
     const Bitboard activePlayerPieces = gameState.getBitboard(activePlayer);
-    Bitboard activePlayerKnights = gameState.getBitboard(activePlayer, PieceType::KNIGHT);
+    Bitboard activePlayerPieceType = gameState.getBitboard(activePlayer, pieceType);
     
-    const int numberOfKnightsOnBoard = activePlayerKnights.numberOfSetBits();
-    for (int i = 0; i < numberOfKnightsOnBoard; i++)
+    const int numberOfActivePlayerPieceType = activePlayerPieceType.numberOfSetBits();
+    for (int i = 0; i < numberOfActivePlayerPieceType; i++)
     {
-        const Square startingSquare = (Square)(activePlayerKnights.clearAndReturnLSB());
-        Bitboard psuedoLegalKnightMoves = attack_tables::KNIGHT_ATTACKS[startingSquare];
+        const Square startingSquare = (Square)(activePlayerPieceType.clearAndReturnLSB());
+
+        Bitboard psuedoLegalMoves = attack_tables::getAttacks(pieceType, startingSquare, gameState);
 
         // Remove any moves that attack our own pieces
-        psuedoLegalKnightMoves &= ~(activePlayerPieces & psuedoLegalKnightMoves);
+        psuedoLegalMoves &= ~(activePlayerPieces & psuedoLegalMoves);
 
-        int numberOfPsuedoLegalMoves = psuedoLegalKnightMoves.numberOfSetBits();
+        // TODO: remove any moves that will result in the active player being in check, this is illegal
+
+        int numberOfPsuedoLegalMoves = psuedoLegalMoves.numberOfSetBits();
         for (int j = 0; j < numberOfPsuedoLegalMoves; j++)
         {
-            const Square targetSquare = (Square)(psuedoLegalKnightMoves.clearAndReturnLSB());
-            Move m(activePlayer, PAWN, startingSquare, targetSquare);
-            moves.push_back(m);
-        }
-    }
-
-    return moves;
-}
-
-MoveVector LegalMoveGenerator::generateBishopMoves(const Chessboard & gameState) const
-{
-    // variables: PieceType::BISHOP, BISHOP_ATTACKS (and how to index it)
-
-    MoveVector moves;
-    const Color activePlayer = gameState.getActivePlayer();
-    const Bitboard activePlayerPieces = gameState.getBitboard(activePlayer);
-    Bitboard activePlayerBishops = gameState.getBitboard(activePlayer, PieceType::BISHOP);
-    
-    const int numberOfActivePlayerBishops = activePlayerBishops.numberOfSetBits();
-    for (int i = 0; i < numberOfActivePlayerBishops; i++)
-    {
-        const Square startingSquare = (Square)(activePlayerBishops.clearAndReturnLSB());
-        Bitboard psuedoLegalBishopMoves = attack_tables::getSliderPieceAttacks(SliderPiece::BISHOP, startingSquare, gameState.getOccupiedSquares());
-
-        // Remove any moves that attack our own pieces
-        psuedoLegalBishopMoves &= ~(activePlayerPieces & psuedoLegalBishopMoves);
-
-        int numberOfPsuedoLegalPawnMoves = psuedoLegalBishopMoves.numberOfSetBits();
-        for (int j = 0; j < numberOfPsuedoLegalPawnMoves; j++)
-        {
-            const Square targetSquare = (Square)(psuedoLegalBishopMoves.clearAndReturnLSB());
+            const Square targetSquare = (Square)(psuedoLegalMoves.clearAndReturnLSB());
             Move m(activePlayer, PAWN, startingSquare, targetSquare);
             moves.push_back(m);
         }
@@ -117,7 +59,7 @@ Bitboard LegalMoveGenerator::filterLegalPawnMoves(Bitboard & psuedoLegalPawnMove
 
 MoveVector LegalMoveGenerator::generateLegalMoves(const Chessboard & gameState)
 {
-    // MoveList psuedoLegalMoves = getPsuedoLegalMoves(gameState);
+    MoveVector psuedoLegalMoves = generatePsuedoLegalMoves(gameState);
     // MoveList legalMoves = filterOutIllegalMoves(psuedoLegalMoves);
 
     // return legalMoves;

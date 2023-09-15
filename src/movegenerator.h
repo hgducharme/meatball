@@ -19,8 +19,6 @@ class LegalMoveGenerator : public MoveGenerator
         LegalMoveGenerator() = default;
         MoveVector generateLegalMoves(const Chessboard & chessboard) override;
         MoveVector generatePsuedoLegalMoves(const Chessboard & chessboard) const;
-        MoveVector generatePawnMoves(const Chessboard & chessboard) const;
-        MoveVector generateKnightMoves(const Chessboard & chessboard) const;
-        MoveVector generateBishopMoves(const Chessboard & gameState) const;
+        MoveVector getMovesByPiece(const PieceType pieceType, const Chessboard & gameState) const;
         Bitboard filterLegalPawnMoves(Bitboard & psuedoLegalPawnMoves);
 };

@@ -20,6 +20,36 @@ void init()
     initializeAttacksForSliderPieces();
 }
 
+Bitboard getAttacks(const PieceType pieceType, const Square square, const Chessboard & gameState)
+{
+    switch (pieceType)
+    {
+        case PieceType::PAWN:
+        case PieceType::KNIGHT:
+        case PieceType::KING:
+            return getLeaperPieceAttacks((LeaperPiece)pieceType, square, gameState.getActivePlayer());
+        case PieceType::BISHOP:
+        case PieceType::ROOK:
+        case PieceType::QUEEN:
+            return getSliderPieceAttacks((SliderPiece)pieceType, square, gameState.getOccupiedSquares());
+        default:
+            std::__throw_invalid_argument("pieceType must be one of the following piece types: 'pawn', 'knight', 'bishop', 'rook', 'queen', or 'king'.");
+        }
+}
+
+Bitboard getLeaperPieceAttacks(const LeaperPiece leaperPiece, const Square square, const Color activePlayer)
+{
+    switch (leaperPiece)
+    {
+        case LeaperPiece::PAWN:
+            return PAWN_ATTACKS[activePlayer][square];
+        case LeaperPiece::KNIGHT:
+            return KNIGHT_ATTACKS[square];
+        case LeaperPiece::KING:
+            return KING_ATTACKS[square];
+    }
+}
+
 Bitboard getSliderPieceAttacks(const SliderPiece sliderPiece, const Square square, const Bitboard & boardState)
 {
     magic_bitboards::HashingParameters hashingParameters;
