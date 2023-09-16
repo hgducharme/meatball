@@ -4,8 +4,6 @@
 
 #include "gtest/gtest.h"
 
-#include <iostream>
-
 namespace meatball {
 namespace {
 
@@ -44,7 +42,7 @@ class MagicBitboardsTest : public ::testing::Test
   static void SetUpTestSuite()
   {
    	// Code here will be called before the first test and will not be called again.
-      // magic_bitboards::init();
+      magic_bitboards::init();
 
       /* Expected bishop attack table */
       MagicBitboardsTest::EXPECTED_BISHOP_BLOCKER_MASKS[0] = 0x40201008040200;

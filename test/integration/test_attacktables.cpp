@@ -1,6 +1,5 @@
 #include "../src/attacktables.h"
 #include "../src/types.h"
-#include "../src/bitboard.h"
 
 #include "gtest/gtest.h"
 
