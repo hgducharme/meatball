@@ -7,12 +7,16 @@ appname := meatball
 PROJECT_DIR := .
 SOURCE_DIR := $(PROJECT_DIR)/src
 TEST_DIR := $(PROJECT_DIR)/test
+UNIT_TEST_DIR := $(TEST_DIR)/unit
+INTEGRATION_TEST_DIR := $(TEST_DIR)/integration
 BUILD_DIR := $(PROJECT_DIR)/build
 BIN_DIR := $(PROJECT_DIR)/bin
 COVERAGE_DIR := $(PROJECT_DIR)/test_coverage
 
 EXECUTABLE = $(BIN_DIR)/$(appname)
 TEST_EXECUTABLE = $(BIN_DIR)/tests
+UNIT_TEST_EXECUTABLE = $(BIN_DIR)/unit_tests
+INTEGRATION_TEST_EXECUTABLE = $(BIN_DIR)/integration_tests
 
 # -------------------------------------- #
 # Compiling configuration
@@ -63,6 +67,10 @@ objectfiles_without_main = $(filter-out $(BUILD_DIR)/./src/main.o, $(objectfiles
 # Test code files
 test_sourcefiles := $(shell find $(TEST_DIR) -name "test_*.cpp")
 test_objectfiles := $(test_sourcefiles:%.cpp=$(BUILD_DIR)/%.o)
+unit_test_sourcefiles := $(shell find $(UNIT_TEST_DIR) -name "test_*.cpp")
+unit_test_objectfiles := $(unit_test_sourcefiles:%.cpp=$(BUILD_DIR)/%.o)
+integration_test_sourcefiles := $(shell find $(INTEGRATION_TEST_DIR) -name "test_*.cpp")
+integration_test_objectfiles := $(integration_test_sourcefiles:%.cpp=$(BUILD_DIR)/%.o)
 
 # All files
 all_sourcefiles := $(sourcefiles) $(test_sourcefiles)
@@ -76,7 +84,7 @@ gcov_files = $(shell find $(BUILD_DIR) -name "*.gcno")
 # -------------------------------------- #
 .PHONY: all clean $(BIN_DIR) $(BUILD_DIR) $(COVERAGE_DIR)
 
-all: $(appname) tests
+all: $(appname) unit_tests
 
 $(appname): $(EXECUTABLE)
 
@@ -94,6 +102,22 @@ tests: $(objectfiles_without_main) $(test_objectfiles) | $(BIN_DIR)
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(GOOGLETEST) --output $(TEST_EXECUTABLE)
 	./$(TEST_EXECUTABLE)
+
+# Build the unit tests executable by linking source objects (without main.o) and unit test objects
+unit_tests: $(objectfiles_without_main) $(unit_test_objectfiles) | $(BIN_DIR)
+	@echo
+	@echo "Building: $@"
+	@echo "Linking file(s): $^"
+	$(LINK.cpp) $^ $(GOOGLETEST) --output $(UNIT_TEST_EXECUTABLE)
+	./$(UNIT_TEST_EXECUTABLE)
+
+# Build the integration tests executable by linking source objects (without main.o) and integration test objects
+integration_tests: $(objectfiles_without_main) $(integration_test_objectfiles) | $(BIN_DIR)
+	@echo
+	@echo "Building: $@"
+	@echo "Linking file(s): $^"
+	$(LINK.cpp) $^ $(GOOGLETEST) --output $(INTEGRATION_TEST_EXECUTABLE)
+	./$(INTEGRATION_TEST_EXECUTABLE)
 
 # Compile .cpp into .o
 $(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
