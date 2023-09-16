@@ -22,7 +22,7 @@ MoveVector LegalMoveGenerator::generatePsuedoLegalMoves(const Chessboard & gameS
     return psuedoLegalMoves;
 }
 
-// TODO: This currently doesn't handle single push, double push, or en pessant for pawns
+// TODO: This currently doesn't handle single push, double push, en pessant, castling, or pawn promotions
 MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const Chessboard & gameState) const
 {
     MoveVector moves;
