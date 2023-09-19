@@ -40,11 +40,17 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
         // Remove any moves that attack our own pieces
         psuedoLegalMoves &= ~(activePlayerPieces & psuedoLegalMoves);
 
-        // TODO: remove any moves that will result in the active player being in check, this is illegal
-
         int numberOfPsuedoLegalMoves = psuedoLegalMoves.numberOfSetBits();
         for (int j = 0; j < numberOfPsuedoLegalMoves; j++)
         {
+            // TODO: remove any moves that will result in the active player being in check, this is illegal
+            // If after this move the king is in check, then either we were in check to begin with or
+            // this move puts the king in check, so don't add this move to the list
+            // Brute force method: for every single black piece on the board, calculate the attack vector to the king,
+            // is it blocked?
+            // Maybe more efficient method: get the attack boards for all of the black pieces. Do a bitwise and with the king's position,
+            // Do we get left with a set bit? If so, the king is under attack
+
             const Square targetSquare = (Square)(psuedoLegalMoves.clearAndReturnLSB());
             Move m(activePlayer, PAWN, startingSquare, targetSquare);
             moves.push_back(m);
