@@ -50,6 +50,7 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
             // is it blocked?
             // Maybe more efficient method: get the attack boards for all of the black pieces. Do a bitwise and with the king's position,
             // Do we get left with a set bit? If so, the king is under attack
+            // AttackList = attacktables::getBlackAttacks();
 
             const Square targetSquare = (Square)(psuedoLegalMoves.clearAndReturnLSB());
             Move m(activePlayer, PAWN, startingSquare, targetSquare);
