@@ -2,10 +2,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug C++ tests",
+            "name": "Debug C++ unit tests",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/tests",
+            "program": "${workspaceFolder}/bin/unit_tests",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb"
+        },
+        {
+            "name": "Debug C++ integration tests",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/integration_tests",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
