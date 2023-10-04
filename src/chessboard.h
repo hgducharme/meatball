@@ -9,6 +9,7 @@ class Chessboard {
         Bitboard pieceBitboards_[PieceType::NUMBER_OF_PIECES];
         Bitboard colorBitboards_[Color::NUMBER_OF_COLORS];
         Color activePlayer_ = Color::WHITE;
+        Color nonActivePlayer_ = Color::BLACK;
 
     public:
         File static squareToFile(const int square);
@@ -23,4 +24,5 @@ class Chessboard {
         void applyMove(const Move & move);
         void toggleActivePlayer();
         Color getActivePlayer() const;
+        Color getNonActivePlayer() const;
 };

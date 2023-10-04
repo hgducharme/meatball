@@ -197,12 +197,15 @@ TEST_F(ChessboardTest, squareToRank)
 
 TEST_F(ChessboardTest, toggleActivePlayer)
 {
-   // White's move by default
    Chessboard chessboard;
+
+   ASSERT_EQ(chessboard.getActivePlayer(), Color::WHITE);
+   ASSERT_EQ(chessboard.getNonActivePlayer(), Color::BLACK);
 
    chessboard.toggleActivePlayer();
 
    ASSERT_EQ(chessboard.getActivePlayer(), Color::BLACK);
+   ASSERT_EQ(chessboard.getNonActivePlayer(), Color::WHITE);
 }
 
 TEST_F(ChessboardTest, getOccupiedSquares)

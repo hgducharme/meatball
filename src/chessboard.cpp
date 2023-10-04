@@ -86,6 +86,8 @@ void Chessboard::applyMove(const Move & move)
 
 void Chessboard::toggleActivePlayer()
 {
+    nonActivePlayer_ = activePlayer_;
+
     if (activePlayer_ == Color::WHITE) 
     {
         activePlayer_ = Color::BLACK;
@@ -98,4 +100,9 @@ void Chessboard::toggleActivePlayer()
 Color Chessboard::getActivePlayer() const
 {
     return activePlayer_;
+}
+
+Color Chessboard::getNonActivePlayer() const
+{
+    return nonActivePlayer_;
 }
