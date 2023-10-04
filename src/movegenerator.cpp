@@ -27,6 +27,7 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
 {
     MoveVector moves;
     const Color activePlayer = gameState.getActivePlayer();
+    const Color nonActivePlayer = gameState.getNonActivePlayer();
     const Bitboard activePlayerPieces = gameState.getBitboard(activePlayer);
     Bitboard activePlayerPieceType = gameState.getBitboard(activePlayer, pieceType);
     
@@ -35,10 +36,12 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
     {
         const Square startingSquare = (Square)(activePlayerPieceType.clearAndReturnLSB());
 
-        Bitboard psuedoLegalMoves = attack_tables::getAttacks(pieceType, startingSquare, gameState);
+        Bitboard psuedoLegalMoves = attack_tables::getAttacks(activePlayer, pieceType, startingSquare, gameState.getOccupiedSquares());
 
         // Remove any moves that attack our own pieces
         psuedoLegalMoves &= ~(activePlayerPieces & psuedoLegalMoves);
+
+        Bitboard attackedSquaresByNonActivePlayer = attack_tables::getAttacks(nonActivePlayer, pieceType, startingSquare, gameState.getOccupiedSquares());
 
         int numberOfPsuedoLegalMoves = psuedoLegalMoves.numberOfSetBits();
         for (int j = 0; j < numberOfPsuedoLegalMoves; j++)
@@ -49,8 +52,15 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
             // Brute force method: for every single black piece on the board, calculate the attack vector to the king,
             // is it blocked?
             // Maybe more efficient method: get the attack boards for all of the black pieces. Do a bitwise and with the king's position,
-            // Do we get left with a set bit? If so, the king is under attack
-            // AttackList = attacktables::getBlackAttacks();
+            // Do we get left with a set bit? If so, the king is under attack.
+            // We need to pass in the color of the nonActivePlayer
+            Bitboard activePlayerKingPosition = gameState.getBitboard(activePlayer, PieceType::KING);
+            activePlayerKingPosition &= attackedSquaresByNonActivePlayer;
+
+            if (activePlayerKingPosition.numberOfSetBits() > 0)
+            {
+                // don't add this move to the list of valid moves
+            }
 
             const Square targetSquare = (Square)(psuedoLegalMoves.clearAndReturnLSB());
             Move m(activePlayer, PAWN, startingSquare, targetSquare);
