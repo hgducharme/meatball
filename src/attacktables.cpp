@@ -20,41 +20,47 @@ void init()
     initializeAttacksForSliderPieces();
 }
 
-Bitboard getBlackAttackSquares(const Chessboard & gameState)
+Bitboard getAttacksByColor(const Chessboard & gameState, const Color color)
 {
     Bitboard attacks;
 
     for (auto pieceType : {PieceType::PAWN, PieceType::KNIGHT, PieceType::BISHOP, PieceType::ROOK, PieceType::QUEEN, PieceType::KING})
     {
-        // gameState.activePlayer = black;
-        Bitboard pieces = gameState.getBitboard(Color::BLACK, pieceType);
-        // attacks |= getAttacks(pieceType, );
+        Bitboard pieces = gameState.getBitboard(color, pieceType);
+        const int numberOfPieces = pieces.numberOfSetBits();
+        for (int i = 0; i < numberOfPieces; i++)
+        {
+            const Square startingSquare = (Square)(pieces.clearAndReturnLSB());
+            attacks |= getAttacks(color, pieceType, startingSquare, gameState.getOccupiedSquares());
+        }
     }
+
+    return attacks;
 }
 
-Bitboard getAttacks(const PieceType pieceType, const Square square, const Chessboard & gameState)
+Bitboard getAttacks(const Color color, const PieceType pieceType, const Square square, const Bitboard & occupiedSquares)
 {
     switch (pieceType)
     {
         case PieceType::PAWN:
         case PieceType::KNIGHT:
         case PieceType::KING:
-            return getLeaperPieceAttacks((LeaperPiece)pieceType, square, gameState.getActivePlayer());
+            return getLeaperPieceAttacks((LeaperPiece)pieceType, square, color);
         case PieceType::BISHOP:
         case PieceType::ROOK:
         case PieceType::QUEEN:
-            return getSliderPieceAttacks((SliderPiece)pieceType, square, gameState.getOccupiedSquares());
+            return getSliderPieceAttacks((SliderPiece)pieceType, square, occupiedSquares);
         default:
             std::__throw_invalid_argument("pieceType must be one of the following piece types: 'pawn', 'knight', 'bishop', 'rook', 'queen', or 'king'.");
         }
 }
 
-Bitboard getLeaperPieceAttacks(const LeaperPiece leaperPiece, const Square square, const Color activePlayer)
+Bitboard getLeaperPieceAttacks(const LeaperPiece leaperPiece, const Square square, const Color color)
 {
     switch (leaperPiece)
     {
         case LeaperPiece::PAWN:
-            return PAWN_ATTACKS[activePlayer][square];
+            return PAWN_ATTACKS[color][square];
         case LeaperPiece::KNIGHT:
             return KNIGHT_ATTACKS[square];
         case LeaperPiece::KING:

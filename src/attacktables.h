@@ -15,10 +15,10 @@ namespace attack_tables
 
     void init();
 
-    // TODO: These automatically assume the color to get the attacks for. We should make this agnostic
-    Bitboard getAttacks(const PieceType pieceType, const Square square, const Chessboard & gameState);
-    Bitboard getLeaperPieceAttacks(const LeaperPiece leaperPiece, const Square square, const Color activePlayer);
+    Bitboard getAttacks(const Color color, const PieceType pieceType, const Square square, const Bitboard & boardState);
+    Bitboard getLeaperPieceAttacks(const LeaperPiece leaperPiece, const Square square, const Color color);
     Bitboard getSliderPieceAttacks(const SliderPiece sliderPiece, const Square square, const Bitboard & boardState);
+    Bitboard getAttacksByColor(const Chessboard & gameState, const Color color);
 
 namespace
 {
