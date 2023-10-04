@@ -57,12 +57,12 @@ class MoveGeneratorTest : public ::testing::Test
 
 TEST_F(MoveGeneratorTest, generatePsuedoLegalMoves)
 {
-   Chessboard chessboard;
+   Chessboard game;
    LegalMoveGenerator moveGenerator;
    
-   std::vector<Move> moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
-	chessboard.applyMove(WHITE, PAWN, e2, e4);
-	moveList = moveGenerator.generatePsuedoLegalMoves(chessboard);
+   std::vector<Move> moveList = moveGenerator.generatePsuedoLegalMoves(game);
+	game.applyMove(WHITE, PAWN, e2, e4);
+	moveList = moveGenerator.generatePsuedoLegalMoves(game);
 }
 
 }  // namespace
