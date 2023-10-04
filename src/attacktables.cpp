@@ -20,6 +20,18 @@ void init()
     initializeAttacksForSliderPieces();
 }
 
+Bitboard getBlackAttackSquares(const Chessboard & gameState)
+{
+    Bitboard attacks;
+
+    for (auto pieceType : {PieceType::PAWN, PieceType::KNIGHT, PieceType::BISHOP, PieceType::ROOK, PieceType::QUEEN, PieceType::KING})
+    {
+        // gameState.activePlayer = black;
+        Bitboard pieces = gameState.getBitboard(Color::BLACK, pieceType);
+        // attacks |= getAttacks(pieceType, );
+    }
+}
+
 Bitboard getAttacks(const PieceType pieceType, const Square square, const Chessboard & gameState)
 {
     switch (pieceType)
