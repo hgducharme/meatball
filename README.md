@@ -2,6 +2,8 @@
 
 This is a hobbyist's attempt at machine learning by creating a chess engine in C++.
 
+**Find the current state of development on the branch [10-movegen](https://github.com/hgducharme/meatball/tree/10-movegen).**
+
 # Features
 
 - Board Representation
