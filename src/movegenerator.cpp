@@ -23,6 +23,10 @@ MoveVector LegalMoveGenerator::generatePsuedoLegalMoves(const Chessboard & gameS
 }
 
 // TODO: This currently doesn't handle single push, double push, en pessant, castling, or pawn promotions
+// TODO: This currently is calculating bishop moves wrong. It thinks the bishop can move but it can't because
+// it's blocked by pawns.
+// This is not calculating rook moves correctly. It thinks the rook on A1 can move but it can't because it's blocked by pawns.
+// The moves for rook on H1 isn't being calculated.
 MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const Chessboard & gameState) const
 {
     MoveVector moves;
@@ -59,11 +63,12 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
 
             if (activePlayerKingPosition.numberOfSetBits() > 0)
             {
-                // don't add this move to the list of valid moves
+                // Don't add this move to the list since it either puts the king in check or leaves the king in check
+                continue;
             }
 
             const Square targetSquare = (Square)(psuedoLegalMoves.clearAndReturnLSB());
-            Move m(activePlayer, PAWN, startingSquare, targetSquare);
+            Move m(activePlayer, pieceType, startingSquare, targetSquare);
             moves.push_back(m);
         }
     }
