@@ -1,15 +1,14 @@
-#include "bitboard.h"
-#include "chessboard.h"
-
-#include <iostream>
+#include "attacktables.h"
 
 int main ()
 {
-  ChessBoard chessboard;
-  std::cout << chessboard.getPieceBitboard(WHITE, PAWN).getBoard() << std::endl;
+  attack_tables::init();
 
-  // chessboard.setState(FEN);
-  // chessboard.generateMoves();
+  // get all the moves = movegenerator.getAllMoves();
 
+  // evalute atll the moves = evaluate;
+
+  // return the best move
+  
   return 0;
 }
