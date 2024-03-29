@@ -35,7 +35,7 @@ void init()
     generateMagicNumbers(ROOK_HASHING_PARAMETERS_LOOKUP, MINIMUM_NUMBER_OF_BITS_FOR_ROOK_HASHING, rookBlockerVariations, rookAttacks);
     std::cout << "DONE." << std::endl;
     #else
-    initializeMagicNumbers();
+    usePrecomputedMagicNumbers();
     #endif
 
     populateAttackDatabase(attack_tables::BISHOP_ATTACKS, BISHOP_HASHING_PARAMETERS_LOOKUP, bishopBlockerVariations, bishopAttacks);
@@ -250,7 +250,7 @@ u64 searchForMagicNumber(const HashingParameters & hashingParameters, const int 
     return magicNumberCandidate;
 }
 
-void initializeMagicNumbers()
+void usePrecomputedMagicNumbers()
 {
     BISHOP_HASHING_PARAMETERS_LOOKUP[0].magicNumber = 9873895970016936192;
     BISHOP_HASHING_PARAMETERS_LOOKUP[1].magicNumber = 883277444818175001;

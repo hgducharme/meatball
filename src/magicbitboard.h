@@ -87,7 +87,7 @@ u64 searchForMagicNumber(const HashingParameters & hashingParameters,
                          const std::vector<Bitboard> & allBlockerVariations,
                          const std::vector<Bitboard> & attackBoards);
 
-void initializeMagicNumbers();
+void usePrecomputedMagicNumbers();
 
 template <size_t rows, size_t columns>
 void populateAttackDatabase(Bitboard (&attackDatabase)[rows][columns],
