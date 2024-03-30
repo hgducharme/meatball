@@ -2,7 +2,8 @@
 
 #include <stdexcept>
 #include <cstdlib>
-#include <string>
+#include <sstream>
+#include <iomanip>
 
 Bitboard::Bitboard(u64 boardState) : board_(boardState)
 {}
@@ -10,6 +11,30 @@ Bitboard::Bitboard(u64 boardState) : board_(boardState)
 Bitboard::Bitboard(int bit)
 {
     setBit(bit);
+}
+
+std::string Bitboard::toHex() const
+{
+    std::stringstream ss;
+    ss << "0x" << std::hex << this->toInt();
+    return ss.str();
+}
+
+std::string Bitboard::toBinary(bool spaces) const
+{
+    std::stringstream ss;
+    for (int i = 63; i >= 0; i--)
+    {
+        ss << ( (board_ >> i) & 1);
+
+        // Insert spaces every 8 bits for readability
+        if (spaces && (i % 8 == 0))
+        {
+            ss << ' ';
+        }
+    }
+
+    return ss.str();
 }
 
 void Bitboard::setBit(int n)
@@ -141,5 +166,5 @@ int Bitboard::clearAndReturnMSB()
 
 Bitboard Bitboard::getNeighbor(Direction direction) const
 {
-    return (direction > 0) ? (getBoard() << direction) : (getBoard() >> std::abs(direction));
+    return (direction > 0) ? (toInt() << direction) : (toInt() >> std::abs(direction));
 }

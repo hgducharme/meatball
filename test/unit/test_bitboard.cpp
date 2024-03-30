@@ -56,14 +56,14 @@ TEST_F(BitboardTest, defaultConstructor_shouldInitializeBoardWithStateOfZero)
 {
    Bitboard bitboard;
 
-   ASSERT_EQ(bitboard.getBoard(), constants::EMPTY_BOARD);
+   ASSERT_EQ(bitboard.toInt(), constants::EMPTY_BOARD);
 }
 
 TEST_F(BitboardTest, constructor_canInitializeBoardWithAState)
 {
    Bitboard bitboard(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
 
-   ASSERT_EQ(bitboard.getBoard(), constants::DEFAULT_BLACK_PAWN_STRUCTURE);
+   ASSERT_EQ(bitboard.toInt(), constants::DEFAULT_BLACK_PAWN_STRUCTURE);
 }
 
 TEST_F(BitboardTest, constructor_createBitboardFromSquare)
@@ -71,7 +71,7 @@ TEST_F(BitboardTest, constructor_createBitboardFromSquare)
    Bitboard d5(Square::d5);
 
    u64 EXPECTED = 0x800000000;
-   ASSERT_EQ(d5.getBoard(), EXPECTED);
+   ASSERT_EQ(d5.toInt(), EXPECTED);
 }
 
 TEST_F(BitboardTest, constructor_createBitboardFromInt)
@@ -80,7 +80,7 @@ TEST_F(BitboardTest, constructor_createBitboardFromInt)
    Bitboard a5(bit);
 
    u64 EXPECTED_A5 = 0x100000000;
-   ASSERT_EQ(a5.getBoard(), EXPECTED_A5);
+   ASSERT_EQ(a5.toInt(), EXPECTED_A5);
 }
 
 TEST_F(BitboardTest, setBit)
@@ -90,7 +90,7 @@ TEST_F(BitboardTest, setBit)
    bitboard.setBit(g3);
    
    u64 EXPECTED_BITBOARD = 0x0000000000400000;
-   ASSERT_EQ(bitboard.getBoard(), EXPECTED_BITBOARD);
+   ASSERT_EQ(bitboard.toInt(), EXPECTED_BITBOARD);
 }
 
 TEST_F(BitboardTest, setBit_throwsExceptionIfBitIsOutOfRange)
@@ -134,7 +134,7 @@ TEST_F(BitboardTest, clearBit)
    bitboard.clearBit(g3);
 
    u64 EXPECTED_BITBOARD = 0xFFFFFFFFFFBFFFFF;
-   ASSERT_EQ(bitboard.getBoard(), EXPECTED_BITBOARD);
+   ASSERT_EQ(bitboard.toInt(), EXPECTED_BITBOARD);
 }
 
 TEST_F(BitboardTest, clearBit2)
@@ -144,7 +144,7 @@ TEST_F(BitboardTest, clearBit2)
    bitboard.setBit(g3);
    bitboard.clearBit(g3);
 
-   ASSERT_EQ(bitboard.getBoard(), constants::EMPTY_BOARD);
+   ASSERT_EQ(bitboard.toInt(), constants::EMPTY_BOARD);
 }
 
 TEST_F(BitboardTest, clearBit_throwsExceptionIfBitIsOutOfRange)
@@ -237,7 +237,7 @@ TEST_F(BitboardTest, reset_ResetsBoardState)
 
    bitboard.reset();
 
-   ASSERT_EQ(bitboard.getBoard(), constants::EMPTY_BOARD);
+   ASSERT_EQ(bitboard.toInt(), constants::EMPTY_BOARD);
 }
 
 TEST_F(BitboardTest, setBoard_correctlySetsBitboard)
@@ -246,7 +246,7 @@ TEST_F(BitboardTest, setBoard_correctlySetsBitboard)
 
    bitboard.setBoard(constants::UNIVERSE);
 
-   ASSERT_EQ(bitboard.getBoard(), constants::UNIVERSE);
+   ASSERT_EQ(bitboard.toInt(), constants::UNIVERSE);
 }
 
 TEST_F(BitboardTest, bitwiseOrOperator_returnsNewBitboard)
@@ -257,7 +257,7 @@ TEST_F(BitboardTest, bitwiseOrOperator_returnsNewBitboard)
    Bitboard c = a | b;
 
    u64 EXPECTED = 0x00FF00000000FF00;
-   ASSERT_EQ(c.getBoard(), EXPECTED);
+   ASSERT_EQ(c.toInt(), EXPECTED);
 }
 
 TEST_F(BitboardTest, shorthandBitwiseOrOperator_correctlySetsNewBoardState)
@@ -270,10 +270,10 @@ TEST_F(BitboardTest, shorthandBitwiseOrOperator_correctlySetsNewBoardState)
    u64 EXPECTED = 0x08FF000000000000;
 
    // bitboard a has an updated state
-   ASSERT_EQ(a.getBoard(), EXPECTED);
+   ASSERT_EQ(a.toInt(), EXPECTED);
 
    // bitboard b is unchanged
-   ASSERT_EQ(b.getBoard(), constants::DEFAULT_BLACK_QUEEN_STRUCTURE);
+   ASSERT_EQ(b.toInt(), constants::DEFAULT_BLACK_QUEEN_STRUCTURE);
 }
 
 TEST_F(BitboardTest, bitwiseAndOperator_returnsNewBitboardWithCorrectResult)
@@ -283,7 +283,7 @@ TEST_F(BitboardTest, bitwiseAndOperator_returnsNewBitboardWithCorrectResult)
 
    Bitboard result = universe & whitePawns;
 
-   ASSERT_EQ(result.getBoard(), constants::DEFAULT_WHITE_PAWN_STRUCTURE);
+   ASSERT_EQ(result.toInt(), constants::DEFAULT_WHITE_PAWN_STRUCTURE);
 }
 
 TEST_F(BitboardTest, shorthandBitwiseAndOperator_correctlySetsNewBoardState)
@@ -293,7 +293,7 @@ TEST_F(BitboardTest, shorthandBitwiseAndOperator_correctlySetsNewBoardState)
 
    universe &= pawns;
 
-   ASSERT_EQ(universe.getBoard(), constants::DEFAULT_PAWN_STRUCTURE);
+   ASSERT_EQ(universe.toInt(), constants::DEFAULT_PAWN_STRUCTURE);
 }
 
 TEST_F(BitboardTest, numberOfSetBits_countsNumberOfSetBitsInUniverseSet)
@@ -329,7 +329,7 @@ TEST_F(BitboardTest, numberOfSetBits_doesNotModifyTheOriginalValue)
 
    universe.numberOfSetBits();
 
-   ASSERT_EQ(universe.getBoard(), constants::UNIVERSE);
+   ASSERT_EQ(universe.toInt(), constants::UNIVERSE);
 }
 
 TEST_F(BitboardTest, findIndexLSB_findsIndexOfLeastSignificantBit)
@@ -347,7 +347,7 @@ TEST_F(BitboardTest, findIndexLSB_doesNotModifyTheOriginalValue)
 
    blackPawns.findIndexLSB();
 
-   ASSERT_EQ(blackPawns.getBoard(), constants::DEFAULT_BLACK_PAWN_STRUCTURE);
+   ASSERT_EQ(blackPawns.toInt(), constants::DEFAULT_BLACK_PAWN_STRUCTURE);
 }
 
 TEST_F(BitboardTest, findIndexLSB_returnsNegativeOneIfNoBitIsSet)
@@ -374,7 +374,7 @@ TEST_F(BitboardTest, findIndexMSB_doesNotModifyTheOriginalValue)
 
    blackPawns.findIndexMSB();
 
-   ASSERT_EQ(blackPawns.getBoard(), constants::DEFAULT_BLACK_PAWN_STRUCTURE);
+   ASSERT_EQ(blackPawns.toInt(), constants::DEFAULT_BLACK_PAWN_STRUCTURE);
 }
 
 TEST_F(BitboardTest, findIndexMSB_returnsNegativeOneIfNoBitIsSet)
