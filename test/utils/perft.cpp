@@ -21,7 +21,7 @@ u64 perft(Chessboard & gameState, const uint16_t depth)
    {
       gameState.applyMove(m);
       numberOfNodes += perft(gameState, depth - 1);
-      // gameState.undoMove(m);      
+      gameState.undoMove(m);      
    }
 
    return numberOfNodes;

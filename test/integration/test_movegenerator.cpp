@@ -76,6 +76,10 @@ TEST_F(MoveGeneratorTest, perftTesting)
    uint16_t depth;
 
    u64 numberOfNodes = perft(game, depth);
+
+   // TODO: get an expected value from stockfish or something.
+   u64 EXPECTED = constants::UNIVERSE;
+   ASSERT_EQ(numberOfNodes, EXPECTED);
 }
 
 }  // namespace
