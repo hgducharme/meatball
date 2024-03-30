@@ -12,6 +12,7 @@ INTEGRATION_TEST_DIR := $(TEST_DIR)/integration
 BUILD_DIR := $(PROJECT_DIR)/build
 BIN_DIR := $(PROJECT_DIR)/bin
 COVERAGE_DIR := $(PROJECT_DIR)/test_coverage
+TEST_UTILS_DIR := $(TEST_DIR)/utils
 
 EXECUTABLE = $(BIN_DIR)/$(appname)
 TEST_EXECUTABLE = $(BIN_DIR)/tests
@@ -59,7 +60,7 @@ GOOGLETEST := --library-directory /usr/local/lib -lgtest -lgtest_main
 # Files
 # -------------------------------------- #
 # Source code files
-sourcefiles := $(shell find $(SOURCE_DIR) -name "*.cpp")
+sourcefiles := $(shell find $(SOURCE_DIR) $(TEST_UTILS_DIR) -name "*.cpp")
 objectfiles := $(sourcefiles:%.cpp=$(BUILD_DIR)/%.o)
 sourcefiles_without_main = $(filter-out $(SOURCE_DIR)/main.cpp, $(sourcefiles))
 objectfiles_without_main = $(filter-out $(BUILD_DIR)/./src/main.o, $(objectfiles))
