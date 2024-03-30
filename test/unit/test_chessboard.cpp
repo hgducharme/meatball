@@ -1,4 +1,5 @@
 #include "../src/chessboard.h"
+#include "../src/exceptions.h"
 #include "../src/types.h"
 #include "../src/move.h"
 
@@ -219,6 +220,26 @@ TEST_F(ChessboardTest, getOccupiedSquares)
 
    u64 EXPECTED = 0xffe700181800e7ff;
    ASSERT_EQ(chessboard.getOccupiedSquares().getBoard(), EXPECTED);
+}
+
+TEST_F(ChessboardTest, undoMove_throwsExceptionIfNoMoveWasMade)
+{
+   Chessboard board;
+   Move m(WHITE, PAWN, e2, e4);
+
+   ASSERT_THROW(board.undoMove(m), exceptions::MoveNotFound);
+}
+
+TEST_F(ChessboardTest, undoMove)
+{
+   Chessboard board;
+   Move m(WHITE, PAWN, e2, e4);
+
+   board.applyMove(m);
+
+   u64 DEFAULT_INITAL_BOARD = 0xFF0000FF;
+   ASSERT_NO_THROW(board.undoMove(m));
+   ASSERT_EQ(board.getOccupiedSquares(), DEFAULT_INITAL_BOARD);
 }
 
 }  // namespace

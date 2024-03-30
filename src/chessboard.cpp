@@ -106,3 +106,13 @@ Color Chessboard::getNonActivePlayer() const
 {
     return nonActivePlayer_;
 }
+
+void Chessboard::undoMove(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare)
+{
+    
+}
+
+void Chessboard::undoMove(const Move & move)
+{
+    undoMove(move.color, move.piece, move.startSquare, move.endSquare);
+}

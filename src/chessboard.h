@@ -4,12 +4,15 @@
 #include "types.h"
 #include "move.h"
 
+#include <vector>
+
 class Chessboard {
     private:
         Bitboard pieceBitboards_[PieceType::NUMBER_OF_PIECES];
         Bitboard colorBitboards_[Color::NUMBER_OF_COLORS];
         Color activePlayer_ = Color::WHITE;
         Color nonActivePlayer_ = Color::BLACK;
+        std::vector<Move> moveHistory;
 
     public:
         File static squareToFile(const int square);
@@ -25,4 +28,6 @@ class Chessboard {
         void toggleActivePlayer();
         Color getActivePlayer() const;
         Color getNonActivePlayer() const;
+        void undoMove(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare);
+        void undoMove(const Move & move);
 };
