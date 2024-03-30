@@ -1,6 +1,7 @@
 #include "../src/movegenerator.h"
 #include "../src/attacktables.h"
 #include "../src/types.h"
+#include "../utils/perft.h"
 
 #include "gtest/gtest.h"
 
@@ -55,14 +56,26 @@ class MoveGeneratorTest : public ::testing::Test
   // then add their definition just below the test fixture class.
 };
 
+
+// TODO: Write a perft instead of integration testing our move generation. Although
+// A test like this might be helpful in debugging and stepping through our move generation code.
+// A perft is the proper way to test a chess engine's move generation capabilities.
 TEST_F(MoveGeneratorTest, generatePsuedoLegalMoves)
 {
    Chessboard game;
    LegalMoveGenerator moveGenerator;
    
-   std::vector<Move> moveList = moveGenerator.generatePsuedoLegalMoves(game);
+   MoveVector moves = moveGenerator.generatePsuedoLegalMoves(game);
 	game.applyMove(WHITE, PAWN, e2, e4);
-	moveList = moveGenerator.generatePsuedoLegalMoves(game);
+	moves = moveGenerator.generatePsuedoLegalMoves(game);
+}
+
+TEST_F(MoveGeneratorTest, perftTesting)
+{
+   Chessboard game;
+   uint16_t depth;
+
+   u64 numberOfNodes = perft(game, depth);
 }
 
 }  // namespace
