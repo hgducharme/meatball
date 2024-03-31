@@ -1,6 +1,6 @@
 #include "chessboard.h"
 
-#include "constants.h"
+#include "exceptions.h"
 
 File Chessboard::squareToFile(const int square)
 {
@@ -39,7 +39,7 @@ Chessboard::Chessboard()
     pieceBitboards_[PieceType::QUEEN].setBoard(constants::DEFAULT_QUEEN_STRUCTURE);
     pieceBitboards_[PieceType::KING].setBoard(constants::DEFAULT_KING_STRUCTURE);
 
-    // Initialize the 'whitePieces' and 'blackPieces' bitboards
+    // Initialize the white and black bitboards
     colorBitboards_[Color::WHITE] = constants::DEFAULT_WHITE_OCCUPIED;
     colorBitboards_[Color::BLACK] = constants::DEFAULT_BLACK_OCCUPIED;
 }
