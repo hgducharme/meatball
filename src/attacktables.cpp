@@ -1,9 +1,7 @@
 #include "attacktables.h"
 
 #include "types.h"
-#include "chessboard.h"
 #include "utils.h"
-#include "magicbitboard.h"
 
 namespace attack_tables
 {
