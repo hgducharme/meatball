@@ -20,15 +20,15 @@ std::string Bitboard::toHex() const
     return ss.str();
 }
 
-std::string Bitboard::toBinary(bool spaces) const
+std::string Bitboard::toBinary(bool includeSpaces) const
 {
     std::stringstream ss;
     for (int i = 63; i >= 0; i--)
     {
-        ss << ( (board_ >> i) & 1);
+        ss << ((board_ >> i) & 1);
 
         // Insert spaces every 8 bits for readability
-        if (spaces && (i % 8 == 0))
+        if (includeSpaces && (i % 8 == 0))
         {
             ss << ' ';
         }

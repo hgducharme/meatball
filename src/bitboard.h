@@ -16,7 +16,7 @@ class Bitboard {
         Bitboard(int bit);
         inline u64 toU64() const { return board_; }
         std::string toHex() const;
-        std::string toBinary(bool spaces = false) const;
+        std::string toBinary(bool includeSpaces = false) const;
         inline void setBoard(const u64 boardState) { board_ = boardState; };
         void setBit(int n);
         void clearBit(int n);
