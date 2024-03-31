@@ -23,7 +23,7 @@ This project was built using C++17, so make sure you have at least C++17 install
 
 Clone the directory and build the executable
 
-```
+```bash
 git clone https://github.com/hgducharme/meatball.git
 cd meatball/
 make meatball
@@ -37,7 +37,7 @@ To run the tests make sure you have [googletest 1.13.0](https://github.com/googl
 
 To install `googletest`, download the zip file, unzip it, then
 
-```
+```bash
 cd /path/to/googletest/
 mkdir install
 cd install/
@@ -48,22 +48,34 @@ make install
 
 Next, edit the `GOOGLETEST` variable inside `meatball/Makefile` to point to where `googletest` was installed. Replace `/usr/local/lib` with the directory that houses your `libgtest.a` and `libgtest_main.a` files.
 
-```
+```make
 GOOGLETEST := -L/usr/local/lib -lgtest -lgtest_main
 ```
 
 Build and run the tests:
 
-```
+```bash
 make tests
 ./bin/tests
+```
+
+To build (and run) only the unit tests:
+
+```bash
+make unit_tests
+```
+
+To build (and run) only the inegration tests:
+
+```bash
+make integration_tests
 ```
 
 ## Test coverage
 
 Make sure you have `gcov` and `gcovr` installed on your system.
 
-```
+```bash
 make coverage
 ```
 
