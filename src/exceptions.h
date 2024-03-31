@@ -5,10 +5,10 @@
 namespace exceptions
 {
 
-   class MoveNotFound : public std::runtime_error
+   class UndoMoveError : public std::runtime_error
    {
       public:
-         MoveNotFound() : std::runtime_error("This move does not exist in the move history.") { }
+         UndoMoveError() : std::runtime_error("The requested move can not be undone. Only the last move to be made can be undone.") { }
    };
 
 }
