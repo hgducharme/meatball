@@ -111,7 +111,7 @@ void Chessboard::undoMove(const Color color, const PieceType piece, const Square
 {
     // TODO:
     // 1. Check to see if the move exists in the move history, if it doesn't throw an exception
-    // 2. If the move exists in the move history, reverse the move. That is, move the piece from endingSquare to startingSquare. We don't need to check the legality of this if this was the last move to be made, because the move couldn't have happened if it was illegal. On the other hand, if the move happened more than 1 moves ago, what does it even mean to undo this move? That doesn't make sense. So we should also verify that the move requesting to be undone was the last move to be made.
+    // 2. If the move exists in the move history, reverse the move. That is, move the piece from endingSquare to startingSquare. We don't need to check the legality of this if this was the last move to be made, because the move couldn't have happened if it was illegal. On the other hand, if the move happened more than 1 moves ago, what does it even mean to undo this move? That doesn't make sense. So we should also verify that the move requesting to be undone was the last move to be made. Perhaps the moveHistory can be a hashtable, and we can hash the move to a unique identifier. We should be able to achieve perfect hashing for this no? Like the move "whitepawne2e4" plus a timestamp?
 }
 
 void Chessboard::undoMove(const Move & move)
