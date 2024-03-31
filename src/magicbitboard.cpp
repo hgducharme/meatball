@@ -121,7 +121,7 @@ std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask)
     std::vector<Bitboard> allBlockerVariations(numberOfBlockerVariations);
 
     std::uint16_t i = 0;
-    for (u64 blockerVariation = blockerMask.toInt(); blockerVariation; blockerVariation = (blockerVariation - 1) & blockerMask.toInt())
+    for (u64 blockerVariation = blockerMask.toU64(); blockerVariation; blockerVariation = (blockerVariation - 1) & blockerMask.toU64())
     {
         allBlockerVariations[i] = blockerVariation;
         i++;
@@ -227,14 +227,14 @@ u64 searchForMagicNumber(const HashingParameters & hashingParameters, const int 
             int hashedIndex = hashBlockerVariation(allBlockerVariations[i], magicNumberCandidate, hashingParameters.shiftAmount);
 
             // Check if this spot in the database is empty
-            if (tempAttackDatabase[hashedIndex].toInt() == constants::UNIVERSE)
+            if (tempAttackDatabase[hashedIndex].toU64() == constants::UNIVERSE)
             {
                 tempAttackDatabase[hashedIndex] = attackBoards[i];
             }
 
             // If the collision gives us the same attack board, then we're fine
             // If the collision gives us a different attack board, search for a new magic number 
-            else if (tempAttackDatabase[hashedIndex].toInt() != attackBoards[i].toInt())
+            else if (tempAttackDatabase[hashedIndex].toU64() != attackBoards[i].toU64())
             {
                 currentMagicNumberIsValid = false;
             }

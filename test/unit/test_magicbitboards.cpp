@@ -263,7 +263,7 @@ TEST_F(MagicBitboardsTest, bishopHashInformation)
 {
    for (int square = 0; square < 64; square++)
    {
-      EXPECT_EQ(magic_bitboards::BISHOP_HASHING_PARAMETERS_LOOKUP[square].blockerMask.toInt(), EXPECTED_BISHOP_BLOCKER_MASKS[square]);
+      EXPECT_EQ(magic_bitboards::BISHOP_HASHING_PARAMETERS_LOOKUP[square].blockerMask.toU64(), EXPECTED_BISHOP_BLOCKER_MASKS[square]);
    }
 }
 
@@ -271,7 +271,7 @@ TEST_F(MagicBitboardsTest, rookHashInformation)
 {
    for (int square = 0; square < 64; square++)
    {
-      EXPECT_EQ(magic_bitboards::ROOK_HASHING_PARAMETERS_LOOKUP[square].blockerMask.toInt(), EXPECTED_ROOK_BLOCKER_MASKS[square]);
+      EXPECT_EQ(magic_bitboards::ROOK_HASHING_PARAMETERS_LOOKUP[square].blockerMask.toU64(), EXPECTED_ROOK_BLOCKER_MASKS[square]);
    }
 }
 

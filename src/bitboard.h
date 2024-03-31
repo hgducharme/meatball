@@ -14,7 +14,7 @@ class Bitboard {
         Bitboard() = default;
         Bitboard(u64 boardState);
         Bitboard(int bit);
-        inline u64 toInt() const { return board_; }
+        inline u64 toU64() const { return board_; }
         std::string toHex() const;
         std::string toBinary(bool spaces = false) const;
         inline void setBoard(const u64 boardState) { board_ = boardState; };
@@ -34,21 +34,21 @@ class Bitboard {
 };
 
 /* Relational operator overloading */
-inline bool operator == (const Bitboard & lhs, const u64 rhs) { return lhs.toInt() == rhs; }
-inline bool operator == (const Bitboard & lhs, const Bitboard & rhs) { return lhs.toInt() == rhs.toInt(); }
+inline bool operator == (const Bitboard & lhs, const u64 rhs) { return lhs.toU64() == rhs; }
+inline bool operator == (const Bitboard & lhs, const Bitboard & rhs) { return lhs.toU64() == rhs.toU64(); }
 
 /* Bitwise operator overloading */
-inline Bitboard operator << (const Bitboard & lhs, const unsigned int rhs) { return lhs.toInt() << rhs; }
-inline Bitboard operator >> (const Bitboard & lhs, const unsigned int rhs) { return lhs.toInt() >> rhs; }
-inline Bitboard operator & (const Bitboard & a, const Bitboard & b) { return Bitboard(a.toInt() & b.toInt()); }
-inline Bitboard operator | (const Bitboard & a, const Bitboard & b) { return Bitboard(a.toInt() | b.toInt()); }
-inline Bitboard operator ~ (const Bitboard & a) { return Bitboard( ~(a.toInt()) ); }
-inline Bitboard & operator &= (Bitboard & lhs, const Bitboard & rhs) { lhs.setBoard(lhs.toInt() & rhs.toInt()); return lhs; }
-inline Bitboard & operator |= (Bitboard & lhs, const Bitboard & rhs) { lhs.setBoard(lhs.toInt() | rhs.toInt()); return lhs; }
+inline Bitboard operator << (const Bitboard & lhs, const unsigned int rhs) { return lhs.toU64() << rhs; }
+inline Bitboard operator >> (const Bitboard & lhs, const unsigned int rhs) { return lhs.toU64() >> rhs; }
+inline Bitboard operator & (const Bitboard & a, const Bitboard & b) { return Bitboard(a.toU64() & b.toU64()); }
+inline Bitboard operator | (const Bitboard & a, const Bitboard & b) { return Bitboard(a.toU64() | b.toU64()); }
+inline Bitboard operator ~ (const Bitboard & a) { return Bitboard( ~(a.toU64()) ); }
+inline Bitboard & operator &= (Bitboard & lhs, const Bitboard & rhs) { lhs.setBoard(lhs.toU64() & rhs.toU64()); return lhs; }
+inline Bitboard & operator |= (Bitboard & lhs, const Bitboard & rhs) { lhs.setBoard(lhs.toU64() | rhs.toU64()); return lhs; }
 
 /* Arithmetic operator overloading */
-inline u64 operator * (const Bitboard & lhs, const u64 rhs) { return lhs.toInt() * rhs; }
-inline u64 operator * (const u64 lhs, const Bitboard & rhs) { return lhs * rhs.toInt(); }
+inline u64 operator * (const Bitboard & lhs, const u64 rhs) { return lhs.toU64() * rhs; }
+inline u64 operator * (const u64 lhs, const Bitboard & rhs) { return lhs * rhs.toU64(); }
 
 /* Stream operator overloading */
 inline std::ostream & operator << (std::ostream& out, const Bitboard & b) { out << b.toBinary(); return out; }

@@ -16,7 +16,7 @@ Bitboard::Bitboard(int bit)
 std::string Bitboard::toHex() const
 {
     std::stringstream ss;
-    ss << "0x" << std::hex << this->toInt();
+    ss << "0x" << std::hex << this->toU64();
     return ss.str();
 }
 
@@ -166,5 +166,5 @@ int Bitboard::clearAndReturnMSB()
 
 Bitboard Bitboard::getNeighbor(Direction direction) const
 {
-    return (direction > 0) ? (toInt() << direction) : (toInt() >> std::abs(direction));
+    return (direction > 0) ? (toU64() << direction) : (toU64() >> std::abs(direction));
 }

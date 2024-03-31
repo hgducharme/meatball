@@ -60,20 +60,20 @@ TEST_F(ChessboardTest, defaultConstructor_correctlyInitializesAllPieceBitboards)
 {
    Chessboard chessboard;
 
-   ASSERT_EQ(chessboard.getBitboard(PAWN).toInt(), constants::DEFAULT_PAWN_STRUCTURE);
-   ASSERT_EQ(chessboard.getBitboard(KNIGHT).toInt(), constants::DEFAULT_KNIGHT_STRUCTURE);
-   ASSERT_EQ(chessboard.getBitboard(BISHOP).toInt(), constants::DEFAULT_BISHOP_STRUCTURE);
-   ASSERT_EQ(chessboard.getBitboard(ROOK).toInt(), constants::DEFAULT_ROOK_STRUCTURE);
-   ASSERT_EQ(chessboard.getBitboard(QUEEN).toInt(), constants::DEFAULT_QUEEN_STRUCTURE);
-   ASSERT_EQ(chessboard.getBitboard(KING).toInt(), constants::DEFAULT_KING_STRUCTURE);
+   ASSERT_EQ(chessboard.getBitboard(PAWN).toU64(), constants::DEFAULT_PAWN_STRUCTURE);
+   ASSERT_EQ(chessboard.getBitboard(KNIGHT).toU64(), constants::DEFAULT_KNIGHT_STRUCTURE);
+   ASSERT_EQ(chessboard.getBitboard(BISHOP).toU64(), constants::DEFAULT_BISHOP_STRUCTURE);
+   ASSERT_EQ(chessboard.getBitboard(ROOK).toU64(), constants::DEFAULT_ROOK_STRUCTURE);
+   ASSERT_EQ(chessboard.getBitboard(QUEEN).toU64(), constants::DEFAULT_QUEEN_STRUCTURE);
+   ASSERT_EQ(chessboard.getBitboard(KING).toU64(), constants::DEFAULT_KING_STRUCTURE);
 }
 
 TEST_F(ChessboardTest, defaultConstructor_correctlyInitializesWhiteAndBlackBitboards)
 {
    Chessboard chessboard;
 
-   ASSERT_EQ(chessboard.getBitboard(WHITE).toInt(), constants::DEFAULT_WHITE_OCCUPIED);
-   ASSERT_EQ(chessboard.getBitboard(BLACK).toInt(), constants::DEFAULT_BLACK_OCCUPIED);
+   ASSERT_EQ(chessboard.getBitboard(WHITE).toU64(), constants::DEFAULT_WHITE_OCCUPIED);
+   ASSERT_EQ(chessboard.getBitboard(BLACK).toU64(), constants::DEFAULT_BLACK_OCCUPIED);
 }
 
 TEST_F(ChessboardTest, getBitboard_returnsBitboardByColor)
@@ -82,7 +82,7 @@ TEST_F(ChessboardTest, getBitboard_returnsBitboardByColor)
 
    const Bitboard & whiteBitboard = chessboard.getBitboard(WHITE);
 
-   ASSERT_EQ(whiteBitboard.toInt(), constants::DEFAULT_WHITE_OCCUPIED);
+   ASSERT_EQ(whiteBitboard.toU64(), constants::DEFAULT_WHITE_OCCUPIED);
 }
 
 TEST_F(ChessboardTest, getBitboard_returnsBitboardByPiece)
@@ -96,12 +96,12 @@ TEST_F(ChessboardTest, getBitboard_returnsBitboardByPiece)
    const Bitboard & queenBitboard = chessboard.getBitboard(QUEEN);
    const Bitboard & kingBitboard = chessboard.getBitboard(KING);
 
-   ASSERT_EQ(pawnBitboard.toInt(), constants::DEFAULT_PAWN_STRUCTURE);
-   ASSERT_EQ(knightBitboard.toInt(), constants::DEFAULT_KNIGHT_STRUCTURE);
-   ASSERT_EQ(bishopBitboard.toInt(), constants::DEFAULT_BISHOP_STRUCTURE);
-   ASSERT_EQ(rookBitboard.toInt(), constants::DEFAULT_ROOK_STRUCTURE);
-   ASSERT_EQ(queenBitboard.toInt(), constants::DEFAULT_QUEEN_STRUCTURE);
-   ASSERT_EQ(kingBitboard.toInt(), constants::DEFAULT_KING_STRUCTURE);
+   ASSERT_EQ(pawnBitboard.toU64(), constants::DEFAULT_PAWN_STRUCTURE);
+   ASSERT_EQ(knightBitboard.toU64(), constants::DEFAULT_KNIGHT_STRUCTURE);
+   ASSERT_EQ(bishopBitboard.toU64(), constants::DEFAULT_BISHOP_STRUCTURE);
+   ASSERT_EQ(rookBitboard.toU64(), constants::DEFAULT_ROOK_STRUCTURE);
+   ASSERT_EQ(queenBitboard.toU64(), constants::DEFAULT_QUEEN_STRUCTURE);
+   ASSERT_EQ(kingBitboard.toU64(), constants::DEFAULT_KING_STRUCTURE);
 }
 
 TEST_F(ChessboardTest, getBitboard_returnsBitboardByColorAndPiece)
@@ -110,7 +110,7 @@ TEST_F(ChessboardTest, getBitboard_returnsBitboardByColorAndPiece)
 
    const Bitboard & blackBishopBitboard = chessboard.getBitboard(BLACK, BISHOP);
 
-   ASSERT_EQ(blackBishopBitboard.toInt(), constants::DEFAULT_BLACK_BISHOP_STRUCTURE);
+   ASSERT_EQ(blackBishopBitboard.toU64(), constants::DEFAULT_BLACK_BISHOP_STRUCTURE);
 }
 
 TEST_F(ChessboardTest, movePiece_shouldMoveWhitePawnFromE2ToE4)
@@ -121,7 +121,7 @@ TEST_F(ChessboardTest, movePiece_shouldMoveWhitePawnFromE2ToE4)
 
    u64 EXPECTED = 0x1000EF00;
    const Bitboard & bitboard = chessboard.getBitboard(WHITE, PAWN);
-   ASSERT_EQ(bitboard.toInt(), EXPECTED);
+   ASSERT_EQ(bitboard.toU64(), EXPECTED);
 }
 
 TEST_F(ChessboardTest, movePiece_togglesActivePlayer)
@@ -146,7 +146,7 @@ TEST_F(ChessboardTest, movePiece_doesNothingIfWrongSideTriesToMakeMove)
    // It's white's turn by default
    chessboard.applyMove(BLACK, PAWN, e2, e4);
 
-   ASSERT_EQ(chessboard.getBitboard(PAWN).toInt(), constants::DEFAULT_PAWN_STRUCTURE);
+   ASSERT_EQ(chessboard.getBitboard(PAWN).toU64(), constants::DEFAULT_PAWN_STRUCTURE);
 }
 
 TEST_F(ChessboardTest, applyMove_shouldMoveWhitePawnFromE2ToE4)
@@ -157,7 +157,10 @@ TEST_F(ChessboardTest, applyMove_shouldMoveWhitePawnFromE2ToE4)
 
    u64 EXPECTED = 0x1000EF00;
    const Bitboard & bitboard = chessboard.getBitboard(WHITE, PAWN);
-   ASSERT_EQ(bitboard.toInt(), EXPECTED);
+   ASSERT_EQ(bitboard.toU64(), EXPECTED);
+
+   ExpectedU64 WHITE_PAWN_E2_E4(0xffff00001000efff);
+   ASSERT_EQ(chessboard.getOccupiedSquares(), WHITE_PAWN_E2_E4);
 }
 
 TEST_F(ChessboardTest, getActivePlayer_returnsWhiteByDefault)
@@ -220,25 +223,25 @@ TEST_F(ChessboardTest, getOccupiedSquares)
    chessboard.applyMove(BLACK, PAWN, d7, d5);
 
    u64 EXPECTED = 0xffe700181800e7ff;
-   ASSERT_EQ(chessboard.getOccupiedSquares().toInt(), EXPECTED);
+   ASSERT_EQ(chessboard.getOccupiedSquares().toU64(), EXPECTED);
 }
 
 TEST_F(ChessboardTest, undoMove_throwsExceptionIfNoMoveWasMade)
 {
    Chessboard board;
    Move m(WHITE, PAWN, e2, e4);
-   ASSERT_THROW(board.undoMove(m), exceptions::MoveNotFound);
+   ASSERT_THROW(board.undoMove(m), exceptions::UndoMoveError);
 }
 
 TEST_F(ChessboardTest, undoMove)
 {
    Chessboard board;
-   Move m(WHITE, PAWN, e2, e4);
+   Move move(WHITE, PAWN, e2, e4);
 
-   board.applyMove(m);
+   board.applyMove(move);
 
+   ASSERT_NO_THROW(board.undoMove(move));
    ExpectedU64 DEFAULT_INITAL_BOARD(0xFFFF00000000FFFF);
-   ASSERT_NO_THROW(board.undoMove(m));
    ASSERT_EQ(board.getOccupiedSquares(), DEFAULT_INITAL_BOARD);
 }
 
