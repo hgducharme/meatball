@@ -44,7 +44,7 @@ Chessboard::Chessboard()
     colorBitboards_[Color::BLACK] = constants::DEFAULT_BLACK_OCCUPIED;
 }
 
-const Bitboard & Chessboard::getOccupiedSquares() const
+const Bitboard Chessboard::getOccupiedSquares() const
 {
     return getBitboard(Color::WHITE) | getBitboard(Color::BLACK);
 }
