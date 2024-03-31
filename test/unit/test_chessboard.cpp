@@ -2,6 +2,7 @@
 #include "../src/exceptions.h"
 #include "../src/types.h"
 #include "../src/move.h"
+#include "../utils/expected_uint64t.h"
 
 #include "gtest/gtest.h"
 
@@ -236,11 +237,9 @@ TEST_F(ChessboardTest, undoMove)
 
    board.applyMove(m);
 
-   std::cout << board.getOccupiedSquares() << std::endl;
-
-   u64 DEFAULT_INITAL_BOARD = 0xFF0000FF;
+   ExpectedU64 DEFAULT_INITAL_BOARD(0xFFFF00000000FFFF);
    ASSERT_NO_THROW(board.undoMove(m));
-   ASSERT_EQ(board.getOccupiedSquares(), DEFAULT_INITAL_BOARD) << "occupiedSquares = " << board.getOccupiedSquares();
+   ASSERT_EQ(board.getOccupiedSquares(), DEFAULT_INITAL_BOARD);
 }
 
 }  // namespace
