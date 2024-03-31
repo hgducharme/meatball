@@ -156,11 +156,12 @@ TEST_F(ChessboardTest, applyMove_shouldMoveWhitePawnFromE2ToE4)
    chessboard.applyMove(Move(WHITE, PAWN, e2, e4));
 
    u64 EXPECTED = 0x1000EF00;
-   const Bitboard & bitboard = chessboard.getBitboard(WHITE, PAWN);
-   ASSERT_EQ(bitboard.toU64(), EXPECTED);
+   const Bitboard & whitePawnBitboard = chessboard.getBitboard(WHITE, PAWN);
+   ASSERT_EQ(whitePawnBitboard.toU64(), EXPECTED);
 
    ExpectedU64 WHITE_PAWN_E2_E4(0xffff00001000efff);
-   ASSERT_EQ(chessboard.getOccupiedSquares(), WHITE_PAWN_E2_E4);
+   const Bitboard occupiedSquares = chessboard.getOccupiedSquares();
+   ASSERT_EQ(occupiedSquares, WHITE_PAWN_E2_E4);
 }
 
 TEST_F(ChessboardTest, getActivePlayer_returnsWhiteByDefault)
@@ -226,11 +227,23 @@ TEST_F(ChessboardTest, getOccupiedSquares)
    ASSERT_EQ(chessboard.getOccupiedSquares().toU64(), EXPECTED);
 }
 
-TEST_F(ChessboardTest, undoMove_throwsExceptionIfNoMoveWasMade)
+TEST_F(ChessboardTest, undoMove_throwsExceptionIfThereIsNoMoveHistory)
 {
    Chessboard board;
    Move m(WHITE, PAWN, e2, e4);
-   ASSERT_THROW(board.undoMove(m), exceptions::UndoMoveError);
+   ASSERT_THROW(board.undoMove(m), std::runtime_error);
+}
+
+TEST_F(ChessboardTest, undoMove_throwsExceptionIfMoveIsNotLastMove)
+{
+   Chessboard board;
+   Move move1(WHITE, PAWN, e2, e4);
+   Move move2(BLACK, PAWN, e7, e5);
+
+   board.applyMove(move1);
+   board.applyMove(move2);
+
+   ASSERT_THROW(board.undoMove(move1), std::runtime_error);
 }
 
 TEST_F(ChessboardTest, undoMove)
@@ -241,6 +254,7 @@ TEST_F(ChessboardTest, undoMove)
    board.applyMove(move);
 
    ASSERT_NO_THROW(board.undoMove(move));
+
    ExpectedU64 DEFAULT_INITAL_BOARD(0xFFFF00000000FFFF);
    ASSERT_EQ(board.getOccupiedSquares(), DEFAULT_INITAL_BOARD);
 }

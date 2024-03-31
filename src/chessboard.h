@@ -5,6 +5,7 @@
 #include "move.h"
 
 #include <vector>
+#include <string>
 
 class Chessboard {
     private:
@@ -30,4 +31,9 @@ class Chessboard {
         Color getNonActivePlayer() const;
         void undoMove(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare);
         void undoMove(const Move & move);
+
+     private:
+        void updateBitboards(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare);
+        void raiseExceptionIfMoveIsNotLastMove(const Move & move, const std::string & errorMessage) const;
+        void raiseExceptionIfMoveHistoryIsEmpty(const std::string & errorMessage) const;
 };

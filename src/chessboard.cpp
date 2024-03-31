@@ -68,15 +68,21 @@ void Chessboard::applyMove(const Color color, const PieceType piece, const Squar
 {
     if (color != activePlayer_) { return; }
 
-    // Update the piece bitboard
-    pieceBitboards_[piece].clearBit(startingSquare);
-    pieceBitboards_[piece].setBit(endingSquare);
+    updateBitboards(color, piece, startingSquare, endingSquare);
 
-    // Update the color bitboard
-    colorBitboards_[color].clearBit(startingSquare);
-    colorBitboards_[color].setBit(endingSquare);
+    Move move(color, piece, startingSquare, endingSquare);
+    moveHistory.push_back(move);
 
     toggleActivePlayer();
+}
+
+void Chessboard::updateBitboards(const Color color, const PieceType piece, const Square squareToClear, const Square squareToSet)
+{
+    pieceBitboards_[piece].clearBit(squareToClear);
+    pieceBitboards_[piece].setBit(squareToSet);
+
+    colorBitboards_[color].clearBit(squareToClear);
+    colorBitboards_[color].setBit(squareToSet);
 }
 
 void Chessboard::applyMove(const Move & move)
@@ -107,14 +113,38 @@ Color Chessboard::getNonActivePlayer() const
     return nonActivePlayer_;
 }
 
-void Chessboard::undoMove(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare)
-{
-    // TODO:
-    // 1. Check to see if the move exists in the move history, if it doesn't throw an exception
-    // 2. If the move exists in the move history, reverse the move. That is, move the piece from endingSquare to startingSquare. We don't need to check the legality of this if this was the last move to be made, because the move couldn't have happened if it was illegal. On the other hand, if the move happened more than 1 moves ago, what does it even mean to undo this move? That doesn't make sense. So we should also verify that the move requesting to be undone was the last move to be made. Perhaps the moveHistory can be a hashtable, and we can hash the move to a unique identifier. We should be able to achieve perfect hashing for this no? Like the move "whitepawne2e4" plus a timestamp?
-}
-
 void Chessboard::undoMove(const Move & move)
 {
     undoMove(move.color, move.piece, move.startSquare, move.endSquare);
+}
+
+void Chessboard::undoMove(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare)
+{
+    Move move(color, piece, startingSquare, endingSquare);
+    raiseExceptionIfMoveHistoryIsEmpty("There is no move history, and therefore no moves to undo.");
+    raiseExceptionIfMoveIsNotLastMove(move, "The requested move can not be undone. Only the last move to be made can be undone.");
+
+    // Remove the last move from the move history
+    moveHistory.pop_back();
+
+    // Move the piece back to its original square
+    updateBitboards(color, piece, endingSquare, startingSquare);
+}
+
+void Chessboard::raiseExceptionIfMoveHistoryIsEmpty(const std::string & errorMessage) const
+{
+    if (moveHistory.empty())
+    {
+        throw exceptions::MoveHistoryIsEmpty(errorMessage);
+    }
+}
+
+void Chessboard::raiseExceptionIfMoveIsNotLastMove(const Move & move, const std::string & errorMessage) const
+{
+    Move lastMove = moveHistory.back();
+    const bool moveIsNotTheLastMove = !(lastMove == move);
+    if (moveIsNotTheLastMove)
+    {
+        throw exceptions::UndoMoveError(errorMessage);
+    }
 }

@@ -11,4 +11,12 @@ namespace exceptions
       public:
          explicit UndoMoveError(const std::string & message) : std::runtime_error(message) {};
    };
+
+   class MoveHistoryIsEmpty : public std::runtime_error
+   {
+      public:
+         explicit MoveHistoryIsEmpty(const std::string & message) : std::runtime_error(message) {};
+   };
+
+   
 }
