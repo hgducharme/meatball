@@ -441,5 +441,13 @@ TEST_F(BitboardTest, bitboardCanBeMultipliedWith64BitIntegers)
    EXPECT_EQ(universe * b, universe);
 }
 
+TEST_F(BitboardTest, toBinary)
+{
+   const u64 universe = 0xFFFFFFFFFFFFFFFF;
+   const Bitboard b(universe);
+
+   ASSERT_EQ(b.toBinary(), "1111111111111111111111111111111111111111111111111111111111111111");
+}
+
 }  // namespace
 }  // namespace meatball
