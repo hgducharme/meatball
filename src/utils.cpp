@@ -10,6 +10,12 @@
 namespace utils
 {
 
+Bitboard shiftCurrentSquareByDirection(const Square square, const int numberOfBits)
+{
+   Bitboard squareAsBitboard(square);
+   return shiftCurrentSquareByDirection(squareAsBitboard, numberOfBits);
+}
+
 Bitboard shiftCurrentSquareByDirection(const Bitboard & oldPosition, const int numberOfBits)
 {
    Bitboard newPosition;
