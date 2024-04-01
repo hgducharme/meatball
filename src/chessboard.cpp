@@ -71,13 +71,6 @@ void Chessboard::applyMove(const Move & move)
 
 void Chessboard::applyMove(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare)
 {
-    // TODO: This causes a bug in the perft.
-    // The perft receives a list of only white moves, and after the first white move
-    // this function gets called with another white move and then the move doesn't apply.
-    // This then causes undoMove() to throw an exception because the move the perft
-    // thought it applied didn't get added to the move history.
-    if (color != activePlayer_) { return; }
-
     updateBitboards(color, piece, startingSquare, endingSquare);
 
     Move move(color, piece, startingSquare, endingSquare);
@@ -134,6 +127,8 @@ void Chessboard::undoMove(const Color color, const PieceType piece, const Square
 
     // Move the piece back to its original square
     updateBitboards(color, piece, endingSquare, startingSquare);
+
+    toggleActivePlayer();
 }
 
 void Chessboard::raiseExceptionIfMoveHistoryIsEmpty(const std::string & errorMessage) const
