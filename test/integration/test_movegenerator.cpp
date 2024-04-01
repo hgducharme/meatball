@@ -70,15 +70,25 @@ TEST_F(MoveGeneratorTest, generatePsuedoLegalMoves)
 	moves = moveGenerator.generatePsuedoLegalMoves(game);
 }
 
-TEST_F(MoveGeneratorTest, perftTesting)
+TEST_F(MoveGeneratorTest, perft_initialPositionDepth1)
 {
    Chessboard game;
-   uint16_t depth;
+   uint16_t depth = 1;
 
    u64 numberOfNodes = perft(game, depth);
 
-   // TODO: get an expected value from stockfish or something.
-   u64 EXPECTED = constants::UNIVERSE;
+   u64 EXPECTED = 20;
+   ASSERT_EQ(numberOfNodes, EXPECTED);
+}
+
+TEST_F(MoveGeneratorTest, perft_initialPositionDepth3)
+{
+   Chessboard game;
+   uint16_t depth = 3;
+
+   u64 numberOfNodes = perft(game, depth);
+
+   u64 EXPECTED = 8902;
    ASSERT_EQ(numberOfNodes, EXPECTED);
 }
 
