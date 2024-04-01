@@ -85,4 +85,5 @@ MoveVector LegalMoveGenerator::generateLegalMoves(const Chessboard & gameState)
     // MoveList legalMoves = filterOutIllegalMoves(psuedoLegalMoves);
 
     // return legalMoves;
+    return psuedoLegalMoves;
 }
