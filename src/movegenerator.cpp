@@ -23,7 +23,6 @@ MoveVector LegalMoveGenerator::generatePsuedoLegalMoves(const Chessboard & gameS
 }
 
 // TODO: This currently doesn't handle single push, double push, en pessant, castling, or pawn promotions
-// TOOD: The moves for rook on H1 isn't being calculated.
 MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const Chessboard & gameState) const
 {
     MoveVector moves;
