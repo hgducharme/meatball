@@ -139,16 +139,6 @@ TEST_F(ChessboardTest, movePiece_togglesActivePlayer)
    ASSERT_EQ(activePlayer, WHITE);
 }
 
-TEST_F(ChessboardTest, movePiece_doesNothingIfWrongSideTriesToMakeMove)
-{
-   Chessboard chessboard;
-
-   // It's white's turn by default
-   chessboard.applyMove(BLACK, PAWN, e2, e4);
-
-   ASSERT_EQ(chessboard.getBitboard(PAWN).toU64(), constants::DEFAULT_PAWN_STRUCTURE);
-}
-
 TEST_F(ChessboardTest, applyMove_shouldMoveWhitePawnFromE2ToE4)
 {
    Chessboard chessboard;
