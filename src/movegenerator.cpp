@@ -1,6 +1,7 @@
 #include "movegenerator.h"
 
 #include "move.h"
+#include "utils.h"
 #include "attacktables.h"
 
 MoveVector LegalMoveGenerator::generatePsuedoLegalMoves(const Chessboard & gameState) const
@@ -22,7 +23,7 @@ MoveVector LegalMoveGenerator::generatePsuedoLegalMoves(const Chessboard & gameS
     return psuedoLegalMoves;
 }
 
-// TODO: This currently doesn't handle single push, double push, en pessant, castling, or pawn promotions
+// TODO: This currently doesn't handle en pessant, castling, or pawn promotions
 MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const Chessboard & gameState) const
 {
     MoveVector moves;
@@ -36,7 +37,35 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
     {
         const Square startingSquare = (Square)(activePlayerPieceType.clearAndReturnLSB());
 
+        // Get the attacks for this piece.
+        // The attack ray for a piece is the same as the possible moves for all pieces
+        // except pawns.
         Bitboard psuedoLegalMoves = attack_tables::getAttacks(activePlayer, pieceType, startingSquare, gameState.getOccupiedSquares());
+
+        // Add single pushes for pawns to the list of psuedo legal moves
+        if (pieceType == PieceType::PAWN)
+        {
+            // TODO: North only works for white
+            Direction direction = NORTH;
+            if (activePlayer == Color::BLACK)
+            {
+                direction = Direction::SOUTH;
+            }
+            Bitboard singlePush = utils::shiftCurrentSquareByDirection(startingSquare, direction);
+
+            // TODO: Verify that this single push doens't put us off the board.
+            // TODO: Check if this single push gives us a promotion.
+            psuedoLegalMoves |= singlePush;
+
+            // If this pawn exists on the default pawn structure, then it is psueo-ellegible for a double push push
+            // TODO: Fix the if conditional to something a bit better and readable.
+            Bitboard pawnExistsOnDefaultPawnStructure = Bitboard(startingSquare) & constants::DEFAULT_PAWN_STRUCTURE;
+            if (pawnExistsOnDefaultPawnStructure.numberOfSetBits() == 1)
+            {
+                Bitboard doublePush = utils::shiftCurrentSquareByDirection(startingSquare, 2 * direction);
+                psuedoLegalMoves |= doublePush;
+            }
+        }
 
         // Remove any moves that attack our own pieces
         psuedoLegalMoves &= ~(activePlayerPieces & psuedoLegalMoves);
@@ -51,6 +80,8 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
         for (int j = 0; j < numberOfPsuedoLegalMoves; j++)
         {
             // TODO: remove any moves that will result in the active player being in check, this is illegal
+            // Technically this should be done in the filerOutIlliegalMoves().
+            // Will ignore this issue for now and work on generating pawn pushes and double pushes.
             // If after this move the king is in check, then either we were in check to begin with or
             // this move puts the king in check, so don't add this move to the list
             // Brute force method: for every single black piece on the board, calculate the attack vector to the king,

@@ -62,7 +62,7 @@ namespace meatball
       {
          Chessboard game;
          uint16_t depth = 1;
-
+         
          u64 numberOfNodes = perft(game, depth);
 
          u64 EXPECTED = 20;
