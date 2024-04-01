@@ -41,6 +41,10 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
         // Remove any moves that attack our own pieces
         psuedoLegalMoves &= ~(activePlayerPieces & psuedoLegalMoves);
 
+        // TODO: I'm pretty sure this is incorrect. If white plays e2e4 and then
+        // We get here by calculating psuedo legal moves for black bishops,
+        // We should expect this to show the attack ray of the white F1 bishop,
+        // but this says that the f1 bishop has 0 attack ray, which is untrue.
         Bitboard attackedSquaresByNonActivePlayer = attack_tables::getAttacks(nonActivePlayer, pieceType, startingSquare, gameState.getOccupiedSquares());
 
         int numberOfPsuedoLegalMoves = psuedoLegalMoves.numberOfSetBits();
@@ -78,8 +82,9 @@ Bitboard LegalMoveGenerator::filterLegalPawnMoves(Bitboard & psuedoLegalPawnMove
 MoveVector LegalMoveGenerator::generateLegalMoves(const Chessboard & gameState)
 {
     MoveVector psuedoLegalMoves = generatePsuedoLegalMoves(gameState);
+    
     // MoveList legalMoves = filterOutIllegalMoves(psuedoLegalMoves);
-
     // return legalMoves;
+
     return psuedoLegalMoves;
 }
