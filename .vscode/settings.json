@@ -15,6 +15,16 @@
       "string_view": "cpp",
       "unordered_map": "cpp",
       "vector": "cpp",
-      "format": "cpp"
+      "format": "cpp",
+      "type_traits": "cpp",
+      "functional": "cpp",
+      "*.tcc": "cpp",
+      "algorithm": "cpp",
+      "any": "cpp",
+      "optional": "cpp",
+      "variant": "cpp",
+      "__functional_03": "cpp",
+      "chrono": "cpp",
+      "random": "cpp"
    }
 }
