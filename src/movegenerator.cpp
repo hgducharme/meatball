@@ -148,12 +148,12 @@ Bitboard LegalMoveGenerator::getPawnDoublePush(const Color activePlayer, const S
     return doublePush;
 }
 
-bool LegalMoveGenerator::pawnHasNotMoved(const Color activePlayer, const Square pawnLocation) const
+const bool LegalMoveGenerator::pawnHasNotMoved(const Color activePlayer, const Square pawnLocation) const
 {
     return !pawnHasMoved(activePlayer, pawnLocation);
 }
 
-bool LegalMoveGenerator::pawnHasMoved(const Color activePlayer, const Square pawnLocation) const
+const bool LegalMoveGenerator::pawnHasMoved(const Color activePlayer, const Square pawnLocation) const
 {
     // The pawn has moved if it does not exist on it's own color's default pawn structure.
     u64 defaultPawnStructure = constants::DEFAULT_WHITE_PAWN_STRUCTURE;
