@@ -26,8 +26,8 @@ class LegalMoveGenerator : public MoveGenerator
       Bitboard getPawnDoublePush(const Color activePlayer, const Square startingSquare, Direction direction) const;
       bool pawnHasNotMoved(const Color activePlayer, const Square pawnLocation) const;
       bool pawnHasMoved(const Color activePlayer, const Square pawnLocation) const;
-      Bitboard getEnPessant(const Color activePlayer, const Square startSquare) const;
-      Bitboard getCastles(const Color activePlayer, const Square startSquare) const;
+      Bitboard getEnPessant(const Color activePlayer, const Square startingSquare) const;
+      Bitboard getCastles(const Color activePlayer, const Square startingSquare) const;
       bool isPawnPromotion(const PieceType pieceType, const Square targetSquare) const;
       void filterOutIllegalMoves(MoveVector & psuedoLegalMoves) const;
 };

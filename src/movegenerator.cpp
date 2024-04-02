@@ -153,7 +153,7 @@ bool LegalMoveGenerator::pawnHasMoved(const Color activePlayer, const Square paw
     return pawnIsAwayFromInitialPosition;
 }
 
-Bitboard LegalMoveGenerator::getEnPessant(const Color activePlayer, const Square startSquare) const
+Bitboard LegalMoveGenerator::getEnPessant(const Color activePlayer, const Square startingSquare) const
 {
     // If a pawn does a double push, we need to check if it moved through a pawn's attack ray.
     // We need to keep track of two things: if the pawn did a double push, if it moved through an attack ray.
@@ -173,7 +173,7 @@ Bitboard LegalMoveGenerator::getEnPessant(const Color activePlayer, const Square
     return Bitboard();
 }
 
-Bitboard LegalMoveGenerator::getCastles(const Color activePlayer, const Square startSquare) const
+Bitboard LegalMoveGenerator::getCastles(const Color activePlayer, const Square startingSquare) const
 {
     // The chessboard should keep track of castling rights. Both players get a queenside and kingside castling right by default at the start of the game. After every applied move to the game, the chessboard should update each side's castling rights. If one side has already castled, then we don't need to bother with updating their rights anymore, it will always remain false from here on out. The chessboard shouldn't consider attack rays I don't think. It will only keep track of whether or not a side is psuedo-ellegible to castle. That is, it will look at the applied move and if a side has moved their king then their rights to castle get set to false, if they move a rook, then the right to castle to that side is set to false. If a right is ever set to false, we no longer need to update it regardless of what happens. Once it gets set to false it's always false.
 
