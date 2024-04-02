@@ -142,21 +142,31 @@ Bitboard LegalMoveGenerator::getPawnDoublePush(const Color activePlayer, const S
 {
     Bitboard doublePush;
 
-    // If this pawn exists on it's own colors default pawn structure, then it has not moved yet and is psuedo-ellegible for a double push (this function does not account for blockers).
+    if (pawnHasNotMoved(activePlayer, startingSquare))
+    {
+        doublePush |= utils::shiftSquareByDirection(startingSquare, 2 * direction);
+    }
+
+    return doublePush;
+}
+
+bool LegalMoveGenerator::pawnHasNotMoved(const Color activePlayer, const Square pawnLocation) const
+{
+    // If the pawn exists on it's own color's default pawn structure, then it has not moved yet.
     u64 defaultPawnStructure = constants::DEFAULT_WHITE_PAWN_STRUCTURE;
     if (activePlayer == BLACK)
     {
         defaultPawnStructure = constants::DEFAULT_BLACK_PAWN_STRUCTURE;
     }
 
-    Bitboard pawnExistsOnDefaultPawnStructure = Bitboard(startingSquare) & defaultPawnStructure;
+    Bitboard pawnRelationToInitialPosition = Bitboard(pawnLocation) & defaultPawnStructure;
+    bool pawnIsAtInitialPosition = (pawnRelationToInitialPosition.numberOfSetBits() == 1);
+    return pawnIsAtInitialPosition;
+}
 
-    if (pawnExistsOnDefaultPawnStructure.numberOfSetBits() == 1)
-    {
-        doublePush |= utils::shiftSquareByDirection(startingSquare, 2 * direction);
-    }
-
-    return doublePush;
+bool LegalMoveGenerator::pawnHasMoved(const Color activePlayer, const Square pawnLocation) const
+{
+    return !pawnHasNotMoved(activePlayer, pawnLocation);
 }
 
 Bitboard LegalMoveGenerator::filterLegalPawnMoves(Bitboard & psuedoLegalPawnMoves)
