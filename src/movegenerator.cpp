@@ -155,6 +155,7 @@ bool LegalMoveGenerator::pawnHasMoved(const Color activePlayer, const Square paw
 
 Bitboard LegalMoveGenerator::getEnPessant(const Color activePlayer, const Square startingSquare) const
 {
+    // TODO:
     // If a pawn does a double push, we need to check if it moved through a pawn's attack ray.
     // We need to keep track of two things: if the pawn did a double push, if it moved through an attack ray.
     // Consider being on this line for a white pawn that has advanced to the 5th rank on it's previous move.
@@ -175,6 +176,7 @@ Bitboard LegalMoveGenerator::getEnPessant(const Color activePlayer, const Square
 
 Bitboard LegalMoveGenerator::getCastles(const Color activePlayer, const Square startingSquare) const
 {
+    // TODO:
     // The chessboard should keep track of castling rights. Both players get a queenside and kingside castling right by default at the start of the game. After every applied move to the game, the chessboard should update each side's castling rights. If one side has already castled, then we don't need to bother with updating their rights anymore, it will always remain false from here on out. The chessboard shouldn't consider attack rays I don't think. It will only keep track of whether or not a side is psuedo-ellegible to castle. That is, it will look at the applied move and if a side has moved their king then their rights to castle get set to false, if they move a rook, then the right to castle to that side is set to false. If a right is ever set to false, we no longer need to update it regardless of what happens. Once it gets set to false it's always false.
 
     // We also need to consider if there are our own pieces in the way of our castling efforts.
@@ -196,19 +198,21 @@ bool LegalMoveGenerator::isPawnPromotion(const PieceType pieceType, const Square
 
 void LegalMoveGenerator::filterOutIllegalMoves(MoveVector & psuedoLegalMoves) const
 {
-    // TODO: For pawns, remove attacks that don't capture anything. For all other pieces an attack and a move is the same thing. We can not wait until here to filter out pawn captures that don't capture anything. We won't know if the move is an attack or a push. I suppose we could check if the targetSquare is in a straight direction North or South from the start square.
+    for (int j = 0; j < psuedoLegalMoves.size(); j++)
+    {
+        // filterOutMovesThatLeaveKingInCheck();
+        // filterOutEmptyPawnAttacks();
 
-    // TODO: if the king is in check after this move, then we either moved the King into check, or we moved a piece that was pinned. Everything below this relates to checking if the king is in check.
+        // TODO: For pawns, remove attacks that don't capture anything. For all other pieces an attack and a move is the same thing. We can not wait until here to filter out pawn captures that don't capture anything. We won't know if the move is an attack or a push. I suppose we could check if the targetSquare is in a straight direction North or South from the start square.
 
-    // TODO: I'm pretty sure this is incorrect. If white plays e2e4 and then
-    // We get here by calculating psuedo legal moves for black bishops,
-    // We should expect this to show the attack ray of the white F1 bishop,
-    // but this says that the f1 bishop has 0 attack ray, which is untrue.
-    // Bitboard attackedSquaresByNonActivePlayer = attack_tables::getAttacks(nonActivePlayer, pieceType, startingSquare, gameState.getOccupiedSquares());
+        // TODO: if the king is in check after this move, then we either moved the King into check, or we moved a piece that was pinned. Everything below this relates to checking if the king is in check.
 
-    // int numberOfMoves = psuedoLegalMoves.numberOfSetBits();
-    // for (int j = 0; j < numberOfMoves; j++)
-    // {
+        // TODO: I'm pretty sure this is incorrect. If white plays e2e4 and then
+        // We get here by calculating psuedo legal moves for black bishops,
+        // We should expect this to show the attack ray of the white F1 bishop,
+        // but this says that the f1 bishop has 0 attack ray, which is untrue.
+        // Bitboard attackedSquaresByNonActivePlayer = attack_tables::getAttacks(nonActivePlayer, pieceType, startingSquare, gameState.getOccupiedSquares());
+
         // Maybe this entire block should be saved for the filter out illegal moves thing method?
         // This block is checking for a move puts our king in check or not.
         // TODO: remove any moves that will result in the active player being in check, this is illegal
@@ -229,7 +233,7 @@ void LegalMoveGenerator::filterOutIllegalMoves(MoveVector & psuedoLegalMoves) co
         //     // Don't add this move to the list since it either puts the king in check or leaves the king in check
         //     continue;
         // }
-    // }
+    }
 }
 
 MoveVector LegalMoveGenerator::generateLegalMoves(const Chessboard & gameState)
