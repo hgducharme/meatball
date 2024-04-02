@@ -23,7 +23,7 @@ MoveVector LegalMoveGenerator::generatePsuedoLegalMoves(const Chessboard & gameS
     return psuedoLegalMoves;
 }
 
-// TODO: This currently doesn't handle en pessant, castling, or pawn promotions
+// TODO: This currently doesn't handle en pessant, castling.
 MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const Chessboard & gameState) const
 {
     MoveVector moves;
@@ -50,16 +50,12 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
         const Square startingSquare = (Square)(activePlayerPieceType.clearAndReturnLSB());
 
         // Get the attacks for this piece.
-        // The attack ray for a piece is the same as the possible moves for all pieces
-        // except pawns.
+        // The attack ray for a piece is the same as the set of possible moves for all pieces except pawns.
         Bitboard psuedoLegalMoves = attack_tables::getAttacks(activePlayer, pieceType, startingSquare, gameState.getOccupiedSquares());
 
-        // Add single pushes for pawns to the list of psuedo legal moves
         if (pieceType == PieceType::PAWN)
         {
             psuedoLegalMoves |= getPawnPushes(activePlayer, startingSquare);
-
-            // TODO: For a white pawn, if we get a pawn push (or capture) that puts it on the 8th rank, then mark this move as a promotion move.
         }
 
         // Remove any moves that attack our own pieces
@@ -74,6 +70,8 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
         int numberOfPsuedoLegalMoves = psuedoLegalMoves.numberOfSetBits();
         for (int j = 0; j < numberOfPsuedoLegalMoves; j++)
         {
+            // Maybe this entire block should be saved for the filter out illegal moves thing method?
+            // This block is checking for a move puts our king in check or not.
             // TODO: remove any moves that will result in the active player being in check, this is illegal
             // Technically this should be done in the filerOutIlliegalMoves().
             // Will ignore this issue for now and work on generating pawn pushes and double pushes.
@@ -84,17 +82,18 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
             // Maybe more efficient method: get the attack boards for all of the black pieces. Do a bitwise and with the king's position,
             // Do we get left with a set bit? If so, the king is under attack.
             // We need to pass in the color of the nonActivePlayer
-            Bitboard activePlayerKingPosition = gameState.getBitboard(activePlayer, PieceType::KING);
-            activePlayerKingPosition &= attackedSquaresByNonActivePlayer;
+            // Bitboard activePlayerKingPosition = gameState.getBitboard(activePlayer, PieceType::KING);
+            // activePlayerKingPosition &= attackedSquaresByNonActivePlayer;
 
-            if (activePlayerKingPosition.numberOfSetBits() > 0)
-            {
-                // Don't add this move to the list since it either puts the king in check or leaves the king in check
-                continue;
-            }
+            // if (activePlayerKingPosition.numberOfSetBits() > 0)
+            // {
+            //     // Don't add this move to the list since it either puts the king in check or leaves the king in check
+            //     continue;
+            // }
 
             const Square targetSquare = (Square)(psuedoLegalMoves.clearAndReturnLSB());
-            Move m(activePlayer, pieceType, startingSquare, targetSquare);
+            const bool pawnPromotion = isPawnPromotion(pieceType, targetSquare);
+            const Move m(activePlayer, pieceType, startingSquare, targetSquare, pawnPromotion);
             moves.push_back(m);
         }
     }
@@ -102,7 +101,6 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
     return moves;
 }
 
-// TODO: This does not currently handle promotions
 Bitboard LegalMoveGenerator::getPawnPushes(const Color activePlayer, const Square startingSquare) const
 {
     Bitboard pawnPushes;
@@ -152,7 +150,12 @@ Bitboard LegalMoveGenerator::getPawnDoublePush(const Color activePlayer, const S
 
 bool LegalMoveGenerator::pawnHasNotMoved(const Color activePlayer, const Square pawnLocation) const
 {
-    // If the pawn exists on it's own color's default pawn structure, then it has not moved yet.
+    return !pawnHasMoved(activePlayer, pawnLocation);
+}
+
+bool LegalMoveGenerator::pawnHasMoved(const Color activePlayer, const Square pawnLocation) const
+{
+    // The pawn has moved if it does not exist on it's own color's default pawn structure.
     u64 defaultPawnStructure = constants::DEFAULT_WHITE_PAWN_STRUCTURE;
     if (activePlayer == BLACK)
     {
@@ -160,13 +163,20 @@ bool LegalMoveGenerator::pawnHasNotMoved(const Color activePlayer, const Square 
     }
 
     Bitboard pawnRelationToInitialPosition = Bitboard(pawnLocation) & defaultPawnStructure;
-    bool pawnIsAtInitialPosition = (pawnRelationToInitialPosition.numberOfSetBits() == 1);
-    return pawnIsAtInitialPosition;
+    bool pawnIsAwayFromInitialPosition = (pawnRelationToInitialPosition.numberOfSetBits() == 0);
+    return pawnIsAwayFromInitialPosition;
 }
 
-bool LegalMoveGenerator::pawnHasMoved(const Color activePlayer, const Square pawnLocation) const
+const bool LegalMoveGenerator::isPawnPromotion(const PieceType pieceType, const Square targetSquare) const
 {
-    return !pawnHasNotMoved(activePlayer, pawnLocation);
+    bool isPawnPromotion = false;
+
+    if (pieceType == PAWN)
+    {
+        isPawnPromotion = (Chessboard::squareToRank(targetSquare) == RANK_8);
+    }
+
+    return isPawnPromotion;
 }
 
 Bitboard LegalMoveGenerator::filterLegalPawnMoves(Bitboard & psuedoLegalPawnMoves)
