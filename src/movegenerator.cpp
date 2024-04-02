@@ -57,7 +57,7 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
         // Add single pushes for pawns to the list of psuedo legal moves
         if (pieceType == PieceType::PAWN)
         {
-            Bitboard psuedoLegalPushes = getPawnPushes(activePlayer, startingSquare);
+            psuedoLegalMoves |= getPawnPushes(activePlayer, startingSquare);
 
             // TODO: For a white pawn, if we get a pawn push (or capture) that puts it on the 8th rank, then mark this move as a promotion move.
         }
@@ -113,13 +113,13 @@ Bitboard LegalMoveGenerator::getPawnPushes(const Color activePlayer, const Squar
         direction = Direction::SOUTH;
     }
 
-    pawnPushes |= getPawnSinglePush(startingSquare, direction, activePlayer);
-    pawnPushes |= getPawnDoublePush(startingSquare, direction);
+    pawnPushes |= getPawnSinglePush(activePlayer, startingSquare, direction);
+    pawnPushes |= getPawnDoublePush(activePlayer, startingSquare, direction);
 
     return pawnPushes;
 }
 
-Bitboard LegalMoveGenerator::getPawnSinglePush(const Square startingSquare, Direction direction, const Color activePlayer) const
+Bitboard LegalMoveGenerator::getPawnSinglePush(const Color activePlayer, const Square startingSquare, Direction direction) const
 {
     Bitboard singlePush;
 
@@ -138,13 +138,18 @@ Bitboard LegalMoveGenerator::getPawnSinglePush(const Square startingSquare, Dire
     return singlePush;
 }
 
-Bitboard LegalMoveGenerator::getPawnDoublePush(const Square startingSquare, Direction direction) const
+Bitboard LegalMoveGenerator::getPawnDoublePush(const Color activePlayer, const Square startingSquare, Direction direction) const
 {
     Bitboard doublePush;
 
-    // If this pawn exists on the default pawn structure, then it is psueo-ellegible for a double push push
-    // TODO: Fix the if conditional to something a bit better and readable.
-    Bitboard pawnExistsOnDefaultPawnStructure = Bitboard(startingSquare) & constants::DEFAULT_PAWN_STRUCTURE;
+    // If this pawn exists on it's own colors default pawn structure, then it has not moved yet and is psuedo-ellegible for a double push (this function does not account for blockers).
+    u64 defaultPawnStructure = constants::DEFAULT_WHITE_PAWN_STRUCTURE;
+    if (activePlayer == BLACK)
+    {
+        defaultPawnStructure = constants::DEFAULT_BLACK_PAWN_STRUCTURE;
+    }
+
+    Bitboard pawnExistsOnDefaultPawnStructure = Bitboard(startingSquare) & defaultPawnStructure;
 
     if (pawnExistsOnDefaultPawnStructure.numberOfSetBits() == 1)
     {

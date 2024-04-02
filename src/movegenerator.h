@@ -16,13 +16,13 @@ class LegalMoveGenerator : public MoveGenerator
 {
    public:
       LegalMoveGenerator() = default;
-      MoveVector getMovesByPiece(const PieceType pieceType, const Chessboard & gameState) const;
       MoveVector generateLegalMoves(const Chessboard & gameState) override;
-      MoveVector generatePsuedoLegalMoves(const Chessboard & gameState) const;
-      Bitboard filterLegalPawnMoves(Bitboard & psuedoLegalPawnMoves);
 
    private:
+      MoveVector generatePsuedoLegalMoves(const Chessboard & gameState) const;
+      MoveVector getMovesByPiece(const PieceType pieceType, const Chessboard & gameState) const;
+      Bitboard filterLegalPawnMoves(Bitboard & psuedoLegalPawnMoves);
       Bitboard getPawnPushes(const Color activePlayer, const Square startingSquare) const;
-      Bitboard getPawnSinglePush(const Square startingSquare, Direction direction, const Color activePlayer) const;
-      Bitboard getPawnDoublePush(const Square startingSquare, Direction direction) const;
+      Bitboard getPawnSinglePush(const Color activePlayer, const Square startingSquare, Direction direction) const;
+      Bitboard getPawnDoublePush(const Color activePlayer, const Square startingSquare, Direction direction) const;
 };
