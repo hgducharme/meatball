@@ -4,12 +4,13 @@
 
 struct Move
 {
+    Move(Color c, PieceType p, Square start, Square end);
     Move(Color c, PieceType p, Square start, Square end, bool isPawnPromotion);
     Color color;
     PieceType piece;
     Square startSquare;
     Square endSquare;
-    bool isPawnPromotion;
+    bool isPawnPromotion = false;
 };
 
 inline bool operator == (const Move & lhs, const Move & rhs)
