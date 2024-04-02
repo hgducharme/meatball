@@ -31,6 +31,18 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
     const Color nonActivePlayer = gameState.getNonActivePlayer();
     const Bitboard activePlayerPieces = gameState.getBitboard(activePlayer);
     Bitboard activePlayerPieceType = gameState.getBitboard(activePlayer, pieceType);
+
+    /* Potential refactor. The piece should know how itself moves.
+    pieceType.getMoves();
+
+    Pawn.getMoves
+    {
+        getPushes();
+        getCaptures();
+        getEnPessant();
+        getPromotions();
+    }
+    */
     
     const int numberOfActivePlayerPieceType = activePlayerPieceType.numberOfSetBits();
     for (int i = 0; i < numberOfActivePlayerPieceType; i++)
