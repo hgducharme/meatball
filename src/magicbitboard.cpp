@@ -90,7 +90,7 @@ Bitboard calculateBlockerMask(const Bitboard & position, const Direction (&slide
 
         for (int i = 1; i < distanceToEdge; i++)
         {
-            potentialBlockerSquares |= utils::shiftCurrentSquareByDirection(position, i * direction);
+            potentialBlockerSquares |= utils::shiftSquareByDirection(position, i * direction);
         }
     }
 
@@ -162,7 +162,7 @@ Bitboard calculateAttacksFromSquare(const Square & square, const Direction (&att
 
         for (int i = 1; i < distanceToEdge; i++)
         {
-            Bitboard targetSquare = utils::shiftCurrentSquareByDirection(squareBitboard, i * direction);
+            Bitboard targetSquare = utils::shiftSquareByDirection(squareBitboard, i * direction);
             if (targetSquareIsBlocked(targetSquare, blockerVariation))
             {
                 break;
