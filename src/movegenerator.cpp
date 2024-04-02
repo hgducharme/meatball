@@ -57,26 +57,9 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
         // Add single pushes for pawns to the list of psuedo legal moves
         if (pieceType == PieceType::PAWN)
         {
-            // TODO: North only works for white
-            Direction direction = NORTH;
-            if (activePlayer == Color::BLACK)
-            {
-                direction = Direction::SOUTH;
-            }
-            Bitboard singlePush = utils::shiftCurrentSquareByDirection(startingSquare, direction);
+            Bitboard psuedoLegalPushes = getPawnPushes(activePlayer, startingSquare);
 
-            // TODO: Verify that this single push doens't put us off the board.
-            // TODO: Check if this single push gives us a promotion.
-            psuedoLegalMoves |= singlePush;
-
-            // If this pawn exists on the default pawn structure, then it is psueo-ellegible for a double push push
-            // TODO: Fix the if conditional to something a bit better and readable.
-            Bitboard pawnExistsOnDefaultPawnStructure = Bitboard(startingSquare) & constants::DEFAULT_PAWN_STRUCTURE;
-            if (pawnExistsOnDefaultPawnStructure.numberOfSetBits() == 1)
-            {
-                Bitboard doublePush = utils::shiftCurrentSquareByDirection(startingSquare, 2 * direction);
-                psuedoLegalMoves |= doublePush;
-            }
+            // TODO: For a white pawn, if we get a pawn push (or capture) that puts it on the 8th rank, then mark this move as a promotion move.
         }
 
         // Remove any moves that attack our own pieces
@@ -117,6 +100,58 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
     }
 
     return moves;
+}
+
+// TODO: This does not currently handle promotions
+Bitboard LegalMoveGenerator::getPawnPushes(const Color activePlayer, const Square startingSquare) const
+{
+    Bitboard pawnPushes;
+
+    Direction direction = NORTH;
+    if (activePlayer == Color::BLACK)
+    {
+        direction = Direction::SOUTH;
+    }
+
+    pawnPushes |= getPawnSinglePush(startingSquare, direction, activePlayer);
+    pawnPushes |= getPawnDoublePush(startingSquare, direction);
+
+    return pawnPushes;
+}
+
+Bitboard LegalMoveGenerator::getPawnSinglePush(const Square startingSquare, Direction direction, const Color activePlayer) const
+{
+    Bitboard singlePush;
+
+    singlePush |= utils::shiftSquareByDirection(startingSquare, direction);
+
+    // For a white pawn, make sure it's not pushing from rank 8 back to rank 1
+    // For a black pawn, make sure it's not pushing from rank 1 to rank 8
+    u64 excludeOverflowRank = constants::bit_masks::EXCLUDE_RANK_1;
+    if (activePlayer == BLACK)
+    {
+        excludeOverflowRank = constants::bit_masks::EXCLUDE_RANK_8;
+    }
+
+    singlePush &= excludeOverflowRank;
+
+    return singlePush;
+}
+
+Bitboard LegalMoveGenerator::getPawnDoublePush(const Square startingSquare, Direction direction) const
+{
+    Bitboard doublePush;
+
+    // If this pawn exists on the default pawn structure, then it is psueo-ellegible for a double push push
+    // TODO: Fix the if conditional to something a bit better and readable.
+    Bitboard pawnExistsOnDefaultPawnStructure = Bitboard(startingSquare) & constants::DEFAULT_PAWN_STRUCTURE;
+
+    if (pawnExistsOnDefaultPawnStructure.numberOfSetBits() == 1)
+    {
+        doublePush |= utils::shiftSquareByDirection(startingSquare, 2 * direction);
+    }
+
+    return doublePush;
 }
 
 Bitboard LegalMoveGenerator::filterLegalPawnMoves(Bitboard & psuedoLegalPawnMoves)
