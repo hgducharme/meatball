@@ -43,6 +43,13 @@ constexpr Direction ROOK_DIRECTIONS[4] = { Direction::NORTH, Direction::WEST, Di
 namespace bit_masks
 {
 
+constexpr u64 LAST_EIGHT_BITS = 0xFF00000000000000;
+
+constexpr u64 RANK_1 = 0xFF;
+constexpr u64 RANK_8 = LAST_EIGHT_BITS;
+constexpr u64 EXCLUDE_RANK_1 = ~RANK_1;
+constexpr u64 EXCLUDE_RANK_8 = ~RANK_8;
+
 constexpr u64 FILE_A = 0x101010101010101;
 constexpr u64 FILE_B = 0x202020202020202;
 constexpr u64 FILE_C = 0x404040404040404;
@@ -55,7 +62,7 @@ constexpr u64 EXCLUDE_FILE_A = ~FILE_A;
 constexpr u64 EXCLUDE_FILE_H = ~FILE_H;
 constexpr u64 EXCLUDE_FILES_A_AND_B = ~FILE_A & ~FILE_B; 
 constexpr u64 EXCLUDE_FILES_H_AND_G = ~FILE_H & ~FILE_G;
-constexpr u64 LAST_EIGHT_BITS = 0xFF00000000000000;
+
 
 } // namespace bit_masks
 } //namespace constants
