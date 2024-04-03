@@ -4,6 +4,8 @@
 #include "utils.h"
 #include "attacktables.h"
 
+#include <optional>
+
 MoveVector LegalMoveGenerator::generatePsuedoLegalMoves(const Chessboard & gameState) const
 {
     MoveVector pawnMoves = getMovesByPiece(PieceType::PAWN, gameState);
@@ -44,7 +46,7 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
     {
         getPushes();
         getCaptures();
-        getEnPessant();
+        isEnPessant();
         getPromotions();
     }
     */
@@ -60,7 +62,6 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
         if (pieceType == PieceType::PAWN)
         {
             psuedoLegalMoves |= getPawnPushes(activePlayer, startingSquare);
-            psuedoLegalMoves |= getEnPessant(activePlayer, startingSquare);
         }
 
         if (pieceType == KING)
@@ -77,9 +78,16 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
         int numberOfMoves = psuedoLegalMoves.numberOfSetBits();
         for (int j = 0; j < numberOfMoves; j++)
         {
+            // TODO: Remove empty pawn attacks HERE, not in the filterOutIllegalMoves().
+            // All we have to do is AND the pawn attacks with the opponent's occupancy set.
+
+            // TODO: Set the isPawnDoublePush flag
+
             const Square targetSquare = (Square)(psuedoLegalMoves.clearAndReturnLSB());
             const bool pawnPromotion = isPawnPromotion(pieceType, targetSquare);
-            const Move m(activePlayer, pieceType, startingSquare, targetSquare, pawnPromotion);
+            const bool enPessant = isEnPessant(activePlayer, startingSquare, gameState);
+            const bool doublePush = isPawnDoublePush();
+            const Move m(activePlayer, pieceType, startingSquare, targetSquare, pawnPromotion, doublePush, enPessant);
             moves.push_back(m);
         }
     }
@@ -153,25 +161,48 @@ bool LegalMoveGenerator::pawnHasMoved(const Color activePlayer, const Square paw
     return pawnIsAwayFromInitialPosition;
 }
 
-Bitboard LegalMoveGenerator::getEnPessant(const Color activePlayer, const Square startingSquare) const
+bool LegalMoveGenerator::isEnPessant(const Color activePlayer, const Square startingSquare, const Chessboard & gameState) const
 {
-    // TODO:
-    // If a pawn does a double push, we need to check if it moved through a pawn's attack ray.
-    // We need to keep track of two things: if the pawn did a double push, if it moved through an attack ray.
-    // Consider being on this line for a white pawn that has advanced to the 5th rank on it's previous move.
-    // Right now we are calculating if en pessant is possible. We know this pawn's attack ray, and with
-    // board.getNonActivePlayerOccupancy(), we can determine if a pawn is on the en pessant square, but we don't
-    // know if it got to that square from a single push or a double push. This is the missing info we need.
-    // Maybe we can register double pushes with the chessboard. So at this line,
-    // we would query the chessboard for any double pushes in the last move. If we found a double push,
-    // we can check if that pawn landed on the square to the east or west of this pawns. If it did, then
-    // an en pessant move is possible, and we would mark the attack to that side as an en pessant move.
+    // TODO: Following algo can be cleaned up. The steps that are taking place are:
+    // 1. Get the last move
+    // 2. If it was a pawn double push and the pawn ended up on a square that is one integer away from
+    //    the current pawn's square, then the last pawn double pushed to the same rank and an adjacent file,
+    //    and therefore this is an en pessant move.
+    //
+    // We can check if the square's distances
+    // by checking if (abs(squareA - squareB) == 1) or XORing the bitboard representations of both squares.
+    // XORing the bitboard representations of both squares will give us the bit distance from squareA to squareB.
+    // Doesn't matter what we do, they will give us the same answer. However, when checking distance like this 
+    // it won't account for the wrapping of the board. The H file is technically one bit or one unit of distance
+    // away from the A file.
+    //
     // This does seem grossly inefficient to check every single pawn against the previous double push.
     // Ways that we can potentially improve the effeciency:
     // - If this white pawn (black pawn) is not on the 5th rank (4th rank), we don't need to check for en pessant.
-    // - 
 
-    return Bitboard();
+    bool isEnPessant = false;
+
+    const std::optional<const Move> optionalMove = gameState.getLastMove();
+    const bool lastMoveWasPawnDoublePush = (optionalMove.has_value() && optionalMove.value().isPawnDoublePush);
+    if (lastMoveWasPawnDoublePush)
+    {
+        const Move & lastMove = optionalMove.value();
+        if ((startingSquare ^ lastMove.endSquare) == 1)
+        {
+            isEnPessant = true;
+        }
+    }
+
+    return isEnPessant;
+}
+
+bool LegalMoveGenerator::isPawnDoublePush() const
+{
+    // TODO: this move is a pawn double push if the start square and end square are 16 bits away from each other.
+    bool isPawnDoublePush = false;
+    
+
+    return isPawnDoublePush;
 }
 
 Bitboard LegalMoveGenerator::getCastles(const Color activePlayer, const Square startingSquare) const
@@ -198,6 +229,7 @@ bool LegalMoveGenerator::isPawnPromotion(const PieceType pieceType, const Square
 
 void LegalMoveGenerator::filterOutIllegalMoves(MoveVector & psuedoLegalMoves) const
 {
+    // TODO: ./src/movegenerator.cpp:223:23: warning: comparison of integers of different signs: 'int' and 'std::vector<Move>::size_type' (aka 'unsigned long') [-Wsign-compare]
     for (int j = 0; j < psuedoLegalMoves.size(); j++)
     {
         // filterOutMovesThatLeaveKingInCheck();
