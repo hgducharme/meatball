@@ -249,5 +249,24 @@ TEST_F(ChessboardTest, undoMove)
    ASSERT_EQ(board.getOccupiedSquares(), DEFAULT_INITAL_BOARD);
 }
 
+TEST_F(ChessboardTest, getLastMove_throwsExceptionIfHistoryIsEmpty)
+{
+   Chessboard board;
+
+   ASSERT_THROW(board.getLastMove(), std::runtime_error);
+}
+
+TEST_F(ChessboardTest, getLastMove_returnsLastMove)
+{
+   Chessboard board;
+   Move move(WHITE, PAWN, e2, e4);
+   
+   board.applyMove(move);
+   
+   const Move & returnedMove = board.getLastMove();
+
+   ASSERT_EQ(returnedMove, move);
+}
+
 }  // namespace
 }  // namespace meatball

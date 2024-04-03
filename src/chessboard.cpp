@@ -68,16 +68,6 @@ void Chessboard::applyMove(const Move & move)
 {
     updateBitboards(move.color, move.piece, move.startSquare, move.endSquare);
     moveHistory.push_back(move);
-
-    // TODO: make sure in unmake move that we reverse what we do below:
-    // 1. Clear this pawn double push from the record
-    // 2. Re register the prior move as a pawn double push, if it was one.
-    // clearAnyExistingPawnDoublePush();
-    // if (move.isDoublePush)
-    // {
-    //     recordPawnDoublePush();
-    // }
-
     toggleActivePlayer();
 }
 
@@ -143,4 +133,10 @@ void Chessboard::raiseExceptionIfMoveIsNotLastMove(const Move & move, const std:
     {
         throw exceptions::UndoMoveError(errorMessage);
     }
+}
+
+const Move & Chessboard::getLastMove() const
+{
+    raiseExceptionIfMoveHistoryIsEmpty("There is no move history and therefore no move to return.");
+    return moveHistory.back();
 }
