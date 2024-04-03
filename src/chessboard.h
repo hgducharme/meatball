@@ -24,12 +24,10 @@ class Chessboard {
         const Bitboard & getBitboard(const PieceType piece) const;
         const Bitboard & getBitboard(const Color color) const;
         Bitboard getBitboard(const Color color, const PieceType piece) const;
-        void applyMove(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare);
         void applyMove(const Move & move);
         void toggleActivePlayer();
         Color getActivePlayer() const;
         Color getNonActivePlayer() const;
-        void undoMove(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare);
         void undoMove(const Move & move);
 
      private:

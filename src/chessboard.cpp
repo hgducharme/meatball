@@ -66,15 +66,17 @@ Bitboard Chessboard::getBitboard(const Color color, const PieceType piece) const
 
 void Chessboard::applyMove(const Move & move)
 {
-    applyMove(move.color, move.piece, move.startSquare, move.endSquare);
-}
-
-void Chessboard::applyMove(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare)
-{
-    updateBitboards(color, piece, startingSquare, endingSquare);
-
-    Move move(color, piece, startingSquare, endingSquare);
+    updateBitboards(move.color, move.piece, move.startSquare, move.endSquare);
     moveHistory.push_back(move);
+
+    // TODO: make sure in unmake move that we reverse what we do below:
+    // 1. Clear this pawn double push from the record
+    // 2. Re register the prior move as a pawn double push, if it was one.
+    // clearAnyExistingPawnDoublePush();
+    // if (move.isDoublePush)
+    // {
+    //     recordPawnDoublePush();
+    // }
 
     toggleActivePlayer();
 }
@@ -113,20 +115,14 @@ Color Chessboard::getNonActivePlayer() const
 
 void Chessboard::undoMove(const Move & move)
 {
-    undoMove(move.color, move.piece, move.startSquare, move.endSquare);
-}
-
-void Chessboard::undoMove(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare)
-{
-    Move move(color, piece, startingSquare, endingSquare);
-    raiseExceptionIfMoveHistoryIsEmpty("There is no move history, and therefore no moves to undo.");
+    raiseExceptionIfMoveHistoryIsEmpty("There is no move history and therefore no moves to undo.");
     raiseExceptionIfMoveIsNotLastMove(move, "The requested move can not be undone. Only the last move to be made can be undone.");
 
     // Remove the last move from the move history
     moveHistory.pop_back();
 
     // Move the piece back to its original square
-    updateBitboards(color, piece, endingSquare, startingSquare);
+    updateBitboards(move.color, move.piece, move.endSquare, move.startSquare);
 
     toggleActivePlayer();
 }

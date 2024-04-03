@@ -117,7 +117,7 @@ TEST_F(ChessboardTest, movePiece_shouldMoveWhitePawnFromE2ToE4)
 {
    Chessboard chessboard;
 
-   chessboard.applyMove(WHITE, PAWN, e2, e4);
+   chessboard.applyMove(Move(WHITE, PAWN, e2, e4));
 
    u64 EXPECTED = 0x1000EF00;
    const Bitboard & bitboard = chessboard.getBitboard(WHITE, PAWN);
@@ -129,12 +129,12 @@ TEST_F(ChessboardTest, movePiece_togglesActivePlayer)
    Chessboard chessboard;
 
    // Make sure after white's move it becomes black's move
-   chessboard.applyMove(WHITE, PAWN, e2, e4);
+   chessboard.applyMove(Move(WHITE, PAWN, e2, e4));
    Color activePlayer = chessboard.getActivePlayer();
    ASSERT_EQ(activePlayer, BLACK);
 
    // Once black moves it should be white's move again
-   chessboard.applyMove(BLACK, PAWN, d7, d5);
+   chessboard.applyMove(Move(BLACK, PAWN, d7, d5));
    activePlayer = chessboard.getActivePlayer();
    ASSERT_EQ(activePlayer, WHITE);
 }
@@ -208,10 +208,10 @@ TEST_F(ChessboardTest, getOccupiedSquares)
 {
    Chessboard chessboard;
 
-   chessboard.applyMove(WHITE, PAWN, e2, e4);
-   chessboard.applyMove(BLACK, PAWN, e7, e5);
-   chessboard.applyMove(WHITE, PAWN, d2, d4);
-   chessboard.applyMove(BLACK, PAWN, d7, d5);
+   chessboard.applyMove(Move(WHITE, PAWN, e2, e4));
+   chessboard.applyMove(Move(BLACK, PAWN, e7, e5));
+   chessboard.applyMove(Move(WHITE, PAWN, d2, d4));
+   chessboard.applyMove(Move(BLACK, PAWN, d7, d5));
 
    u64 EXPECTED = 0xffe700181800e7ff;
    ASSERT_EQ(chessboard.getOccupiedSquares().toU64(), EXPECTED);
