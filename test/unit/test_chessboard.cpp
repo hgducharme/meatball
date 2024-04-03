@@ -249,11 +249,11 @@ TEST_F(ChessboardTest, undoMove)
    ASSERT_EQ(board.getOccupiedSquares(), DEFAULT_INITAL_BOARD);
 }
 
-TEST_F(ChessboardTest, getLastMove_throwsExceptionIfHistoryIsEmpty)
+TEST_F(ChessboardTest, getLastMove_returnsEmptyOptional)
 {
    Chessboard board;
 
-   ASSERT_THROW(board.getLastMove(), std::runtime_error);
+   ASSERT_FALSE(board.getLastMove().has_value());
 }
 
 TEST_F(ChessboardTest, getLastMove_returnsLastMove)
@@ -263,9 +263,10 @@ TEST_F(ChessboardTest, getLastMove_returnsLastMove)
    
    board.applyMove(move);
    
-   const Move & returnedMove = board.getLastMove();
+   const std::optional<const Move> returnedMove = board.getLastMove();
 
-   ASSERT_EQ(returnedMove, move);
+   EXPECT_TRUE(returnedMove.has_value());
+   EXPECT_EQ(returnedMove.value(), move);
 }
 
 }  // namespace

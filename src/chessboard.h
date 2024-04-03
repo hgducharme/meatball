@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <string>
+#include <optional>
 
 class Chessboard {
     private:
@@ -29,7 +30,7 @@ class Chessboard {
         Color getActivePlayer() const;
         Color getNonActivePlayer() const;
         void undoMove(const Move & move);
-        const Move & getLastMove() const;
+        const std::optional<const Move> getLastMove() const;
 
      private:
         void updateBitboards(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare);

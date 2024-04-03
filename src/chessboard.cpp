@@ -135,8 +135,12 @@ void Chessboard::raiseExceptionIfMoveIsNotLastMove(const Move & move, const std:
     }
 }
 
-const Move & Chessboard::getLastMove() const
+const std::optional<const Move> Chessboard::getLastMove() const
 {
-    raiseExceptionIfMoveHistoryIsEmpty("There is no move history and therefore no move to return.");
-    return moveHistory.back();
+    std::optional<const Move> lastMove;
+    if (!moveHistory.empty())
+    {
+        return moveHistory.back();
+    }
+    return lastMove;
 }
