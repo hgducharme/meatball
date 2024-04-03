@@ -187,6 +187,8 @@ bool LegalMoveGenerator::isEnPessant(const Color activePlayer, const Square star
     if (lastMoveWasPawnDoublePush)
     {
         const Move & lastMove = optionalMove.value();
+        // TODO: account for wrapping here. Maybe we can make a utils function
+        // that calculates sequential distance between squares and accounts for wrapping.
         if ((startingSquare ^ lastMove.endSquare) == 1)
         {
             isEnPessant = true;
