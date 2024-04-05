@@ -12,6 +12,6 @@ Move::Move(const Color c, const PieceType p, const Square start, const Square en
     color(c), piece(p), startSquare(start), endSquare(end), isPawnPromotion(isPawnPromotion), isPawnDoublePush(isPawnDoublePush)
     {}
 
-Move::Move(const Color c, const PieceType p, const Square start, const Square end, const bool isPawnPromotion, const bool isPawnDoublePush, const bool isEnPessant) :
-    color(c), piece(p), startSquare(start), endSquare(end), isPawnPromotion(isPawnPromotion), isPawnDoublePush(isPawnDoublePush), isEnPessant(isEnPessant)
+Move::Move(const Color c, const PieceType p, const Square start, const Square end, const bool isPawnPromotion, const bool isPawnDoublePush, const bool isEnPassant) :
+    color(c), piece(p), startSquare(start), endSquare(end), isPawnPromotion(isPawnPromotion), isPawnDoublePush(isPawnDoublePush), isEnPassant(isEnPassant)
     {}
