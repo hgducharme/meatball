@@ -5,6 +5,7 @@
 #include "attacktables.h"
 
 #include <optional>
+#include <cmath>
 
 MoveVector LegalMoveGenerator::generatePsuedoLegalMoves(const Chessboard & gameState) const
 {
@@ -25,7 +26,7 @@ MoveVector LegalMoveGenerator::generatePsuedoLegalMoves(const Chessboard & gameS
     return psuedoLegalMoves;
 }
 
-// TODO: This currently doesn't handle en pessant, castling.
+// TODO: This currently doesn't handle en passant, castling.
 MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const Chessboard & gameState) const
 {
     /*
@@ -46,7 +47,7 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
     {
         getPushes();
         getCaptures();
-        isEnPessant();
+        isEnPassant();
         getPromotions();
     }
     */
@@ -84,10 +85,12 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
             // TODO: Set the isPawnDoublePush flag
 
             const Square targetSquare = (Square)(psuedoLegalMoves.clearAndReturnLSB());
+
+            // TODO: these need to only occur when the piece type is a pawn
             const bool pawnPromotion = isPawnPromotion(pieceType, targetSquare);
-            const bool enPessant = isEnPessant(activePlayer, startingSquare, gameState);
+            const bool enPassant = isEnPassant(activePlayer, startingSquare, gameState);
             const bool doublePush = isPawnDoublePush();
-            const Move m(activePlayer, pieceType, startingSquare, targetSquare, pawnPromotion, doublePush, enPessant);
+            const Move m(activePlayer, pieceType, startingSquare, targetSquare, pawnPromotion, doublePush, enPassant);
             moves.push_back(m);
         }
     }
@@ -161,41 +164,25 @@ bool LegalMoveGenerator::pawnHasMoved(const Color activePlayer, const Square paw
     return pawnIsAwayFromInitialPosition;
 }
 
-bool LegalMoveGenerator::isEnPessant(const Color activePlayer, const Square startingSquare, const Chessboard & gameState) const
+bool LegalMoveGenerator::isEnPassant(const Color activePlayer, const Square startingSquare, const Chessboard & gameState) const
 {
-    // TODO: Following algo can be cleaned up. The steps that are taking place are:
-    // 1. Get the last move
-    // 2. If it was a pawn double push and the pawn ended up on a square that is one integer away from
-    //    the current pawn's square, then the last pawn double pushed to the same rank and an adjacent file,
-    //    and therefore this is an en pessant move.
-    //
-    // We can check if the square's distances
-    // by checking if (abs(squareA - squareB) == 1) or XORing the bitboard representations of both squares.
-    // XORing the bitboard representations of both squares will give us the bit distance from squareA to squareB.
-    // Doesn't matter what we do, they will give us the same answer. However, when checking distance like this 
-    // it won't account for the wrapping of the board. The H file is technically one bit or one unit of distance
-    // away from the A file.
-    //
-    // This does seem grossly inefficient to check every single pawn against the previous double push.
-    // Ways that we can potentially improve the effeciency:
-    // - If this white pawn (black pawn) is not on the 5th rank (4th rank), we don't need to check for en pessant.
+    bool isEnPassant = false;
 
-    bool isEnPessant = false;
+    // TODO:
+    // if the current pawn is a white pawn not on the 5th rank, then en passant isn't possible
+    // if the current pawn is a black pawn not on the 4th rank, then en passant isn't possible
 
-    const std::optional<const Move> optionalMove = gameState.getLastMove();
-    const bool lastMoveWasPawnDoublePush = (optionalMove.has_value() && optionalMove.value().isPawnDoublePush);
-    if (lastMoveWasPawnDoublePush)
+    const std::optional<const Move> lastMove = gameState.getLastMove();
+    if (lastMove.has_value() && lastMove->isPawnDoublePush)
     {
-        const Move & lastMove = optionalMove.value();
-        // TODO: account for wrapping here. Maybe we can make a utils function
-        // that calculates sequential distance between squares and accounts for wrapping.
-        if ((startingSquare ^ lastMove.endSquare) == 1)
-        {
-            isEnPessant = true;
-        }
+        // TODO: Test and verify the following behaves correctly.
+        // You can use squares A2 and H1 to make sure the wrap around works as expected.
+        const bool ranksAreSame = Chessboard::squareToRank(startingSquare) == Chessboard::squareToRank(lastMove->endSquare);
+        const bool filesAreNeighbors = std::abs(Chessboard::squareToFile(startingSquare) - Chessboard::squareToFile(lastMove->endSquare)) == 1;
+        isEnPassant = ranksAreSame && filesAreNeighbors;
     }
 
-    return isEnPessant;
+    return isEnPassant;
 }
 
 bool LegalMoveGenerator::isPawnDoublePush() const

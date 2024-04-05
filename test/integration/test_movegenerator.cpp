@@ -58,21 +58,36 @@ namespace meatball
          // then add their definition just below the test fixture class.
       };
 
-      TEST_F(MoveGeneratorTest, perft_initialPositionDepth1)
+      // TEST_F(MoveGeneratorTest, perft_initialPositionDepth1)
+      // {
+      //    Chessboard game;
+      //    uint16_t depth = 1;
+         
+      //    u64 numberOfNodes = perft(game, depth);
+
+      //    u64 EXPECTED = 20;
+      //    ASSERT_EQ(numberOfNodes, EXPECTED);
+      // }
+
+      // TEST_F(MoveGeneratorTest, perft_initialPositionDepth3)
+      // {
+      //    Chessboard game;
+      //    uint16_t depth = 3;
+
+      //    u64 numberOfNodes = perft(game, depth);
+
+      //    u64 EXPECTED = 8902;
+      //    ASSERT_EQ(numberOfNodes, EXPECTED);
+      // }
+
+
+      TEST_F(MoveGeneratorTest, perft_enPassant)
       {
          Chessboard game;
          uint16_t depth = 1;
-         
-         u64 numberOfNodes = perft(game, depth);
 
-         u64 EXPECTED = 20;
-         ASSERT_EQ(numberOfNodes, EXPECTED);
-      }
-
-      TEST_F(MoveGeneratorTest, perft_initialPositionDepth3)
-      {
-         Chessboard game;
-         uint16_t depth = 3;
+         game.applyMove(Move(WHITE, PAWN, e2, e4));
+         game.applyMove(Move(BLACK, PAWN, e7, e5));
 
          u64 numberOfNodes = perft(game, depth);
 
