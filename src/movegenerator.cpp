@@ -43,7 +43,7 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
     /* Potential refactor. The piece should know how itself moves.
     pieceType.getMoves();
 
-    Pawn.getMoves
+    Pawn.getMoves()
     {
         getPushes();
         getCaptures();
@@ -79,14 +79,28 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
         int numberOfMoves = psuedoLegalMoves.numberOfSetBits();
         for (int j = 0; j < numberOfMoves; j++)
         {
-            // TODO: Remove empty pawn attacks HERE, not in the filterOutIllegalMoves().
+            // TODO: Remove empty pawn attacks inside this loop, not in the filterOutIllegalMoves().
             // All we have to do is AND the pawn attacks with the opponent's occupancy set.
-
-            // TODO: Set the isPawnDoublePush flag
+            // However, this has to be done without removing en pessant attacks. An en passant attack
+            // will look like an empty attack.
+            // To make sure we don't remove en passant attacks, check the enPassant flag first
+            // if this is an en passant attack, don't and it with the opponent's occupancy set.
+            // otherwise, we can and it with the opponent's occupancy set.
+            // A bitwise AND with the occupancy set works for all pieces (I think) except for pawns and kings.
+            // There's some special considerations to make for pawns and kings.
 
             const Square targetSquare = (Square)(psuedoLegalMoves.clearAndReturnLSB());
 
+            bool pawnPromotion = false;
+            bool enPassant = false;
+            bool doublePush = false;
+            if (pieceType == PAWN)
+            {
+                pawnPromotion = isPawnPromotion(pieceType, targetSquare);
+                enPassant = isEnPassant(activePlayer, startingSquare, gameState);
                 doublePush = isPawnDoublePush(startingSquare, targetSquare);
+            }
+
             const Move m(activePlayer, pieceType, startingSquare, targetSquare, pawnPromotion, doublePush, enPassant);
             moves.push_back(m);
         }
@@ -165,17 +179,34 @@ bool LegalMoveGenerator::isEnPassant(const Color activePlayer, const Square star
 {
     bool isEnPassant = false;
 
-    // TODO:
-    // if the current pawn is a white pawn not on the 5th rank, then en passant isn't possible
-    // if the current pawn is a black pawn not on the 4th rank, then en passant isn't possible
+    // Make sure the capturing pawn is in the right position for en passant to be valid
+    const Rank startingSquareRank = Chessboard::squareToRank(startingSquare);
+    const bool currentPawnIsWhiteAndNotOn5thRank = ( (activePlayer == WHITE) && (startingSquareRank != RANK_5) );
+    const bool currentPawnIsBlackAndNotOn4thRank = ( (activePlayer == BLACK) && (startingSquareRank != RANK_4) );
+    if (currentPawnIsWhiteAndNotOn5thRank || currentPawnIsBlackAndNotOn4thRank)
+    {
+        return isEnPassant;
+    }
 
     const std::optional<const Move> lastMove = gameState.getLastMove();
     if (lastMove.has_value() && lastMove->isPawnDoublePush)
     {
-        // TODO: Test and verify the following behaves correctly.
-        // You can use squares A2 and H1 to make sure the wrap around works as expected.
-        const bool ranksAreSame = Chessboard::squareToRank(startingSquare) == Chessboard::squareToRank(lastMove->endSquare);
-        const bool filesAreNeighbors = std::abs(Chessboard::squareToFile(startingSquare) - Chessboard::squareToFile(lastMove->endSquare)) == 1;
+        // TODO:
+        // To verify that the last pawn's double push is able to be captured en passant, you can:
+        // 1. check that the current pawns square is one bit away from the opponent's pawn square,
+        //    but this will require the need to check for board wrapping
+        // 2. An alternative is to check if the ranks are the same and the files are neighbors
+        // 3. If we are constantly checking for board wrapping, we can make a static method
+        //    Chessboard::areSquaresTouching(square1, square2, RANK) where the last parameter
+        //    can be RANK, FILE, or DIAGONAL which is the direction to check for if the squares are touching.
+        // isEnPassant = Chessboard::areSquaresTouching(square1, square2, EAST) || Chessboard::areSquaresTouching(square1, square2, WEST)
+        // As of right now this works perfectly fine, but maybe we can improve readability with the above considerations.
+
+        // TODO: we must also make sure that the active pawns ending square is an attack.
+        // That is, we must make sure the active pawns ending square is on the same file as the last moves
+        // ending square.
+        const bool ranksAreSame = startingSquareRank == Chessboard::squareToRank(lastMove->endSquare);
+        const bool filesAreNeighbors = std::abs( static_cast<int>(Chessboard::squareToFile(startingSquare) - Chessboard::squareToFile(lastMove->endSquare)) ) == 1;
         isEnPassant = ranksAreSame && filesAreNeighbors;
     }
 

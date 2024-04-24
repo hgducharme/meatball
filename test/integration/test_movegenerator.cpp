@@ -86,13 +86,31 @@ namespace meatball
          Chessboard game;
          uint16_t depth = 1;
 
+         // The white pawn on e5 can capture en passant after black pawn d7 to d5
          game.applyMove(Move(WHITE, PAWN, e2, e4));
-         game.applyMove(Move(BLACK, PAWN, e7, e5));
+         game.applyMove(Move(BLACK, PAWN, g7, g5));
+         game.applyMove(Move(WHITE, PAWN, e4, e5));
+         game.applyMove(Move(BLACK, PAWN, d7, d5, false, true, false));
 
          u64 numberOfNodes = perft(game, depth);
 
-         u64 EXPECTED = 8902;
-         ASSERT_EQ(numberOfNodes, EXPECTED);
+         ASSERT_EQ(numberOfNodes, 0);
+      }
+
+      TEST_F(MoveGeneratorTest, perft_enPassantDoesntWorkForPawnsOnOppositeSidesOfTheBoard)
+      {
+         Chessboard game;
+         uint16_t depth = 1;
+
+         // The white pawn on a5 should not be able to capture en passant the pawn on h5
+         game.applyMove(Move(WHITE, PAWN, a2, a4));
+         game.applyMove(Move(BLACK, PAWN, d7, d6));
+         game.applyMove(Move(WHITE, PAWN, a4, a5));
+         game.applyMove(Move(BLACK, PAWN, h7, h5, false, true, false));
+
+         u64 numberOfNodes = perft(game, depth);
+
+         ASSERT_EQ(numberOfNodes, 0);
       }
 
    } // namespace
