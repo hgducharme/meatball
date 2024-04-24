@@ -27,7 +27,7 @@ class LegalMoveGenerator : public MoveGenerator
       bool pawnHasNotMoved(const Color activePlayer, const Square pawnLocation) const;
       bool pawnHasMoved(const Color activePlayer, const Square pawnLocation) const;
       bool isEnPassant(const Color activePlayer, const Square startingSquare, const Chessboard & gameState) const;
-      bool isPawnDoublePush() const;
+      bool isPawnDoublePush(const Square startingSquare, const Square targetSquare) const;
       Bitboard getCastles(const Color activePlayer, const Square startingSquare) const;
       bool isPawnPromotion(const PieceType pieceType, const Square targetSquare) const;
       void filterOutIllegalMoves(MoveVector & psuedoLegalMoves) const;

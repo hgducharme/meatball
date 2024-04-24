@@ -86,10 +86,7 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
 
             const Square targetSquare = (Square)(psuedoLegalMoves.clearAndReturnLSB());
 
-            // TODO: these need to only occur when the piece type is a pawn
-            const bool pawnPromotion = isPawnPromotion(pieceType, targetSquare);
-            const bool enPassant = isEnPassant(activePlayer, startingSquare, gameState);
-            const bool doublePush = isPawnDoublePush();
+                doublePush = isPawnDoublePush(startingSquare, targetSquare);
             const Move m(activePlayer, pieceType, startingSquare, targetSquare, pawnPromotion, doublePush, enPassant);
             moves.push_back(m);
         }
@@ -185,12 +182,11 @@ bool LegalMoveGenerator::isEnPassant(const Color activePlayer, const Square star
     return isEnPassant;
 }
 
-bool LegalMoveGenerator::isPawnDoublePush() const
+bool LegalMoveGenerator::isPawnDoublePush(const Square startingSquare, const Square targetSquare) const
 {
-    // TODO: this move is a pawn double push if the start square and end square are 16 bits away from each other.
-    bool isPawnDoublePush = false;
-    
-
+    // This move is a pawn double push if the start square and target square are 16 bits away from each other.
+    const int sixteenBits = 16;
+    bool isPawnDoublePush = ( std::abs(static_cast<int>(startingSquare - targetSquare)) == sixteenBits );
     return isPawnDoublePush;
 }
 
