@@ -2,7 +2,7 @@
 
 #include "exceptions.h"
 
-File Chessboard::squareToFile(const int square)
+const File Chessboard::squareToFile(const int square)
 {
    /*
    Let n be the square's rank [0, 8]
@@ -15,7 +15,7 @@ File Chessboard::squareToFile(const int square)
    return static_cast<File>(square % 8);
 }
 
-Rank Chessboard::squareToRank(const int square)
+const Rank Chessboard::squareToRank(const int square)
 {
    /*
    Let n be the square's file [0, 8]
