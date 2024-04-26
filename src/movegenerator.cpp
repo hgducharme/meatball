@@ -231,16 +231,9 @@ Bitboard LegalMoveGenerator::getCastles(const Color activePlayer, const Square s
     return Bitboard();
 }
 
-bool LegalMoveGenerator::isPawnPromotion(const PieceType pieceType, const Square targetSquare) const
+bool LegalMoveGenerator::isPawnPromotion(const Square targetSquare) const
 {
-    bool isPawnPromotion = false;
-
-    if (pieceType == PAWN)
-    {
-        isPawnPromotion = (Chessboard::squareToRank(targetSquare) == RANK_8);
-    }
-
-    return isPawnPromotion;
+    return (Chessboard::squareToRank(targetSquare) == RANK_8);
 }
 
 void LegalMoveGenerator::filterOutIllegalMoves(MoveVector & psuedoLegalMoves) const
