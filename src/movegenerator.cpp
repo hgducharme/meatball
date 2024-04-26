@@ -84,7 +84,7 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
             // However, this has to be done without removing en pessant attacks. An en passant attack
             // will look like an empty attack.
             // To make sure we don't remove en passant attacks, check the enPassant flag first
-            // if this is an en passant attack, don't and it with the opponent's occupancy set.
+            // if this is an en passant attack, don't bitwise AND it with the opponent's occupancy set.
             // otherwise, we can and it with the opponent's occupancy set.
             // A bitwise AND with the occupancy set works for all pieces (I think) except for pawns and kings.
             // There's some special considerations to make for pawns and kings.
