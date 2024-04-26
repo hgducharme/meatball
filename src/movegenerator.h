@@ -26,7 +26,7 @@ class LegalMoveGenerator : public MoveGenerator
       Bitboard getPawnDoublePush(const Color activePlayer, const Square startingSquare, Direction direction) const;
       bool pawnHasNotMoved(const Color activePlayer, const Square pawnLocation) const;
       bool pawnHasMoved(const Color activePlayer, const Square pawnLocation) const;
-      bool isEnPassant(const Color activePlayer, const Square startingSquare, const Chessboard & gameState) const;
+      bool isEnPassant(const Color activePlayer, const Square startingSquare, const Square targetSquare, const std::optional<const Move> opponentsPreviousMove) const;
       bool isPawnDoublePush(const Square startingSquare, const Square targetSquare) const;
       Bitboard getCastles(const Color activePlayer, const Square startingSquare) const;
       bool isPawnPromotion(const Square targetSquare) const;

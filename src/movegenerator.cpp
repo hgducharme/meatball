@@ -91,17 +91,17 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
 
             const Square targetSquare = (Square)(psuedoLegalMoves.clearAndReturnLSB());
 
-            bool pawnPromotion = false;
-            bool enPassant = false;
-            bool doublePush = false;
+            Move m(activePlayer, pieceType, startingSquare, targetSquare);
+
             if (pieceType == PAWN)
             {
-                pawnPromotion = isPawnPromotion(pieceType, targetSquare);
-                enPassant = isEnPassant(activePlayer, startingSquare, gameState);
-                doublePush = isPawnDoublePush(startingSquare, targetSquare);
+                m.isPawnPromotion = isPawnPromotion(targetSquare);
+                m.isPawnDoublePush = isPawnDoublePush(startingSquare, targetSquare);
+
+                const std::optional<const Move> opponentsPreviousMove = gameState.getLastMove();
+                m.isEnPassant = isEnPassant(activePlayer, startingSquare, targetSquare, opponentsPreviousMove);
             }
 
-            const Move m(activePlayer, pieceType, startingSquare, targetSquare, pawnPromotion, doublePush, enPassant);
             moves.push_back(m);
         }
     }
@@ -175,7 +175,7 @@ bool LegalMoveGenerator::pawnHasMoved(const Color activePlayer, const Square paw
     return pawnIsAwayFromInitialPosition;
 }
 
-bool LegalMoveGenerator::isEnPassant(const Color activePlayer, const Square startingSquare, const Chessboard & gameState) const
+bool LegalMoveGenerator::isEnPassant(const Color activePlayer, const Square startingSquare, const Square targetSquare, const std::optional<const Move> opponentsPreviousMove) const
 {
     bool isEnPassant = false;
 
@@ -188,8 +188,7 @@ bool LegalMoveGenerator::isEnPassant(const Color activePlayer, const Square star
         return isEnPassant;
     }
 
-    const std::optional<const Move> lastMove = gameState.getLastMove();
-    if (lastMove.has_value() && lastMove->isPawnDoublePush)
+    if (opponentsPreviousMove.has_value() && opponentsPreviousMove->isPawnDoublePush)
     {
         // TODO:
         // To verify that the last pawn's double push is able to be captured en passant, you can:
@@ -201,13 +200,18 @@ bool LegalMoveGenerator::isEnPassant(const Color activePlayer, const Square star
         //    can be RANK, FILE, or DIAGONAL which is the direction to check for if the squares are touching.
         // isEnPassant = Chessboard::areSquaresTouching(square1, square2, EAST) || Chessboard::areSquaresTouching(square1, square2, WEST)
         // As of right now this works perfectly fine, but maybe we can improve readability with the above considerations.
+        // NOTE: you must also check that the active pawn's target square is on the same file as the previous pawn move
+        // To do this, you can check the files or check if the target square is 8 bits north/south of the current position
+        // of the opponent's pawn.
 
-        // TODO: we must also make sure that the active pawns ending square is an attack.
-        // That is, we must make sure the active pawns ending square is on the same file as the last moves
-        // ending square.
-        const bool ranksAreSame = startingSquareRank == Chessboard::squareToRank(lastMove->endSquare);
-        const bool filesAreNeighbors = std::abs( static_cast<int>(Chessboard::squareToFile(startingSquare) - Chessboard::squareToFile(lastMove->endSquare)) ) == 1;
-        isEnPassant = ranksAreSame && filesAreNeighbors;
+        const File startingSquareFile = Chessboard::squareToFile(startingSquare);
+        const File targetSquareFile = Chessboard::squareToFile(targetSquare);
+        const File opponentPawnFile = Chessboard::squareToFile(opponentsPreviousMove->endSquare);
+        const bool ranksAreSame = startingSquareRank == Chessboard::squareToRank(opponentsPreviousMove->endSquare);
+        const bool filesAreNeighbors = std::abs(static_cast<int>(startingSquareFile - opponentPawnFile)) == 1;
+        const bool targetSquareFileIsSameAsTargetPawnFile = (targetSquareFile == opponentPawnFile);
+
+        isEnPassant = ranksAreSame && filesAreNeighbors && targetSquareFileIsSameAsTargetPawnFile;
     }
 
     return isEnPassant;
