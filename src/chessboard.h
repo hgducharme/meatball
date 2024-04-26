@@ -17,8 +17,8 @@ class Chessboard {
         std::vector<Move> moveHistory;
 
     public:
-        const File static squareToFile(const int square);
-        const Rank static squareToRank(const int square);
+        File static squareToFile(const int square);
+        Rank static squareToRank(const int square);
 
 
         Chessboard();
