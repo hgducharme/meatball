@@ -8,10 +8,10 @@
 u64 perft(Chessboard & gameState, const uint16_t depth)
 {
    LegalMoveGenerator moveGenerator;
-   u64 numberOfNodes = 1;
 
-   if (depth == 0) { return numberOfNodes; }
+   if (depth == 0) { return 1; }
 
+   u64 numberOfNodes = 0;
    MoveVector moves = moveGenerator.generateLegalMoves(gameState);
    for (const Move & m : moves)
    {
