@@ -91,18 +91,24 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
 
             const Square targetSquare = (Square)(psuedoLegalMoves.clearAndReturnLSB());
 
-            Move m(activePlayer, pieceType, startingSquare, targetSquare);
+            Move move(activePlayer, pieceType, startingSquare, targetSquare);
 
             if (pieceType == PAWN)
             {
-                m.isPawnPromotion = isPawnPromotion(targetSquare);
-                m.isPawnDoublePush = isPawnDoublePush(startingSquare, targetSquare);
-
                 const std::optional<const Move> opponentsPreviousMove = gameState.getLastMove();
-                m.isEnPassant = isEnPassant(activePlayer, startingSquare, targetSquare, opponentsPreviousMove);
+                const Bitboard opponentOccupancySet = gameState.getBitboard(nonActivePlayer);
+
+                move.isPawnPromotion = isPawnPromotion(targetSquare);
+                move.isPawnDoublePush = isPawnDoublePush(startingSquare, targetSquare);
+                move.isEnPassant = isEnPassant(activePlayer, startingSquare, targetSquare, opponentsPreviousMove);
+                if (moveIsAttackWithNoCaptures(move, opponentOccupancySet))
+                {
+                    continue;
+                
+                }
             }
 
-            moves.push_back(m);
+            moves.push_back(move);
         }
     }
 
@@ -175,6 +181,14 @@ bool LegalMoveGenerator::pawnHasMoved(const Color activePlayer, const Square paw
     return pawnIsAwayFromInitialPosition;
 }
 
+bool LegalMoveGenerator::isPawnDoublePush(const Square startingSquare, const Square targetSquare) const
+{
+    // This move is a pawn double push if the start square and target square are 16 bits away from each other.
+    const int sixteenBits = 16;
+    bool isPawnDoublePush = ( std::abs(static_cast<int>(startingSquare - targetSquare)) == sixteenBits );
+    return isPawnDoublePush;
+}
+
 bool LegalMoveGenerator::isEnPassant(const Color activePlayer, const Square startingSquare, const Square targetSquare, const std::optional<const Move> opponentsPreviousMove) const
 {
     bool isEnPassant = false;
@@ -217,12 +231,21 @@ bool LegalMoveGenerator::isEnPassant(const Color activePlayer, const Square star
     return isEnPassant;
 }
 
-bool LegalMoveGenerator::isPawnDoublePush(const Square startingSquare, const Square targetSquare) const
+bool LegalMoveGenerator::moveIsAttackWithNoCaptures(const Move & m, const Bitboard & opponentOccupancySet) const
 {
-    // This move is a pawn double push if the start square and target square are 16 bits away from each other.
-    const int sixteenBits = 16;
-    bool isPawnDoublePush = ( std::abs(static_cast<int>(startingSquare - targetSquare)) == sixteenBits );
-    return isPawnDoublePush;
+    if (m.isEnPassant == false)
+    {
+        const bool startingFileAndEndingFileAreDifferent = (Chessboard::squareToFile(m.startSquare) != Chessboard::squareToFile(m.endSquare));
+
+        Bitboard targetSquareBitboard(static_cast<int>(m.endSquare));
+        Bitboard possibleCaptures = targetSquareBitboard & opponentOccupancySet;
+        if (startingFileAndEndingFileAreDifferent && possibleCaptures.numberOfSetBits() == 0)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 Bitboard LegalMoveGenerator::getCastles(const Color activePlayer, const Square startingSquare) const
