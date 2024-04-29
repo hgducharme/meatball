@@ -26,31 +26,17 @@ MoveVector LegalMoveGenerator::generatePsuedoLegalMoves(const Chessboard & gameS
     return psuedoLegalMoves;
 }
 
-// TODO: This currently doesn't handle en passant, castling.
 MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const Chessboard & gameState) const
 {
     /*
-     * This function will return all of the possible moves for a piece without considering if it puts the king in check
-     * and for pawns will return their attack moves even if there's nothing to attack.
-    */
+     * This function will return all of the possible moves for a piece without considering if it puts the king in check.
+     */
 
     MoveVector moves;
     const Color activePlayer = gameState.getActivePlayer();
     const Color nonActivePlayer = gameState.getNonActivePlayer();
     const Bitboard activePlayerPieces = gameState.getBitboard(activePlayer);
     Bitboard activePlayerPieceType = gameState.getBitboard(activePlayer, pieceType);
-
-    /* Potential refactor. The piece should know how itself moves.
-    pieceType.getMoves();
-
-    Pawn.getMoves()
-    {
-        getPushes();
-        getCaptures();
-        isEnPassant();
-        getPromotions();
-    }
-    */
     
     const int numberOfActivePieces = activePlayerPieceType.numberOfSetBits();
     for (int i = 0; i < numberOfActivePieces; i++)
@@ -60,6 +46,9 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
 
         psuedoLegalMoves |= attack_tables::getAttacks(activePlayer, pieceType, startingSquare, gameState.getOccupiedSquares());
 
+
+        // TODO: We know at this moment if a pawn is a double push, or if a move is castling move. Maybe we pass in some sort of Flags struct
+        // that gets modified to hold these flags, and then the struct gets passed into the Move() constructor where the constructor parses it?
         if (pieceType == PieceType::PAWN)
         {
             psuedoLegalMoves |= getPawnPushes(activePlayer, startingSquare);
@@ -67,36 +56,22 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
 
         if (pieceType == KING)
         {
-            // We could check for castling moves for either the rooks or the king, I believe it's arbitrary.
-            // I choose to only check for castling when generating moves for the king that way it only happens once (and not on both rooks)
-            // and since the idea of castling is to protect the king, it makes sense in my mind to make this a king move.
-            psuedoLegalMoves |= getCastles(activePlayer, startingSquare);
+            psuedoLegalMoves |= getCastles(startingSquare, gameState);
         }
 
         // Remove any moves that attack our own pieces
         psuedoLegalMoves &= ~(activePlayerPieces & psuedoLegalMoves);
 
-        int numberOfMoves = psuedoLegalMoves.numberOfSetBits();
+        const int numberOfMoves = psuedoLegalMoves.numberOfSetBits();
         for (int j = 0; j < numberOfMoves; j++)
         {
-            // TODO: Remove empty pawn attacks inside this loop, not in the filterOutIllegalMoves().
-            // All we have to do is AND the pawn attacks with the opponent's occupancy set.
-            // However, this has to be done without removing en pessant attacks. An en passant attack
-            // will look like an empty attack.
-            // To make sure we don't remove en passant attacks, check the enPassant flag first
-            // if this is an en passant attack, don't bitwise AND it with the opponent's occupancy set.
-            // otherwise, we can and it with the opponent's occupancy set.
-            // A bitwise AND with the occupancy set works for all pieces (I think) except for pawns and kings.
-            // There's some special considerations to make for pawns and kings.
-
-            const Square targetSquare = (Square)(psuedoLegalMoves.clearAndReturnLSB());
-
+            const Square targetSquare = static_cast<Square>(psuedoLegalMoves.clearAndReturnLSB());
             Move move(activePlayer, pieceType, startingSquare, targetSquare);
 
             if (pieceType == PAWN)
             {
-                const std::optional<const Move> opponentsPreviousMove = gameState.getLastMove();
                 const Bitboard opponentOccupancySet = gameState.getBitboard(nonActivePlayer);
+                const std::optional<const Move> opponentsPreviousMove = gameState.getLastMove();
 
                 move.isPawnPromotion = isPawnPromotion(targetSquare);
                 move.isPawnDoublePush = isPawnDoublePush(startingSquare, targetSquare);
@@ -104,7 +79,6 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
                 if (moveIsAttackWithNoCaptures(move, opponentOccupancySet))
                 {
                     continue;
-                
                 }
             }
 
@@ -248,12 +222,72 @@ bool LegalMoveGenerator::moveIsAttackWithNoCaptures(const Move & m, const Bitboa
     return false;
 }
 
-Bitboard LegalMoveGenerator::getCastles(const Color activePlayer, const Square startingSquare) const
+Bitboard LegalMoveGenerator::getCastles(const Square startingSquare, const Chessboard & gameState) const
 {
-    // TODO:
-    // The chessboard should keep track of castling rights. Both players get a queenside and kingside castling right by default at the start of the game. After every applied move to the game, the chessboard should update each side's castling rights. If one side has already castled, then we don't need to bother with updating their rights anymore, it will always remain false from here on out. The chessboard shouldn't consider attack rays I don't think. It will only keep track of whether or not a side is psuedo-ellegible to castle. That is, it will look at the applied move and if a side has moved their king then their rights to castle get set to false, if they move a rook, then the right to castle to that side is set to false. If a right is ever set to false, we no longer need to update it regardless of what happens. Once it gets set to false it's always false.
+    const Color activePlayer = gameState.getActivePlayer();
+    const Color nonActivePlayer = gameState.getNonActivePlayer();
+    const CastleRights castleRights = gameState.getCastleRights(activePlayer);
 
-    // We also need to consider if there are our own pieces in the way of our castling efforts.
+    switch (castleRights)
+    {
+        case CastleRights::NONE:
+        {
+            return Bitboard();
+        }
+
+        case CastleRights::ONLY_KING_SIDE:
+        {
+            Square kingTargetSquare = Square::g1;
+            u64 squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_WHITE_KING_AND_KINGSIDE_ROOK;
+            if (activePlayer == Color::BLACK)
+            {
+                kingTargetSquare = Square::g8;
+                squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_BLACK_KING_AND_KINGSIDE_ROOK;
+            }
+
+            return computeCastleBitboard(gameState, squaresInBetweenKingAndRook, kingTargetSquare);
+        }
+
+        case CastleRights::ONLY_QUEEN_SIDE:
+        {
+            // TODO: The following variable setting with the if statements are the only change between kingside and queenside
+            // computations. The calculations that follow the if statement are the same.
+            // The variable setting and the computations may be able to be extracted to their own methods.
+            Square kingTargetSquare = Square::c1;
+            u64 squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_WHITE_KING_AND_QUEENSIDE_ROOK;
+            if (activePlayer == Color::BLACK)
+            {
+                kingTargetSquare = Square::c8;
+                squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_BLACK_KING_AND_QUEENSIDE_ROOK;
+            }
+
+            return computeCastleBitboard(gameState, squaresInBetweenKingAndRook, kingTargetSquare);
+        }
+
+        case CastleRights::KING_AND_QUEEN_SIDE:
+        {
+            // TODO: find a way to just bitwise OR the kingside and queenside results.
+            // This would be a great recursive function if the CastleRights was a parameter to getCastles().
+            // then: return getCastles(startingSquare, ONLY_KING_SIDE, gameState) | getCastles(startingSquare, ONLY_QUEEN_SIDE, gameState)
+            // bitboard = castleBitboard(queen side parameters) | castleBitboard(king side parameters)
+            return Bitboard();
+        }
+    }
+}
+
+const Bitboard LegalMoveGenerator::computeCastleBitboard(const Chessboard & gameState, const u64 squaresInBetweenKingAndRook, const Square kingTargetSquare) const
+{
+    const Color nonActivePlayer = gameState.getNonActivePlayer();
+    const Bitboard occupiedSquares = gameState.getOccupiedSquares();
+    const Bitboard squaresAttackedByOpponent = attack_tables::getAttacksByColor(gameState, nonActivePlayer);
+
+    const bool noPiecesAreInTheWay = Bitboard(squaresInBetweenKingAndRook & occupiedSquares).noBitsSet();
+    const bool noSquaresAreBeingAttacked = Bitboard(squaresInBetweenKingAndRook & squaresAttackedByOpponent).noBitsSet();
+    if (noPiecesAreInTheWay && noSquaresAreBeingAttacked)
+    {
+        // This is a valid castle move, return the square the king would move to.
+        return Bitboard(kingTargetSquare);
+    }
 
     return Bitboard();
 }
@@ -271,9 +305,11 @@ void LegalMoveGenerator::filterOutIllegalMoves(MoveVector & psuedoLegalMoves) co
         // filterOutMovesThatLeaveKingInCheck();
         // filterOutEmptyPawnAttacks();
 
-        // TODO: For pawns, remove attacks that don't capture anything. For all other pieces an attack and a move is the same thing. We can not wait until here to filter out pawn captures that don't capture anything. We won't know if the move is an attack or a push. I suppose we could check if the targetSquare is in a straight direction North or South from the start square.
-
         // TODO: if the king is in check after this move, then we either moved the King into check, or we moved a piece that was pinned. Everything below this relates to checking if the king is in check.
+
+        // This will be hard to check for castling. After castling we may no longer be in check. Also
+        // we need to check attacked squares I think to determine if a castling move is moving through check.
+        // For castling we can't just check the before and end state. We must check the intermediate step.
 
         // TODO: I'm pretty sure this is incorrect. If white plays e2e4 and then
         // We get here by calculating psuedo legal moves for black bishops,
