@@ -15,11 +15,11 @@ class Chessboard {
         Color activePlayer_ = Color::WHITE;
         Color nonActivePlayer_ = Color::BLACK;
         std::vector<Move> moveHistory;
+        CastleRights castleRights[Color::NUMBER_OF_COLORS];
 
     public:
         File static squareToFile(const int square);
         Rank static squareToRank(const int square);
-
 
         Chessboard();
         const Bitboard getOccupiedSquares() const;
@@ -32,9 +32,11 @@ class Chessboard {
         Color getNonActivePlayer() const;
         void undoMove(const Move & move);
         const std::optional<const Move> getLastMove() const;
+        CastleRights getCastleRights(const Color color) const;
 
      private:
         void updateBitboards(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare);
+        void updateCastleRights(const Move move);
         void raiseExceptionIfMoveIsNotLastMove(const Move & move, const std::string & errorMessage) const;
         void raiseExceptionIfMoveHistoryIsEmpty(const std::string & errorMessage) const;
 };

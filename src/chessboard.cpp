@@ -42,6 +42,9 @@ Chessboard::Chessboard()
     // Initialize the white and black bitboards
     colorBitboards_[Color::WHITE] = constants::DEFAULT_WHITE_OCCUPIED;
     colorBitboards_[Color::BLACK] = constants::DEFAULT_BLACK_OCCUPIED;
+
+    castleRights[Color::WHITE] = CastleRights::KING_AND_QUEEN_SIDE;
+    castleRights[Color::BLACK] = CastleRights::KING_AND_QUEEN_SIDE;
 }
 
 const Bitboard Chessboard::getOccupiedSquares() const
@@ -67,6 +70,7 @@ Bitboard Chessboard::getBitboard(const Color color, const PieceType piece) const
 void Chessboard::applyMove(const Move & move)
 {
     updateBitboards(move.color, move.piece, move.startSquare, move.endSquare);
+    updateCastleRights(move);
     moveHistory.push_back(move);
     toggleActivePlayer();
 }
@@ -78,6 +82,47 @@ void Chessboard::updateBitboards(const Color color, const PieceType piece, const
 
     colorBitboards_[color].clearBit(squareToClear);
     colorBitboards_[color].setBit(squareToSet);
+}
+
+void Chessboard::updateCastleRights(const Move move)
+{
+    if (castleRights[move.color] == CastleRights::NONE)
+    {
+        return;
+    }
+    else if (move.piece == PieceType::KING)
+    {
+        castleRights[move.color] = CastleRights::NONE;
+    }
+    else if (move.piece == PieceType::ROOK)
+    {
+        Square queenSideRookStartingSquare = Square::a1;
+        Square kingSideRookStartingSquare = Square::h1;
+
+        if (move.color == Color::BLACK)
+        {
+            queenSideRookStartingSquare = Square::a8;
+            kingSideRookStartingSquare = Square::h8;
+        }
+
+        const Bitboard activePlayerRookBitboard = getBitboard(move.color, PieceType::ROOK);
+        const bool queenSideRookHasMoved = (activePlayerRookBitboard.getBit(queenSideRookStartingSquare) == 0);
+        const bool kingSideRookHasMoved = (activePlayerRookBitboard.getBit(kingSideRookStartingSquare) == 0);
+
+        if (queenSideRookHasMoved && !kingSideRookHasMoved) {
+            castleRights[move.color] = CastleRights::ONLY_KING_SIDE;
+        }
+        else if (!queenSideRookHasMoved && kingSideRookHasMoved)
+        {
+            castleRights[move.color] = CastleRights::ONLY_QUEEN_SIDE;
+        }
+        else if (queenSideRookHasMoved && kingSideRookHasMoved)
+        {
+            castleRights[move.color] = CastleRights::NONE;
+        }
+        else {}
+    }
+    else {}
 }
 
 void Chessboard::toggleActivePlayer()
@@ -143,4 +188,9 @@ const std::optional<const Move> Chessboard::getLastMove() const
         return moveHistory.back();
     }
     return lastMove;
+}
+
+CastleRights Chessboard::getCastleRights(const Color color) const
+{
+    return castleRights[color];
 }

@@ -91,3 +91,11 @@ enum Rank
    RANK_8,
    NUMBER_OF_RANKS = 8
 };
+
+enum class CastleRights
+{
+    KING_AND_QUEEN_SIDE,
+    ONLY_KING_SIDE,
+    ONLY_QUEEN_SIDE,
+    NONE
+};

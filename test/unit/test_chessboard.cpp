@@ -269,5 +269,85 @@ TEST_F(ChessboardTest, getLastMove_returnsLastMove)
    EXPECT_EQ(returnedMove.value(), move);
 }
 
+TEST_F(ChessboardTest, castleRights_allCastleRightsAreTrueByDefault)
+{
+   Chessboard board;
+
+   CastleRights whiteCastleRights = board.getCastleRights(WHITE);
+   CastleRights blackCastleRights = board.getCastleRights(BLACK);
+
+   EXPECT_EQ(whiteCastleRights, CastleRights::KING_AND_QUEEN_SIDE);
+   EXPECT_EQ(blackCastleRights, CastleRights::KING_AND_QUEEN_SIDE);
+}
+
+TEST_F(ChessboardTest, castleRights_castleRightsAreTurnedOffIfKingMoves)
+{
+   Chessboard board;
+
+   board.applyMove(Move(WHITE, PAWN, e2, e4));
+   board.applyMove(Move(WHITE, KING, e1, e2));
+
+   CastleRights whiteCastleRights = board.getCastleRights(WHITE);
+   CastleRights blackCastleRights = board.getCastleRights(BLACK);
+
+   EXPECT_EQ(whiteCastleRights, CastleRights::NONE);
+   EXPECT_EQ(blackCastleRights, CastleRights::KING_AND_QUEEN_SIDE);
+
+   board.applyMove(Move(BLACK, PAWN, e7, e5));
+   board.applyMove(Move(BLACK, KING, e8, e7));
+
+   whiteCastleRights = board.getCastleRights(WHITE);
+   blackCastleRights = board.getCastleRights(BLACK);
+
+   EXPECT_EQ(whiteCastleRights, CastleRights::NONE);
+   EXPECT_EQ(blackCastleRights, CastleRights::NONE);
+}
+
+TEST_F(ChessboardTest, castleRights_kingSideCastleRightsAreTurnedOffIfKingSideRookMoves)
+{
+   Chessboard board;
+
+   board.applyMove(Move(WHITE, PAWN, h2, h4));
+   board.applyMove(Move(WHITE, ROOK, h1, h3));
+
+   CastleRights whiteCastleRights = board.getCastleRights(WHITE);
+   CastleRights blackCastleRights = board.getCastleRights(BLACK);
+
+   EXPECT_EQ(whiteCastleRights, CastleRights::ONLY_QUEEN_SIDE);
+   EXPECT_EQ(blackCastleRights, CastleRights::KING_AND_QUEEN_SIDE);
+
+   board.applyMove(Move(BLACK, PAWN, h7, h5));
+   board.applyMove(Move(BLACK, ROOK, h8, h7));
+
+   whiteCastleRights = board.getCastleRights(WHITE);
+   blackCastleRights = board.getCastleRights(BLACK);
+
+   EXPECT_EQ(whiteCastleRights, CastleRights::ONLY_QUEEN_SIDE);
+   EXPECT_EQ(blackCastleRights, CastleRights::ONLY_QUEEN_SIDE);
+}
+
+TEST_F(ChessboardTest, castleRights_queenSideCastleRightsAreTurnedOffIfQueenSideRookMoves)
+{
+   Chessboard board;
+
+   board.applyMove(Move(WHITE, PAWN, a2, a4));
+   board.applyMove(Move(WHITE, ROOK, a1, a3));
+
+   CastleRights whiteCastleRights = board.getCastleRights(WHITE);
+   CastleRights blackCastleRights = board.getCastleRights(BLACK);
+
+   EXPECT_EQ(whiteCastleRights, CastleRights::ONLY_KING_SIDE);
+   EXPECT_EQ(blackCastleRights, CastleRights::KING_AND_QUEEN_SIDE);
+
+   board.applyMove(Move(BLACK, PAWN, a7, a5));
+   board.applyMove(Move(BLACK, ROOK, a8, a7));
+
+   whiteCastleRights = board.getCastleRights(WHITE);
+   blackCastleRights = board.getCastleRights(BLACK);
+
+   EXPECT_EQ(whiteCastleRights, CastleRights::ONLY_KING_SIDE);
+   EXPECT_EQ(blackCastleRights, CastleRights::ONLY_KING_SIDE);
+}
+
 }  // namespace
 }  // namespace meatball
