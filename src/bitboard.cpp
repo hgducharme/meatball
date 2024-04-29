@@ -173,3 +173,8 @@ bool Bitboard::anyBitsSet() const
 {
     return (numberOfSetBits() > 0);
 }
+
+bool Bitboard::noBitsSet() const
+{
+    return (numberOfSetBits() == 0);
+}

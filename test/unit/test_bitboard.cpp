@@ -451,15 +451,23 @@ TEST_F(BitboardTest, toBinary)
 
 TEST_F(BitboardTest, anyBitsSet)
 {
-   const u64 squareD5 = 0x800000000;
-   const Bitboard b(squareD5);
-   EXPECT_TRUE(b.anyBitsSet());
+   const Bitboard d5(Square::d5);
+   EXPECT_TRUE(d5.anyBitsSet());
 
    const Bitboard empty;
    EXPECT_FALSE(empty.anyBitsSet());
 
    const Bitboard lastSquare(Square::h8);
    EXPECT_TRUE(lastSquare.anyBitsSet());
+}
+
+TEST_F(BitboardTest, noBitsSet)
+{
+   const Bitboard d5(Square::d5);
+   EXPECT_FALSE(d5.noBitsSet());
+
+   const Bitboard empty;
+   EXPECT_TRUE(empty.noBitsSet());
 }
 
 }  // namespace
