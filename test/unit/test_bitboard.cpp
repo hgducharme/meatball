@@ -449,5 +449,18 @@ TEST_F(BitboardTest, toBinary)
    ASSERT_EQ(b.toBinary(), "1111111111111111111111111111111111111111111111111111111111111111");
 }
 
+TEST_F(BitboardTest, anyBitsSet)
+{
+   const u64 squareD5 = 0x800000000;
+   const Bitboard b(squareD5);
+   EXPECT_TRUE(b.anyBitsSet());
+
+   const Bitboard empty;
+   EXPECT_FALSE(empty.anyBitsSet());
+
+   const Bitboard lastSquare(Square::h8);
+   EXPECT_TRUE(lastSquare.anyBitsSet());
+}
+
 }  // namespace
 }  // namespace meatball

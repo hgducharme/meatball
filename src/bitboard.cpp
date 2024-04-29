@@ -168,3 +168,8 @@ Bitboard Bitboard::getNeighbor(Direction direction) const
 {
     return (direction > 0) ? (toU64() << direction) : (toU64() >> std::abs(direction));
 }
+
+bool Bitboard::anyBitsSet() const
+{
+    return (numberOfSetBits() > 0);
+}

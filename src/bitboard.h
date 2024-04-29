@@ -28,6 +28,7 @@ class Bitboard {
         int clearAndReturnLSB();
         int clearAndReturnMSB();
         Bitboard getNeighbor(Direction direction) const;
+        bool anyBitsSet() const;
 
         private:
             void raiseExceptionIfBitIsOutOfRange(int n) const;
