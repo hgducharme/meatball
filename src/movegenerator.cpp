@@ -269,7 +269,7 @@ Bitboard LegalMoveGenerator::getCastles(const Square startingSquare, const Chess
             // TODO: find a way to just bitwise OR the kingside and queenside results.
             // This would be a great recursive function if the CastleRights was a parameter to getCastles().
             // then: return getCastles(startingSquare, ONLY_KING_SIDE, gameState) | getCastles(startingSquare, ONLY_QUEEN_SIDE, gameState)
-            // bitboard = castleBitboard(queen side parameters) | castleBitboard(king side parameters)
+            // bitboard = computeCastleBitboard(queen side parameters) | computeCastleBitboard(king side parameters)
             return Bitboard();
         }
     }
