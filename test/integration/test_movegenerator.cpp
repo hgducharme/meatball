@@ -63,10 +63,27 @@ namespace meatball
          Chessboard game;
          uint16_t depth = 1;
          
-         u64 numberOfNodes = perft(game, depth);
+         PerftResults results = perft(game, depth);
 
-         u64 EXPECTED = 20;
-         ASSERT_EQ(numberOfNodes, EXPECTED);
+         u64 EXPECTED_NODES = 20;
+         int EXPECTED_CAPTURES = 0;
+         int EXPECTED_ENPASSANTS = 0;
+         int EXPECTED_CASTLES = 0;
+         int EXPECTED_PROMOTIONS = 0;
+         int EXPECTED_CHECKS = 0;
+         int EXPECTED_DISCOVERYCHECKS = 0;
+         int EXPECTED_DOUBLECHECKS = 0;
+         int EXPECTED_CHECKMATES = 0;
+
+         EXPECT_EQ(results.numberOfNodes, EXPECTED_NODES);
+         EXPECT_EQ(results.captures, EXPECTED_CAPTURES);
+         EXPECT_EQ(results.enPassants, EXPECTED_ENPASSANTS);
+         EXPECT_EQ(results.castles, EXPECTED_CASTLES);
+         EXPECT_EQ(results.promotions, EXPECTED_PROMOTIONS);
+         EXPECT_EQ(results.checks, EXPECTED_CHECKS);
+         EXPECT_EQ(results.discoveryChecks, EXPECTED_DISCOVERYCHECKS);
+         EXPECT_EQ(results.doubleChecks, EXPECTED_DOUBLECHECKS);
+         EXPECT_EQ(results.checkmates, EXPECTED_CHECKMATES);
       }
 
       TEST_F(MoveGeneratorTest, perft_initialPositionDepth3)
@@ -74,10 +91,27 @@ namespace meatball
          Chessboard game;
          uint16_t depth = 3;
 
-         u64 numberOfNodes = perft(game, depth);
+         PerftResults results = perft(game, depth);
 
-         u64 EXPECTED = 8902;
-         ASSERT_EQ(numberOfNodes, EXPECTED);
+         u64 EXPECTED_NODES = 8902;
+         int EXPECTED_CAPTURES = 34;
+         int EXPECTED_ENPASSANTS = 0;
+         int EXPECTED_CASTLES = 0;
+         int EXPECTED_PROMOTIONS = 0;
+         int EXPECTED_CHECKS = 12;
+         int EXPECTED_DISCOVERYCHECKS = 0;
+         int EXPECTED_DOUBLECHECKS = 0;
+         int EXPECTED_CHECKMATES = 0;
+
+         EXPECT_EQ(results.numberOfNodes, EXPECTED_NODES);
+         EXPECT_EQ(results.captures, EXPECTED_CAPTURES);
+         EXPECT_EQ(results.enPassants, EXPECTED_ENPASSANTS);
+         EXPECT_EQ(results.castles, EXPECTED_CASTLES);
+         EXPECT_EQ(results.promotions, EXPECTED_PROMOTIONS);
+         EXPECT_EQ(results.checks, EXPECTED_CHECKS);
+         EXPECT_EQ(results.discoveryChecks, EXPECTED_DISCOVERYCHECKS);
+         EXPECT_EQ(results.doubleChecks, EXPECTED_DOUBLECHECKS);
+         EXPECT_EQ(results.checkmates, EXPECTED_CHECKMATES);
       }
    } // namespace
 } // namespace meatball
