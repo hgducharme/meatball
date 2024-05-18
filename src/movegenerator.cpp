@@ -315,7 +315,6 @@ void LegalMoveGenerator::filterOutIllegalMoves(MoveVector & psuedoLegalMoves) co
     for (int j = 0; j < psuedoLegalMoves.size(); j++)
     {
         // filterOutMovesThatLeaveKingInCheck();
-        // filterOutEmptyPawnAttacks();
 
         // TODO: if the king is in check after this move, then we either moved the King into check, or we moved a piece that was pinned. Everything below this relates to checking if the king is in check.
 
