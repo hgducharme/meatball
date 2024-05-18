@@ -237,42 +237,54 @@ Bitboard LegalMoveGenerator::getCastles(const Square startingSquare, const Chess
 
         case CastleRights::ONLY_KING_SIDE:
         {
-            Square kingTargetSquare = Square::g1;
-            u64 squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_WHITE_KING_AND_KINGSIDE_ROOK;
-            if (activePlayer == Color::BLACK)
-            {
-                kingTargetSquare = Square::g8;
-                squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_BLACK_KING_AND_KINGSIDE_ROOK;
-            }
-
+            auto [kingTargetSquare, squaresInBetweenKingAndRook] = getKingSideCastleSquares(activePlayer);
             return computeCastleBitboard(gameState, squaresInBetweenKingAndRook, kingTargetSquare);
         }
 
         case CastleRights::ONLY_QUEEN_SIDE:
         {
-            // TODO: The following variable setting with the if statements are the only change between kingside and queenside
-            // computations. The calculations that follow the if statement are the same.
-            // The variable setting and the computations may be able to be extracted to their own methods.
-            Square kingTargetSquare = Square::c1;
-            u64 squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_WHITE_KING_AND_QUEENSIDE_ROOK;
-            if (activePlayer == Color::BLACK)
-            {
-                kingTargetSquare = Square::c8;
-                squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_BLACK_KING_AND_QUEENSIDE_ROOK;
-            }
-
+            auto [kingTargetSquare, squaresInBetweenKingAndRook] = getQueenSideCastleSquares(activePlayer);
             return computeCastleBitboard(gameState, squaresInBetweenKingAndRook, kingTargetSquare);
         }
 
         case CastleRights::KING_AND_QUEEN_SIDE:
         {
-            // TODO: find a way to just bitwise OR the kingside and queenside results.
-            // This would be a great recursive function if the CastleRights was a parameter to getCastles().
-            // then: return getCastles(startingSquare, ONLY_KING_SIDE, gameState) | getCastles(startingSquare, ONLY_QUEEN_SIDE, gameState)
-            // bitboard = computeCastleBitboard(queen side parameters) | computeCastleBitboard(king side parameters)
-            return Bitboard();
+            auto [kingSideTargetSquare, squaresInBetweenKingAndRookKingSide] = getKingSideCastleSquares(activePlayer);
+            Bitboard kingSideCastle = computeCastleBitboard(gameState, squaresInBetweenKingAndRookKingSide, kingSideTargetSquare);
+
+            auto [queenSideTargetSquare, squaresInBetweenKingAndRookQueenSide] = getQueenSideCastleSquares(activePlayer);
+            Bitboard queenSideCastle = computeCastleBitboard(gameState, squaresInBetweenKingAndRookQueenSide, queenSideTargetSquare);
+
+            return kingSideCastle | queenSideCastle;
         }
     }
+}
+
+const std::pair<Square, u64> LegalMoveGenerator::getKingSideCastleSquares(const Color activePlayer) const
+{
+    Square kingTargetSquare = Square::g1;
+    u64 squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_WHITE_KING_AND_KINGSIDE_ROOK;
+
+    if (activePlayer == Color::BLACK) {
+        kingTargetSquare = Square::g8;
+        squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_BLACK_KING_AND_KINGSIDE_ROOK;
+    }
+
+    return {kingTargetSquare, squaresInBetweenKingAndRook};
+}
+
+const std::pair<Square, u64> LegalMoveGenerator::getQueenSideCastleSquares(const Color activePlayer) const
+{
+    Square kingTargetSquare = Square::c1;
+    u64 squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_WHITE_KING_AND_QUEENSIDE_ROOK;
+
+    if (activePlayer == Color::BLACK)
+    {
+        kingTargetSquare = Square::c8;
+        squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_BLACK_KING_AND_QUEENSIDE_ROOK;
+    }
+
+    return {kingTargetSquare, squaresInBetweenKingAndRook};
 }
 
 const Bitboard LegalMoveGenerator::computeCastleBitboard(const Chessboard & gameState, const u64 squaresInBetweenKingAndRook, const Square kingTargetSquare) const
