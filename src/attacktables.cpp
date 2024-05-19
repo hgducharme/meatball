@@ -18,7 +18,7 @@ void init()
     initializeAttacksForSliderPieces();
 }
 
-Bitboard getAttacksByColor(const Chessboard & gameState, const Color color)
+Bitboard getAttacks(const Chessboard & gameState, const Color color)
 {
     Bitboard attacks;
 

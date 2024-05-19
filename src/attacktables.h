@@ -15,10 +15,13 @@ namespace attack_tables
 
     void init();
 
+    /* Get all the attacked squares by a player. */
+    Bitboard getAttacks(const Chessboard & gameState, const Color color);
+
+    /* Get all the attacked squares by a player's piece. */
     Bitboard getAttacks(const Color color, const PieceType pieceType, const Square square, const Bitboard & boardState);
     Bitboard getLeaperPieceAttacks(const LeaperPiece leaperPiece, const Square square, const Color color);
     Bitboard getSliderPieceAttacks(const SliderPiece sliderPiece, const Square square, const Bitboard & boardState);
-    Bitboard getAttacksByColor(const Chessboard & gameState, const Color color);
 
 namespace
 {
