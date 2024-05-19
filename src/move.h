@@ -15,6 +15,7 @@ struct Move
     bool isPawnPromotion = false;
     bool isPawnDoublePush = false;
     bool isEnPassant = false;
+    bool isCapture = false;
 };
 
 inline bool operator == (const Move & lhs, const Move & rhs)

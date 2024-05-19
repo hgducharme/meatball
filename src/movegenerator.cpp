@@ -49,6 +49,7 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
 
         // TODO: We know at this moment if a pawn is a double push, or if a move is castling move. Maybe we pass in some sort of Flags struct
         // that gets modified to hold these flags, and then the struct gets passed into the Move() constructor where the constructor parses it?
+        // Also computing flags will be so much faster if we do our computations doing bit arithmetic.
         if (pieceType == PieceType::PAWN)
         {
             psuedoLegalMoves |= getPawnPushes(activePlayer, startingSquare);
@@ -68,19 +69,37 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
             const Square targetSquare = static_cast<Square>(psuedoLegalMoves.clearAndReturnLSB());
             Move move(activePlayer, pieceType, startingSquare, targetSquare);
 
-            if (pieceType == PAWN)
+            /*
+             * START - set various flags about the type of move.
+            */
+
+            const Bitboard opponentOccupancySet = gameState.getBitboard(nonActivePlayer);
+            if (pieceType == PieceType::PAWN)
             {
-                const Bitboard opponentOccupancySet = gameState.getBitboard(nonActivePlayer);
+                if (pawnMoveIsAttackWithNoCaptures(move, opponentOccupancySet))
+                {
+                    continue;
+                }
+
                 const std::optional<const Move> opponentsPreviousMove = gameState.getLastMove();
 
                 move.isPawnPromotion = isPawnPromotion(targetSquare);
                 move.isPawnDoublePush = isPawnDoublePush(startingSquare, targetSquare);
                 move.isEnPassant = isEnPassant(activePlayer, startingSquare, targetSquare, opponentsPreviousMove);
-                if (moveIsAttackWithNoCaptures(move, opponentOccupancySet))
-                {
-                    continue;
-                }
+
+                const bool startingFileAndEndingFileAreDifferent = (Chessboard::squareToFile(move.startSquare) != Chessboard::squareToFile(move.endSquare));
+                Bitboard targetSquareBitboard(static_cast<int>(move.endSquare));
+                Bitboard possibleCaptures = targetSquareBitboard & opponentOccupancySet;
+                move.isCapture = move.isEnPassant | (startingFileAndEndingFileAreDifferent && (possibleCaptures.numberOfSetBits() == 1));
             }
+            else
+            {
+                move.isCapture = ((opponentOccupancySet & Bitboard(move.endSquare)).numberOfSetBits() == 1);
+            }
+
+            /*
+             * END - set various flags about the type of move.
+            */
 
             moves.push_back(move);
         }
@@ -205,7 +224,7 @@ bool LegalMoveGenerator::isEnPassant(const Color activePlayer, const Square star
     return isEnPassant;
 }
 
-bool LegalMoveGenerator::moveIsAttackWithNoCaptures(const Move & m, const Bitboard & opponentOccupancySet) const
+bool LegalMoveGenerator::pawnMoveIsAttackWithNoCaptures(const Move & m, const Bitboard & opponentOccupancySet) const
 {
     if (m.isEnPassant == false)
     {

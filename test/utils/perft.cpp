@@ -18,10 +18,10 @@ PerftResults perft(Chessboard & gameState, const uint16_t depth)
    MoveVector moves = moveGenerator.generateLegalMoves(gameState);
    for (const Move & m : moves)
    {
-      // TODO: count captures and checks
       gameState.applyMove(m);
+      results.captures += static_cast<int>(m.isCapture);
       results += perft(gameState, depth - 1);
-      gameState.undoMove(m);   
+      gameState.undoMove(m);
    }
 
    return results;
