@@ -56,7 +56,7 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
 
         if (pieceType == KING)
         {
-            psuedoLegalMoves |= getCastles(startingSquare, gameState);
+            psuedoLegalMoves |= getCastles(gameState);
         }
 
         // Remove any moves that attack our own pieces
@@ -222,10 +222,9 @@ bool LegalMoveGenerator::moveIsAttackWithNoCaptures(const Move & m, const Bitboa
     return false;
 }
 
-Bitboard LegalMoveGenerator::getCastles(const Square startingSquare, const Chessboard & gameState) const
+Bitboard LegalMoveGenerator::getCastles(const Chessboard & gameState) const
 {
     const Color activePlayer = gameState.getActivePlayer();
-    const Color nonActivePlayer = gameState.getNonActivePlayer();
     const CastleRights castleRights = gameState.getCastleRights(activePlayer);
 
     switch (castleRights)
@@ -291,7 +290,7 @@ const Bitboard LegalMoveGenerator::computeCastleBitboard(const Chessboard & game
 {
     const Color nonActivePlayer = gameState.getNonActivePlayer();
     const Bitboard occupiedSquares = gameState.getOccupiedSquares();
-    const Bitboard squaresAttackedByOpponent = attack_tables::getAttacksByColor(gameState, nonActivePlayer);
+    const Bitboard squaresAttackedByOpponent = attack_tables::getAttacks(gameState, nonActivePlayer);
 
     const bool noPiecesAreInTheWay = Bitboard(squaresInBetweenKingAndRook & occupiedSquares).noBitsSet();
     const bool noSquaresAreBeingAttacked = Bitboard(squaresInBetweenKingAndRook & squaresAttackedByOpponent).noBitsSet();
@@ -309,52 +308,36 @@ bool LegalMoveGenerator::isPawnPromotion(const Square targetSquare) const
     return (Chessboard::squareToRank(targetSquare) == RANK_8);
 }
 
-void LegalMoveGenerator::filterOutIllegalMoves(MoveVector & psuedoLegalMoves) const
+void LegalMoveGenerator::filterOutIllegalMoves(MoveVector & psuedoLegalMoves, const Chessboard & gameState) const
 {
-    // TODO: ./src/movegenerator.cpp:223:23: warning: comparison of integers of different signs: 'int' and 'std::vector<Move>::size_type' (aka 'unsigned long') [-Wsign-compare]
-    for (int j = 0; j < psuedoLegalMoves.size(); j++)
+
+    // TODO: if the king is in check after this move, then we either moved the King into check, or we moved a piece that was pinned. Everything below this relates to checking if the king is in check.
+
+    // TODO: This will be hard to check for castling. After castling we may no longer be in check. Also
+    // we need to check attacked squares I think to determine if a castling move is moving through check.
+    // For castling we can't just check the before and end state. We must check the intermediate step.
+
+    const Color activePlayer = gameState.getActivePlayer();
+    const Color nonActivePlayer = gameState.getNonActivePlayer();
+
+    auto movePutsOrLeavesKingInCheck = [&](const Move & move) -> bool
     {
-        // filterOutMovesThatLeaveKingInCheck();
+        Chessboard simulatedGameState = gameState;
+        simulatedGameState.applyMove(move);
+        Bitboard activePlayerKingPosition = simulatedGameState.getBitboard(activePlayer, PieceType::KING);
+        Bitboard attackedSquaresByNonActivePlayer = attack_tables::getAttacks(gameState, nonActivePlayer);
+        bool isKingUnderAttack = (attackedSquaresByNonActivePlayer & activePlayerKingPosition).numberOfSetBits() != 0;
+        return isKingUnderAttack;
+    };
 
-        // TODO: if the king is in check after this move, then we either moved the King into check, or we moved a piece that was pinned. Everything below this relates to checking if the king is in check.
-
-        // This will be hard to check for castling. After castling we may no longer be in check. Also
-        // we need to check attacked squares I think to determine if a castling move is moving through check.
-        // For castling we can't just check the before and end state. We must check the intermediate step.
-
-        // TODO: I'm pretty sure this is incorrect. If white plays e2e4 and then
-        // We get here by calculating psuedo legal moves for black bishops,
-        // We should expect this to show the attack ray of the white F1 bishop,
-        // but this says that the f1 bishop has 0 attack ray, which is untrue.
-        // Bitboard attackedSquaresByNonActivePlayer = attack_tables::getAttacks(nonActivePlayer, pieceType, startingSquare, gameState.getOccupiedSquares());
-
-        // Maybe this entire block should be saved for the filter out illegal moves thing method?
-        // This block is checking for a move puts our king in check or not.
-        // TODO: remove any moves that will result in the active player being in check, this is illegal
-        // Technically this should be done in the filerOutIlliegalMoves().
-        // Will ignore this issue for now and work on generating pawn pushes and double pushes.
-        // If after this move the king is in check, then either we were in check to begin with or
-        // this move puts the king in check, so don't add this move to the list
-        // Brute force method: for every single black piece on the board, calculate the attack vector to the king,
-        // is it blocked?
-        // Maybe more efficient method: get the attack boards for all of the black pieces. Do a bitwise and with the king's position,
-        // Do we get left with a set bit? If so, the king is under attack.
-        // We need to pass in the color of the nonActivePlayer
-        // Bitboard activePlayerKingPosition = gameState.getBitboard(activePlayer, PieceType::KING);
-        // activePlayerKingPosition &= attackedSquaresByNonActivePlayer;
-
-        // if (activePlayerKingPosition.numberOfSetBits() > 0)
-        // {
-        //     // Don't add this move to the list since it either puts the king in check or leaves the king in check
-        //     continue;
-        // }
-    }
+    // Remove moves from the move vector that make the lambda function true
+    psuedoLegalMoves.erase(std::remove_if(psuedoLegalMoves.begin(), psuedoLegalMoves.end(), movePutsOrLeavesKingInCheck), psuedoLegalMoves.end());
 }
 
 MoveVector LegalMoveGenerator::generateLegalMoves(const Chessboard & gameState)
 {
     MoveVector moves = generatePsuedoLegalMoves(gameState);
-    filterOutIllegalMoves(moves);
+    filterOutIllegalMoves(moves, gameState);
 
     return moves;
 }
