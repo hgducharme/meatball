@@ -63,7 +63,7 @@ namespace meatball
          Chessboard game;
          uint16_t depth = 1;
          
-         PerftResults results = perft(game, depth);
+         PerftResults results = perft(game, depth, false);
 
          u64 EXPECTED_NODES = 20;
          int EXPECTED_CAPTURES = 0;
@@ -91,7 +91,7 @@ namespace meatball
          Chessboard game;
          uint16_t depth = 3;
 
-         PerftResults results = perft(game, depth);
+         PerftResults results = perft(game, depth, true);
 
          u64 EXPECTED_NODES = 8902;
          int EXPECTED_CAPTURES = 34;
