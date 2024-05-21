@@ -17,6 +17,10 @@ class Chessboard {
         std::vector<Move> moveHistory;
         CastleRights castleRights[Color::NUMBER_OF_COLORS];
 
+        /* We freeze the castle rights state before a move is applied in the event
+         * that the move is later undone, then we can restore the castle rights after undoing the move. */
+        CastleRights previousCastleRightsState;
+
     public:
         File static squareToFile(const int square);
         Rank static squareToRank(const int square);
@@ -34,9 +38,36 @@ class Chessboard {
         const std::optional<const Move> getLastMove() const;
         CastleRights getCastleRights(const Color color) const;
 
+        bool operator==(const Chessboard & other) const;
+
      private:
         void updateBitboards(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare);
-        void updateCastleRights(const Move move);
+        void updateCastleRights(const Move & move);
         void raiseExceptionIfMoveIsNotLastMove(const Move & move, const std::string & errorMessage) const;
         void raiseExceptionIfMoveHistoryIsEmpty(const std::string & errorMessage) const;
 };
+
+inline bool Chessboard::operator == (const Chessboard & other) const {
+    for (int i = 0; i < PieceType::NUMBER_OF_PIECES; ++i) {
+        if (pieceBitboards_[i] != other.pieceBitboards_[i]) {
+            return false;
+        }
+    }
+
+    for (int i = 0; i < Color::NUMBER_OF_COLORS; ++i) {
+        if (colorBitboards_[i] != other.colorBitboards_[i] ||
+            castleRights[i] != other.castleRights[i]) {
+            return false;
+        }
+    }
+
+    if (activePlayer_ != other.activePlayer_ ||
+        nonActivePlayer_ != other.nonActivePlayer_ ||
+        moveHistory != other.moveHistory ||
+        previousCastleRightsState != other.previousCastleRightsState)
+    {
+        return false;
+    }
+
+    return true;
+}

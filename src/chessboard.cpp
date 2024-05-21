@@ -45,6 +45,7 @@ Chessboard::Chessboard()
 
     castleRights[Color::WHITE] = CastleRights::KING_AND_QUEEN_SIDE;
     castleRights[Color::BLACK] = CastleRights::KING_AND_QUEEN_SIDE;
+    previousCastleRightsState = CastleRights::KING_AND_QUEEN_SIDE;
 }
 
 const Bitboard Chessboard::getOccupiedSquares() const
@@ -69,6 +70,10 @@ Bitboard Chessboard::getBitboard(const Color color, const PieceType piece) const
 
 void Chessboard::applyMove(const Move & move)
 {
+    // Store the active player's castle rights state in case this move is later undone,
+    // then we can quickly restore the castle rights back to this player
+    previousCastleRightsState = castleRights[move.color];
+
     updateBitboards(move.color, move.piece, move.startSquare, move.endSquare);
     updateCastleRights(move);
     moveHistory.push_back(move);
@@ -84,7 +89,7 @@ void Chessboard::updateBitboards(const Color color, const PieceType piece, const
     colorBitboards_[color].setBit(squareToSet);
 }
 
-void Chessboard::updateCastleRights(const Move move)
+void Chessboard::updateCastleRights(const Move & move)
 {
     if (castleRights[move.color] == CastleRights::NONE)
     {
@@ -153,11 +158,14 @@ void Chessboard::undoMove(const Move & move)
     raiseExceptionIfMoveHistoryIsEmpty("There is no move history and therefore no moves to undo.");
     raiseExceptionIfMoveIsNotLastMove(move, "The requested move can not be undone. Only the last move to be made can be undone.");
 
-    // Remove the last move from the move history
-    moveHistory.pop_back();
-
     // Move the piece back to its original square
     updateBitboards(move.color, move.piece, move.endSquare, move.startSquare);
+
+    // If castle rights were changed in the prior move, then reverse that
+    castleRights[move.color] = previousCastleRightsState;
+
+    // Remove the last move from the move history
+    moveHistory.pop_back();
 
     toggleActivePlayer();
 }
