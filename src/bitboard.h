@@ -35,9 +35,10 @@ class Bitboard {
             void raiseExceptionIfBitIsOutOfRange(int n) const;
 };
 
-/* Relational operator overloading */
+/* Comparison operators */
 inline bool operator == (const Bitboard & lhs, const u64 rhs) { return lhs.toU64() == rhs; }
 inline bool operator == (const Bitboard & lhs, const Bitboard & rhs) { return lhs.toU64() == rhs.toU64(); }
+inline bool operator!=(const Bitboard & lhs, const Bitboard & rhs) { return !(lhs == rhs); }
 
 /* Bitwise operator overloading */
 inline Bitboard operator << (const Bitboard & lhs, const unsigned int rhs) { return lhs.toU64() << rhs; }

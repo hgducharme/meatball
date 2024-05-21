@@ -249,6 +249,38 @@ TEST_F(BitboardTest, setBoard_correctlySetsBitboard)
    ASSERT_EQ(bitboard.toU64(), constants::UNIVERSE);
 }
 
+TEST_F(BitboardTest, equalityOperator_differentBitboardsReturnFalse)
+{
+    Bitboard a(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
+    Bitboard b(constants::DEFAULT_BLACK_QUEEN_STRUCTURE);
+
+    ASSERT_FALSE(a == b);
+}
+
+TEST_F(BitboardTest, equalityOperator_sameBitboardsReturnTrue)
+{
+    Bitboard a(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
+    Bitboard b(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
+
+    ASSERT_TRUE(a == b);
+}
+
+TEST_F(BitboardTest, inequalityOperator_differentBitboardsReturnTrue)
+{
+    Bitboard a(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
+    Bitboard b(constants::DEFAULT_BLACK_QUEEN_STRUCTURE);
+
+    ASSERT_TRUE(a != b);
+}
+
+TEST_F(BitboardTest, inequalityOperator_sameBitboardsReturnFalse)
+{
+    Bitboard a(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
+    Bitboard b(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
+
+    ASSERT_FALSE(a != b);
+}
+
 TEST_F(BitboardTest, bitwiseOrOperator_returnsNewBitboard)
 {
    Bitboard a(constants::DEFAULT_BLACK_PAWN_STRUCTURE);
