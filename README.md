@@ -2,7 +2,7 @@
 
 This is a hobbyist's attempt at machine learning by creating a chess engine in C++.
 
-# Features
+## Features
 
 Consider reading [the wiki](https://github.com/hgducharme/meatball/wiki/) for more information on the theory behind some of the engine's components.
 
@@ -17,7 +17,7 @@ Consider reading [the wiki](https://github.com/hgducharme/meatball/wiki/) for mo
 
 This code is written with readability in mind and is not meant to be fully optimized.
 
-# Installation
+## Installation
 
 This project was built using C++17, so make sure you have at least C++17 installed on your system.
 
@@ -31,7 +31,7 @@ make meatball
 
 If successful, you should see the executable `/bin/meatball`
 
-# Tests
+## Tests
 
 To run the tests make sure you have [googletest 1.13.0](https://github.com/google/googletest/releases/tag/v1.13.0) and `cmake` installed on your system.
 
@@ -71,7 +71,7 @@ To build (and run) only the inegration tests:
 make integration_tests
 ```
 
-## Test coverage
+### Test coverage
 
 Make sure you have `gcov` and `gcovr` installed on your system.
 
