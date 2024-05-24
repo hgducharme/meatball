@@ -349,5 +349,19 @@ TEST_F(ChessboardTest, castleRights_queenSideCastleRightsAreTurnedOffIfQueenSide
    EXPECT_EQ(blackCastleRights, CastleRights::ONLY_KING_SIDE);
 }
 
+TEST_F(ChessboardTest, castleRights_getRestoredAfterUnmakingAMove)
+{
+   Chessboard game;
+
+   game.applyMove(Move(WHITE, PAWN, e2, e4));
+   game.applyMove(Move(WHITE, KING, e1, e2));
+   
+   EXPECT_EQ(game.getCastleRights(WHITE), CastleRights::NONE);
+
+   game.undoMove(Move(WHITE, KING, e1, e2));
+
+   EXPECT_EQ(game.getCastleRights(WHITE), CastleRights::KING_AND_QUEEN_SIDE);
+}
+
 }  // namespace
 }  // namespace meatball
