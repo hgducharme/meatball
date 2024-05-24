@@ -52,7 +52,8 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
         // Also computing flags will be so much faster if we do our computations doing bit arithmetic.
         if (pieceType == PieceType::PAWN)
         {
-            psuedoLegalMoves |= getPawnPushes(activePlayer, startingSquare);
+            const Bitboard occupiedSquares = gameState.getOccupiedSquares();
+            psuedoLegalMoves |= getPawnPushes(activePlayer, startingSquare, occupiedSquares);
         }
 
         if (pieceType == KING)
@@ -108,7 +109,7 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
     return moves;
 }
 
-Bitboard LegalMoveGenerator::getPawnPushes(const Color activePlayer, const Square startingSquare) const
+Bitboard LegalMoveGenerator::getPawnPushes(const Color activePlayer, const Square startingSquare, const Bitboard occupiedSquares) const
 {
     Bitboard pawnPushes;
 
@@ -120,6 +121,9 @@ Bitboard LegalMoveGenerator::getPawnPushes(const Color activePlayer, const Squar
 
     pawnPushes |= getPawnSinglePush(activePlayer, startingSquare, direction);
     pawnPushes |= getPawnDoublePush(activePlayer, startingSquare, direction);
+
+    // Remove pushes to squares that are already occupied
+    pawnPushes &= (~occupiedSquares);
 
     return pawnPushes;
 }
