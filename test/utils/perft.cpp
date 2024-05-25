@@ -204,7 +204,8 @@ std::string moveToString(const Move &m)
 // This perft takes an initialDepth parameter so that we can implement perft divide functionality
 // Perft divide means that we can spit how many child nodes are located under each top level node
 // TODO: make sure en passant also gets restored after unmaking a move.
-// TODO: I'm not sure why it's still broken. We removed pushes to occupied squares. Double check why.
+// Ok we have an issue with moves that capture other pieces. When we make the move, the opponents piece gets deleted.
+// Then we unmake the move the opponents piece doesn't get put back on the board.
 // TODO: place the following conditional breakpoint right inside the for loop:
 // (depth == 1) && (move.startSquare == a4) && (move.endSquare == a5)
 // The move history goes: a2a4, a7a5, and then the move generator says we can make the move a4a5 but we can't
