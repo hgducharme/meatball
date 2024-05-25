@@ -26,13 +26,13 @@ namespace attack_tables
 namespace
 {
 
-    void initializeAttacksForLeaperPieces();
-    Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitboard);
-    Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard);
-    Bitboard calculateBishopAttacksFromSquareClassical(const Bitboard & bitboard);
-    Bitboard calculateRookAttacksFromSquareClassical(const Bitboard & bitboard);
-    Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard);
-    void initializeAttacksForSliderPieces();
+    static inline void initializeAttacksForLeaperPieces();
+    static inline Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitboard);
+    static inline Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard);
+    static inline Bitboard calculateBishopAttacksFromSquareClassical(const Bitboard & bitboard);
+    static inline Bitboard calculateRookAttacksFromSquareClassical(const Bitboard & bitboard);
+    static inline Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard);
+    static inline void initializeAttacksForSliderPieces();
 
 } // anonymous namespace
 

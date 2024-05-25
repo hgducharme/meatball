@@ -96,7 +96,7 @@ Bitboard getSliderPieceAttacks(const SliderPiece sliderPiece, const Square squar
 namespace
 {
 
-void initializeAttacksForLeaperPieces()
+static inline void initializeAttacksForLeaperPieces()
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
@@ -109,7 +109,7 @@ void initializeAttacksForLeaperPieces()
     }
 }
 
-Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitboard)
+static inline Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitboard)
 {
     Bitboard potentialPawnAttacks;
     Rank rank = Chessboard::squareToRank(bitboard.findIndexLSB());
@@ -136,7 +136,7 @@ Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitb
     return potentialPawnAttacks;
 }
 
-Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard)
+static inline Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard)
 {
     Bitboard potentialKnightAttacks;
 
@@ -153,7 +153,7 @@ Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard)
     return potentialKnightAttacks;
 }
 
-Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard)
+static inline Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard)
 {
     Bitboard legalKingAttacks;
 
@@ -170,7 +170,7 @@ Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard)
     return legalKingAttacks;
 }
 
-void initializeAttacksForSliderPieces()
+static inline void initializeAttacksForSliderPieces()
 {
     magic_bitboards::init();
 }

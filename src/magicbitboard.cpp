@@ -50,7 +50,7 @@ int hashBlockerVariation(const Bitboard & blockerVariation, const u64 magicNumbe
 namespace
 {
 
-void initializeHashingParameters()
+static inline void initializeHashingParameters()
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
@@ -62,7 +62,7 @@ void initializeHashingParameters()
     }
 }
 
-void generateBlockerMasks()
+static inline void generateBlockerMasks()
 {
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
     {
@@ -79,7 +79,7 @@ void generateBlockerMasks()
 }
 
 template <uint8_t size>
-Bitboard calculateBlockerMask(const Bitboard & position, const Direction (&sliderPieceDirections)[size])
+static inline Bitboard calculateBlockerMask(const Bitboard & position, const Direction (&sliderPieceDirections)[size])
 {
     Bitboard potentialBlockerSquares;
     Square currentSquare = static_cast<Square>(position.findIndexLSB());
@@ -97,7 +97,7 @@ Bitboard calculateBlockerMask(const Bitboard & position, const Direction (&slide
     return potentialBlockerSquares;
 }
 
-ArrayOfBitboardVectors calculateBlockerVariations(HashingParameters const * hashingParametersLookup)
+static inline ArrayOfBitboardVectors calculateBlockerVariations(HashingParameters const * hashingParametersLookup)
 {
     ArrayOfBitboardVectors blockerVariations;
     for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
@@ -108,7 +108,7 @@ ArrayOfBitboardVectors calculateBlockerVariations(HashingParameters const * hash
     return blockerVariations;
 }
 
-std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask)
+static inline std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask)
 {
     /*
      * This solved problem is also known as: enumerate all submasks of a bitmask.
@@ -131,7 +131,7 @@ std::vector<Bitboard> enumerateSubmasks(Bitboard blockerMask)
 }
 
 template <uint8_t size>
-ArrayOfBitboardVectors calculateAttacks(const Direction (&attackDirections)[size], const ArrayOfBitboardVectors & blockerVariations)
+static inline ArrayOfBitboardVectors calculateAttacks(const Direction (&attackDirections)[size], const ArrayOfBitboardVectors & blockerVariations)
 {
     ArrayOfBitboardVectors attacks;
 
@@ -151,7 +151,7 @@ ArrayOfBitboardVectors calculateAttacks(const Direction (&attackDirections)[size
 }
 
 template <uint8_t size>
-Bitboard calculateAttacksFromSquare(const Square & square, const Direction (&attackDirections)[size], const Bitboard & blockerVariation)
+static inline Bitboard calculateAttacksFromSquare(const Square & square, const Direction (&attackDirections)[size], const Bitboard & blockerVariation)
 {
     Bitboard attackBoard;
     Bitboard squareBitboard(square);
@@ -177,12 +177,12 @@ Bitboard calculateAttacksFromSquare(const Square & square, const Direction (&att
     return attackBoard;
 }
 
-bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares)
+static inline bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares)
 {
     return ( (targetSquare & occupiedSquares).numberOfSetBits() == 1 );
 }
 
-void generateMagicNumbers(HashingParameters * hashingParametersLookup,
+static inline void generateMagicNumbers(HashingParameters * hashingParametersLookup,
                           const int minimumBitsRequiredForHashing,
                           const ArrayOfBitboardVectors & blockerVariations,
                           const ArrayOfBitboardVectors & attackBoards)
@@ -198,7 +198,7 @@ void generateMagicNumbers(HashingParameters * hashingParametersLookup,
 }
 
 // TODO: magic number search for rooks is extremely slow.
-u64 searchForMagicNumber(const HashingParameters & hashingParameters, const int minimumAmountOfBitsInLastByte, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards)
+static inline u64 searchForMagicNumber(const HashingParameters & hashingParameters, const int minimumAmountOfBitsInLastByte, const std::vector<Bitboard> & allBlockerVariations, const std::vector<Bitboard> & attackBoards)
 {
     Bitboard tempAttackDatabase[LARGEST_AMOUNT_OF_ROOK_BLOCKER_CONFIGURATIONS];
     const int numberOfBlockerVariations = allBlockerVariations.size();
@@ -250,7 +250,7 @@ u64 searchForMagicNumber(const HashingParameters & hashingParameters, const int 
     return magicNumberCandidate;
 }
 
-void usePrecomputedMagicNumbers()
+static inline void usePrecomputedMagicNumbers()
 {
     BISHOP_HASHING_PARAMETERS_LOOKUP[0].magicNumber = 9873895970016936192U;
     BISHOP_HASHING_PARAMETERS_LOOKUP[1].magicNumber = 883277444818175001U;
@@ -384,7 +384,7 @@ void usePrecomputedMagicNumbers()
 }
 
 template <size_t rows, size_t columns>
-void populateAttackDatabase(Bitboard (&attackDatabase)[rows][columns],
+static inline void populateAttackDatabase(Bitboard (&attackDatabase)[rows][columns],
                             const HashingParameters * hashingParametersLookup,
                             const ArrayOfBitboardVectors & blockerVariations,
                             const ArrayOfBitboardVectors & attackBoards)
