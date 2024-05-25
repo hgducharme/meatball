@@ -361,6 +361,8 @@ TEST_F(ChessboardTest, getPieceAt)
    EXPECT_EQ(game.getPieceAt(Square::e8).value(), Piece(BLACK ,KING));
    EXPECT_FALSE(game.getPieceAt(Square::e4).has_value());
 }
+
+TEST_F(ChessboardTest, undoMove_castleRightsGetRestoredAfterUndoingAMove)
 {
    Chessboard game;
 
@@ -372,6 +374,38 @@ TEST_F(ChessboardTest, getPieceAt)
    game.undoMove(Move(WHITE, KING, e1, e2));
 
    EXPECT_EQ(game.getCastleRights(WHITE), CastleRights::KING_AND_QUEEN_SIDE);
+}
+
+TEST_F(ChessboardTest, undoMove_capturedPieceGetsRestoredAfterUndoingMove)
+{
+   Chessboard game;
+   Piece capturedPiece(BLACK, PAWN);
+   const Move e4CapturesD5(WHITE, PAWN, e4, d5, false, false, false, true, capturedPiece);
+
+   game.applyMove(Move(WHITE, PAWN, e2, e4));
+   game.applyMove(Move(BLACK, PAWN, d7, d5));
+
+   const Bitboard ORIGINAL_STATE = game.getOccupiedSquares();
+
+   game.applyMove(e4CapturesD5);
+   game.undoMove(e4CapturesD5);
+
+   ASSERT_EQ(game.getOccupiedSquares(), ORIGINAL_STATE);
+}
+
+TEST_F(ChessboardTest, undoMove_enPassantGetsCorrectlyUndone)
+{
+   ASSERT_TRUE(false);
+}
+
+TEST_F(ChessboardTest, undoMove_castleGetsCorrectlyUndone)
+{
+   ASSERT_TRUE(false);
+}
+
+TEST_F(ChessboardTest, undoMove_promotionGetsCorrectlyUndone)
+{
+   ASSERT_TRUE(false);
 }
 
 }  // namespace

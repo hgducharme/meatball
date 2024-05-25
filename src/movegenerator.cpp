@@ -96,6 +96,10 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
             else
             {
                 move.isCapture = ((opponentOccupancySet & Bitboard(move.endSquare)).numberOfSetBits() == 1);
+                if (move.isCapture)
+                {
+                    move.capturedPiece = gameState.getPieceAt(move.endSquare);
+                }
             }
 
             /*

@@ -43,6 +43,7 @@ Chessboard::Chessboard()
     colorBitboards_[Color::WHITE] = constants::DEFAULT_WHITE_OCCUPIED;
     colorBitboards_[Color::BLACK] = constants::DEFAULT_BLACK_OCCUPIED;
 
+    // Initialize castle rights
     castleRights[Color::WHITE] = CastleRights::KING_AND_QUEEN_SIDE;
     castleRights[Color::BLACK] = CastleRights::KING_AND_QUEEN_SIDE;
     previousCastleRightsState = CastleRights::KING_AND_QUEEN_SIDE;
@@ -160,6 +161,12 @@ void Chessboard::undoMove(const Move & move)
 
     // Move the piece back to its original square
     updateBitboards(move.color, move.piece, move.endSquare, move.startSquare);
+
+    // If the move captured a piece, we need to add that piece back to the board
+    if (move.isCapture)
+    {
+        updateBitboards(move.capturedPiece.value().color, move.capturedPiece.value().type, move.endSquare, move.endSquare);
+    }
 
     // If castle rights were changed in the prior move, then reverse that
     castleRights[move.color] = previousCastleRightsState;
