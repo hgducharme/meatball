@@ -89,6 +89,6 @@ It can be difficult to know where to start debugging the move generation when a 
 
 1. Go to your stockfish repo and make sure the executable has been built.
 2. Start the executable `./stockfish`.
-3. Run the perft command `go perft [depth]`. You should see the number of nodes that fall under each top level move. You can recurse down the tree to get more and more precise results.
+3. Run the commands in the shell: `position startpos` and then `go perft [depth]`. You should see the number of nodes that fall under each top level move. You can recurse down the tree to get more and more precise results.
 4. In `test_movegenerator.cpp`, make sure the `showDivideOutput` argument in the `perft()` calls are set to `true`. This will print the divide output to the console.
 5. Compare the results.
