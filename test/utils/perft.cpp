@@ -203,15 +203,6 @@ std::string moveToString(const Move &m)
 
 // This perft takes an initialDepth parameter so that we can implement perft divide functionality
 // Perft divide means that we can spit how many child nodes are located under each top level node
-// TODO: make sure en passant also gets restored after unmaking a move.
-// Ok we have an issue with moves that capture other pieces. When we make the move, the opponents piece gets deleted.
-// Then we unmake the move the opponents piece doesn't get put back on the board.
-// TODO: place the following conditional breakpoint right inside the for loop:
-// (depth == 1) && (move.startSquare == a4) && (move.endSquare == a5)
-// The move history goes: a2a4, a7a5, and then the move generator says we can make the move a4a5 but we can't
-// because there is a piece there. And then when we unmake the move a4a5 we clear the a5 bit which deletes
-// the black pawn that was occupying that square.
-// https://www.reddit.com/r/chessprogramming/comments/152monz/how_to_use_perft_results_when_debugging_and/
 PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t initialDepth, const bool showDivideOutput)
 {
    LegalMoveGenerator moveGenerator;
