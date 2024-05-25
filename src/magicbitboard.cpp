@@ -182,7 +182,7 @@ static inline bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupie
     return ( (targetSquare & occupiedSquares).numberOfSetBits() == 1 );
 }
 
-static inline void generateMagicNumbers(HashingParameters * hashingParametersLookup,
+[[maybe_unused]] static inline void generateMagicNumbers(HashingParameters * hashingParametersLookup,
                           const int minimumBitsRequiredForHashing,
                           const ArrayOfBitboardVectors & blockerVariations,
                           const ArrayOfBitboardVectors & attackBoards)

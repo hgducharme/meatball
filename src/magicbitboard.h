@@ -77,7 +77,7 @@ static inline Bitboard calculateAttacksFromSquare(const Square & square, const D
 
 static inline bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares);
 
-static inline void generateMagicNumbers(HashingParameters * hashingParametersLookup,
+[[maybe_unused]] static inline void generateMagicNumbers(HashingParameters * hashingParametersLookup,
                           const int minimumBitsRequiredForHashing,
                           const ArrayOfBitboardVectors & blockerVariations,
                           const ArrayOfBitboardVectors & attackBoards);
