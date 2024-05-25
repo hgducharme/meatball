@@ -502,5 +502,20 @@ TEST_F(BitboardTest, noBitsSet)
    EXPECT_TRUE(empty.noBitsSet());
 }
 
+TEST_F(BitboardTest, boolConversion)
+{
+   const Bitboard empty;
+   EXPECT_FALSE(empty);
+
+   const Bitboard one(constants::ONE);
+   EXPECT_TRUE(one);
+
+   const Bitboard oneBitSet(30);
+   EXPECT_TRUE(oneBitSet);
+
+   const Bitboard allBitsSet(constants::UNIVERSE);
+   EXPECT_TRUE(allBitsSet);
+}
+
 }  // namespace
 }  // namespace meatball

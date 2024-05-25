@@ -30,6 +30,7 @@ class Bitboard {
         Bitboard getNeighbor(Direction direction) const;
         bool anyBitsSet() const;
         bool noBitsSet() const;
+        explicit operator bool () const {return anyBitsSet(); }
 
         private:
             void raiseExceptionIfBitIsOutOfRange(int n) const;
