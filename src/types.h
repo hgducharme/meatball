@@ -29,8 +29,7 @@ enum class LeaperPiece
     KING = PieceType::KING
 };
 
-// This enum translates the concept of a direction on a chessboard to the corresponding
-// number of bits in a bitboard.
+// This enum maps the concept of a direction on a chessboard to a corresponding number of bits
 // - one move to the north west corresponds to the bit 7 positions larger than the current bit
 // - one move to the north      corresponds to the bit 8 positions larger than the current bit
 // - one move to the north east corresponds to the bit 9 positions larger than the current bit
@@ -98,4 +97,15 @@ enum class CastleRights
     ONLY_KING_SIDE,
     ONLY_QUEEN_SIDE,
     NONE
+};
+
+struct Piece
+{
+    Color color;
+    PieceType type;
+
+    inline Piece() {}
+    inline Piece(const Color c, const PieceType pt) : color(c), type(pt) {}
+
+    inline bool operator == (const Piece & rhs) const { return ( (color == rhs.color) && (type == rhs.type) ); }
 };

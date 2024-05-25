@@ -12,10 +12,10 @@ class Chessboard {
     private:
         Bitboard pieceBitboards_[PieceType::NUMBER_OF_PIECES];
         Bitboard colorBitboards_[Color::NUMBER_OF_COLORS];
+        CastleRights castleRights[Color::NUMBER_OF_COLORS];
         Color activePlayer_ = Color::WHITE;
         Color nonActivePlayer_ = Color::BLACK;
         std::vector<Move> moveHistory;
-        CastleRights castleRights[Color::NUMBER_OF_COLORS];
 
         /* We freeze the castle rights state before a move is applied in the event
          * that the move is later undone, then we can restore the castle rights after undoing the move. */
@@ -37,6 +37,7 @@ class Chessboard {
         void undoMove(const Move & move);
         const std::optional<const Move> getLastMove() const;
         CastleRights getCastleRights(const Color color) const;
+        std::optional<Piece> getPieceAt(const Square square) const;
 
         bool operator==(const Chessboard & other) const;
 

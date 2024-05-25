@@ -349,7 +349,18 @@ TEST_F(ChessboardTest, castleRights_queenSideCastleRightsAreTurnedOffIfQueenSide
    EXPECT_EQ(blackCastleRights, CastleRights::ONLY_KING_SIDE);
 }
 
-TEST_F(ChessboardTest, castleRights_getRestoredAfterUnmakingAMove)
+TEST_F(ChessboardTest, getPieceAt)
+{
+   Chessboard game;
+
+   EXPECT_EQ(game.getPieceAt(Square::a2).value(), Piece(WHITE, PAWN));
+   EXPECT_EQ(game.getPieceAt(Square::b1).value(), Piece(WHITE ,KNIGHT));
+   EXPECT_EQ(game.getPieceAt(Square::c1).value(), Piece(WHITE ,BISHOP));
+   EXPECT_EQ(game.getPieceAt(Square::a8).value(), Piece(BLACK ,ROOK));
+   EXPECT_EQ(game.getPieceAt(Square::d8).value(), Piece(BLACK ,QUEEN));
+   EXPECT_EQ(game.getPieceAt(Square::e8).value(), Piece(BLACK ,KING));
+   EXPECT_FALSE(game.getPieceAt(Square::e4).has_value());
+}
 {
    Chessboard game;
 

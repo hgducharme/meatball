@@ -202,3 +202,23 @@ CastleRights Chessboard::getCastleRights(const Color color) const
 {
     return castleRights[color];
 }
+std::optional<Piece> Chessboard::getPieceAt(const Square square) const
+{
+    Piece piece;
+    Bitboard squareBitboard(square);
+
+    // Find the type of piece on this square, if any
+    if (getBitboard(PieceType::PAWN) & squareBitboard) { piece.type = PieceType::PAWN; }
+    else if (getBitboard(PieceType::KNIGHT) & squareBitboard) { piece.type = PieceType::KNIGHT; }
+    else if (getBitboard(PieceType::BISHOP) & squareBitboard) { piece.type = PieceType::BISHOP; }
+    else if (getBitboard(PieceType::ROOK) & squareBitboard) { piece.type = PieceType::ROOK; }
+    else if (getBitboard(PieceType::QUEEN) & squareBitboard) { piece.type = PieceType::QUEEN; }
+    else if (getBitboard(PieceType::KING) & squareBitboard) { piece.type = PieceType::KING; }
+    else { return std::nullopt; }
+
+    // Find the color of the piece
+    if (getBitboard(Color::WHITE, piece.type) & squareBitboard) { piece.color = Color::WHITE; }
+    else { piece.color = Color::BLACK; }
+    
+    return piece;
+}
