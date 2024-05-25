@@ -7,7 +7,7 @@
 
 /*
  * The purpose of this class is to provide a custom way to print uint64_t values with google test.
- * Technically you can override UniversalPrinter and PrintTo(), but I couldn't get that to work for me.
+ * Technically you can override UniversalPrinter class and PrintTo() function, but I couldn't get that to work for me.
  * It's pretty easy for custom types, you just override the << operator, but for standard types its harder.
  * Here's three links for how you're apparently supposed to do it for standard types:
  * [1]: https://github.com/google/googletest/discussions/4121
