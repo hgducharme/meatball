@@ -86,7 +86,16 @@ void Chessboard::applyMove(const Move &move)
         removePiece(move.capturedPiece.value().color, move.capturedPiece.value().type, move.capturedPiece.value().square);
     }
 
-    movePiece(move.color, move.piece, move.startSquare, move.endSquare);
+    if (move.isCastle)
+    {
+        movePiece(move.color, move.piece, move.startSquare, move.endSquare);
+        // TODO: movePiece(move.color, PieceType::ROOK, rookStartSquare, rookEndSquare);
+    }
+    else
+    {
+        movePiece(move.color, move.piece, move.startSquare, move.endSquare);
+    }
+
     updateCastleRights(move);
     moveHistory.push_back(move);
     toggleActivePlayer();

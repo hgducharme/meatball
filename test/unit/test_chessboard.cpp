@@ -394,13 +394,11 @@ TEST_F(ChessboardTest, undoMove_capturedPieceGetsRestoredAfterUndoingMove)
 
    game.applyMove(Move(WHITE, PAWN, e2, e4));
    game.applyMove(Move(BLACK, PAWN, d7, d5));
-
-   const Bitboard ORIGINAL_STATE = game.getOccupiedSquares();
-
    game.applyMove(e4CapturesD5);
    game.undoMove(e4CapturesD5);
 
-   ASSERT_EQ(game.getOccupiedSquares(), ORIGINAL_STATE);
+   const ExpectedU64 EXPECTED(0xfff700081000efff);
+   ASSERT_EQ(game.getOccupiedSquares(), EXPECTED);
 }
 
 TEST_F(ChessboardTest, undoMove_enPassantGetsCorrectlyUndone)
@@ -413,23 +411,75 @@ TEST_F(ChessboardTest, undoMove_enPassantGetsCorrectlyUndone)
    game.applyMove(Move(BLACK, PAWN, d7, d5));
    game.applyMove(Move(WHITE, PAWN, e4, e5));
    game.applyMove(Move(BLACK, PAWN, f7, f5));
-
-   const Bitboard ORIGINAL_STATE = game.getOccupiedSquares();
-
    game.applyMove(enPassantCapture);
    game.undoMove(enPassantCapture);
 
-   ASSERT_EQ(game.getOccupiedSquares(), ORIGINAL_STATE);
+   const ExpectedU64 EXPECTED(0xffd700380000efff);
+   ASSERT_EQ(game.getOccupiedSquares(), EXPECTED);
 }
 
 TEST_F(ChessboardTest, undoMove_castleGetsCorrectlyUndone)
 {
-   ASSERT_TRUE(false);
+   Chessboard game;
+   const Move castlingMove(WHITE, KING, e1, g1, false, false, true, false, false, std::nullopt);
+
+   game.applyMove(Move(WHITE, PAWN, e2, e4));
+   game.applyMove(Move(BLACK, PAWN, d7, d6));
+   game.applyMove(Move(WHITE, BISHOP, f1, d3));
+   game.applyMove(Move(BLACK, PAWN, a7, a6));
+   game.applyMove(Move(WHITE, KNIGHT, g1, f3));
+   game.applyMove(castlingMove);
+   game.undoMove(castlingMove);
+
+   const ExpectedU64 EXPECTED(0xfff609001028ef9f);
+   ASSERT_EQ(game.getOccupiedSquares(), EXPECTED);
 }
 
 TEST_F(ChessboardTest, undoMove_promotionGetsCorrectlyUndone)
 {
    ASSERT_TRUE(false);
+}
+
+TEST_F(ChessboardTest, castleMoveGetsCorrectlyApplied)
+{
+   Chessboard game;
+   const Move castlingMove(WHITE, KING, e1, g1, false, false, true, false, false, std::nullopt);
+
+   game.applyMove(Move(WHITE, PAWN, e2, e4));
+   game.applyMove(Move(BLACK, PAWN, d7, d6));
+   game.applyMove(Move(WHITE, BISHOP, f1, d3));
+   game.applyMove(Move(BLACK, PAWN, a7, a6));
+   game.applyMove(Move(WHITE, KNIGHT, g1, f3));
+   game.applyMove(castlingMove);
+
+   ExpectedU64 EXPECTED_WHITE_ROOKS(0x21);
+   ExpectedU64 EXPECTED_WHITE_KING(0x10);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::ROOK), EXPECTED_WHITE_ROOKS);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::KING), EXPECTED_WHITE_KING);
+}
+
+TEST_F(ChessboardTest, enPassantMoveGetsCorrectlyApplied)
+{
+   Chessboard game;
+   CapturedPiece capturedPiece(BLACK, PAWN, f5);
+   const Move enPassantCapture(WHITE, PAWN, e5, f6, false, false, false, true, false, capturedPiece);
+
+   game.applyMove(Move(WHITE, PAWN, e2, e4));
+   game.applyMove(Move(BLACK, PAWN, d7, d5));
+   game.applyMove(Move(WHITE, PAWN, e4, e5));
+   game.applyMove(Move(BLACK, PAWN, f7, f5));
+
+   ExpectedU64 EXPECTED_WHITE_PAWNS(0x100000ef00);
+   ExpectedU64 EXPECTED_BLACK_PAWNS(0xd7002800000000);
+   ASSERT_EQ(game.getBitboard(Color::WHITE, PieceType::PAWN), EXPECTED_WHITE_PAWNS);
+   ASSERT_EQ(game.getBitboard(Color::BLACK, PieceType::PAWN), EXPECTED_BLACK_PAWNS);
+
+   game.applyMove(enPassantCapture);
+
+   EXPECTED_WHITE_PAWNS.value = 0x20000000ef00;
+   EXPECTED_BLACK_PAWNS.value = 0xd7000800000000;
+   ASSERT_EQ(game.getBitboard(Color::WHITE, PieceType::PAWN), EXPECTED_WHITE_PAWNS);
+   ASSERT_EQ(game.getBitboard(Color::BLACK, PieceType::PAWN), EXPECTED_BLACK_PAWNS);
 }
 
 }  // namespace
