@@ -110,7 +110,7 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
                 move.setCapturedPiece(CapturedPiece(p.color, p.type, targetSquare));
             }
 
-            // The move is a castle if the king moves two squares
+            // TODO: The move is a castle if the king moves two squares
             const int twoSquares = 2;
             if ( (move.pieceType() == PieceType::KING) && (std::abs(targetSquare - startingSquare) == twoSquares) )
             {
