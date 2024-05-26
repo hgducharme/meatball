@@ -15,4 +15,6 @@ u64 getRandom64BitInteger();
 
 u64 getSparselyPopulatedRandom64BitInteger();
 
+std::string squareToString(Square square);
+
 } // namespace utils

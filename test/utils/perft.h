@@ -44,7 +44,6 @@ std::ostream& operator<<(std::ostream& out, const Color value);
 std::ostream& operator<<(std::ostream& out, const PieceType value);
 std::ostream& operator<<(std::ostream& os, Square square);
 
-std::string squareToString(Square square);
 std::string moveToString(const Move & m);
 
 // Perft with divide functionality
