@@ -39,6 +39,10 @@ constexpr int INDEX_OF_SEVENTH_BYTE = 48;
 
 constexpr Direction BISHOP_DIRECTIONS[4] = { Direction::NORTH_EAST, Direction::NORTH_WEST, Direction::SOUTH_WEST, Direction::SOUTH_EAST };
 constexpr Direction ROOK_DIRECTIONS[4] = { Direction::NORTH, Direction::WEST, Direction::SOUTH, Direction::EAST };
+constexpr Square WHITE_KINGSIDE_CASTLE_SQUARE = Square::g1;
+constexpr Square WHITE_QUEENSIDE_CASTLE_SQUARE = Square::c1;
+constexpr Square BLACK_KINGSIDE_CASTLE_SQUARE = Square::g8;
+constexpr Square BLACK_QUEENSIDE_CASTLE_SQUARE = Square::c8;
 
 namespace bit_masks
 {

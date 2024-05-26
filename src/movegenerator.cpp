@@ -297,11 +297,11 @@ Bitboard LegalMoveGenerator::getCastles(const Chessboard & gameState) const
 
 const std::pair<Square, u64> LegalMoveGenerator::getKingSideCastleSquares(const Color activePlayer) const
 {
-    Square kingTargetSquare = Square::g1;
+    Square kingTargetSquare = constants::WHITE_KINGSIDE_CASTLE_SQUARE;
     u64 squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_WHITE_KING_AND_KINGSIDE_ROOK;
 
     if (activePlayer == Color::BLACK) {
-        kingTargetSquare = Square::g8;
+        kingTargetSquare = constants::BLACK_KINGSIDE_CASTLE_SQUARE;
         squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_BLACK_KING_AND_KINGSIDE_ROOK;
     }
 
@@ -310,12 +310,12 @@ const std::pair<Square, u64> LegalMoveGenerator::getKingSideCastleSquares(const 
 
 const std::pair<Square, u64> LegalMoveGenerator::getQueenSideCastleSquares(const Color activePlayer) const
 {
-    Square kingTargetSquare = Square::c1;
+    Square kingTargetSquare = constants::WHITE_QUEENSIDE_CASTLE_SQUARE;
     u64 squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_WHITE_KING_AND_QUEENSIDE_ROOK;
 
     if (activePlayer == Color::BLACK)
     {
-        kingTargetSquare = Square::c8;
+        kingTargetSquare = constants::BLACK_QUEENSIDE_CASTLE_SQUARE;
         squaresInBetweenKingAndRook = constants::bit_masks::SQUARES_BETWEEN_BLACK_KING_AND_QUEENSIDE_ROOK;
     }
 
