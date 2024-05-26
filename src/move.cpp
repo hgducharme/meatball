@@ -4,6 +4,6 @@ Move::Move(const Color c, const PieceType p, const Square start, const Square en
     color(c), piece(p), startSquare(start), endSquare(end)
     {}
 
-Move::Move(const Color c, const PieceType p, const Square start, const Square end, const bool isPawnPromotion, const bool isPawnDoublePush, const bool isCastle, const bool isEnPassant, const bool isCapture, const CapturedPiece capturedPiece) :
+Move::Move(const Color c, const PieceType p, const Square start, const Square end, const bool isPawnPromotion, const bool isPawnDoublePush, const bool isCastle, const bool isEnPassant, const bool isCapture, std::optional<CapturedPiece> capturedPiece = std::nullopt) :
     color(c), piece(p), startSquare(start), endSquare(end), isPawnPromotion(isPawnPromotion), isPawnDoublePush(isPawnDoublePush), isCastle(isCastle), isEnPassant(isEnPassant), isCapture(isCapture), capturedPiece(capturedPiece)
     {}

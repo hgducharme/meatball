@@ -4,10 +4,13 @@
 
 #include <optional>
 
+// TODO: Move needs a flags argument, the constructor is just getting out of hand
+
 struct Move
 {
     Move(const Color c, const PieceType p, const Square start, const Square end);
-    Move(const Color c, const PieceType p, const Square start, const Square end, const bool isPawnPromotion, const bool isPawnDoublePush, const bool isCastle, const bool isEnPassant, const bool isCapture, const CapturedPiece capturedPiece);
+    Move(const Color c, const PieceType p, const Square start, const Square end, const uint16_t flags);
+    Move(const Color c, const PieceType p, const Square start, const Square end, const bool isPawnPromotion, const bool isPawnDoublePush, const bool isCastle, const bool isEnPassant, const bool isCapture, const std::optional<CapturedPiece> capturedPiece);
     Color color;
     PieceType piece;
     Square startSquare;
