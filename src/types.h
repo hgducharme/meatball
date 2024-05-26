@@ -109,3 +109,15 @@ struct Piece
 
     inline bool operator == (const Piece & rhs) const { return ( (color == rhs.color) && (type == rhs.type) ); }
 };
+
+struct CapturedPiece : public Piece
+{
+    Square square;
+
+    inline CapturedPiece() {}
+    inline CapturedPiece(const Color c, const PieceType pt, const Square loc) : Piece(c, pt), square(loc) {}
+
+    inline bool operator == (const CapturedPiece & rhs) const {
+        return Piece::operator==(rhs) && (square == rhs.square);
+    }
+};
