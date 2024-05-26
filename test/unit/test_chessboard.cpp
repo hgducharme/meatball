@@ -349,6 +349,16 @@ TEST_F(ChessboardTest, castleRights_queenSideCastleRightsAreTurnedOffIfQueenSide
    EXPECT_EQ(blackCastleRights, CastleRights::ONLY_KING_SIDE);
 }
 
+TEST_F(ChessboardTest, squareIsOccupied)
+{
+   Chessboard game;
+
+   EXPECT_TRUE(game.squareIsOccupied(Square::a1));
+   EXPECT_TRUE(game.squareIsOccupied(Square::a8));
+   EXPECT_FALSE(game.squareIsOccupied(Square::a3));
+   EXPECT_FALSE(game.squareIsOccupied(Square::e3));
+}
+
 TEST_F(ChessboardTest, getPieceAt)
 {
    Chessboard game;

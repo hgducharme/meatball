@@ -18,5 +18,10 @@ namespace exceptions
          explicit MoveHistoryIsEmpty(const std::string & message) : std::runtime_error(message) {};
    };
 
+   class SquareAlreadyOccupied : public std::runtime_error
+   {
+      public:
+         explicit SquareAlreadyOccupied(const std::string & message) : std::runtime_error(message) {};
+   };
    
 }

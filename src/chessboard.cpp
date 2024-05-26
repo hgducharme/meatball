@@ -81,13 +81,17 @@ void Chessboard::applyMove(const Move & move)
     toggleActivePlayer();
 }
 
-void Chessboard::updateBitboards(const Color color, const PieceType piece, const Square squareToClear, const Square squareToSet)
+void Chessboard::raiseExceptionIfSquareIsOccupied(const Square square)
 {
-    pieceBitboards_[piece].clearBit(squareToClear);
-    pieceBitboards_[piece].setBit(squareToSet);
+    if (squareIsOccupied(square))
+    {
+        throw exceptions::SquareAlreadyOccupied("Cannot add piece to " + utils::squareToString(square) + ". The square is already occupied.");
+    }
+}
 
-    colorBitboards_[color].clearBit(squareToClear);
-    colorBitboards_[color].setBit(squareToSet);
+bool Chessboard::squareIsOccupied(const Square square)
+{
+    return static_cast<bool>(getOccupiedSquares() & Bitboard(square));
 }
 
 void Chessboard::updateCastleRights(const Move & move)

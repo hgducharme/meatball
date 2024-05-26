@@ -38,13 +38,12 @@ class Chessboard {
         const std::optional<const Move> getLastMove() const;
         CastleRights getCastleRights(const Color color) const;
         std::optional<Piece> getPieceAt(const Square square) const;
+        bool squareIsOccupied(const Square square);
 
         bool operator==(const Chessboard & other) const;
 
      private:
-        void updateBitboards(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare);
-        void updateCastleRights(const Move & move);
-        void raiseExceptionIfMoveIsNotLastMove(const Move & move, const std::string & errorMessage) const;
+        void raiseExceptionIfSquareIsOccupied(const Square square);
         void raiseExceptionIfMoveHistoryIsEmpty(const std::string & errorMessage) const;
 };
 
