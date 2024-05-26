@@ -62,7 +62,7 @@ std::ostream &operator<<(std::ostream &os, Square square)
 
 std::string moveToString(const Move &m)
 {
-   return utils::squareToString(m.startSquare) + utils::squareToString(m.endSquare);
+   return utils::squareToString(m.startSquare()) + utils::squareToString(m.endSquare());
 }
 
 // This perft takes an initialDepth parameter so that we can implement perft divide functionality
@@ -83,7 +83,7 @@ PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t
    {
       Chessboard originalState = gameState;
       gameState.applyMove(move);
-      results.captures += static_cast<int>(move.isCapture);
+      results.captures += static_cast<int>(move.isCapture());
 
       PerftResults childResults = __perft(gameState, depth - 1, initialDepth, showDivideOutput);
       results += childResults;
@@ -96,7 +96,7 @@ PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t
 
          if (showDivideOutput)
          {
-            std::cout << move.color << " " << move.piece << " : " << move.startSquare << move.endSquare << " - " << childResults.numberOfNodes << std::endl;
+            std::cout << move.color() << " " << move.pieceType() << " : " << move.startSquare() << move.endSquare() << " - " << childResults.numberOfNodes << std::endl;
          }
       }
 

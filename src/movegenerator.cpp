@@ -73,6 +73,7 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
             /*
              * START - set various flags about the type of move.
             */
+           uint8_t moveFlags = 0;
 
             const Bitboard opponentOccupancySet = gameState.getBitboard(nonActivePlayer);
             if (pieceType == PieceType::PAWN)
@@ -84,37 +85,43 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
 
                 const std::optional<const Move> opponentsPreviousMove = gameState.getLastMove();
 
-                move.isPawnPromotion = isPawnPromotion(targetSquare);
-                move.isPawnDoublePush = isPawnDoublePush(startingSquare, targetSquare);
-                move.isEnPassant = isEnPassant(activePlayer, startingSquare, targetSquare, opponentsPreviousMove);
-
-                const bool startingFileAndEndingFileAreDifferent = (Chessboard::squareToFile(move.startSquare) != Chessboard::squareToFile(move.endSquare));
-                Bitboard targetSquareBitboard(static_cast<int>(move.endSquare));
+                if (isPawnPromotion(targetSquare)) { moveFlags |= Move::PROMOTION; }
+                if (isPawnDoublePush(startingSquare, targetSquare)) { moveFlags |= Move::PAWN_DOUBLE_PUSH; }
+                if (isEnPassant(activePlayer, startingSquare, targetSquare, opponentsPreviousMove)) { moveFlags |= Move::EN_PASSANT; }
+                const bool startingFileAndEndingFileAreDifferent = (Chessboard::squareToFile(startingSquare) != Chessboard::squareToFile(targetSquare));
+                Bitboard targetSquareBitboard(static_cast<int>(targetSquare));
                 Bitboard possibleCaptures = targetSquareBitboard & opponentOccupancySet;
-                move.isCapture = (!move.isEnPassant) | (startingFileAndEndingFileAreDifferent && (possibleCaptures.numberOfSetBits() == 1));
+                if (~(moveFlags & Move::EN_PASSANT) && ((startingFileAndEndingFileAreDifferent && (possibleCaptures.numberOfSetBits() == 1))))
+                {
+                    moveFlags |= (Move::CAPTURE);
+                }
             }
             else
             {
-                move.isCapture = ((opponentOccupancySet & Bitboard(move.endSquare)).numberOfSetBits() == 1);
+                if ((opponentOccupancySet & Bitboard(targetSquare)).numberOfSetBits() == 1)
+                {
+                    moveFlags |= (Move::CAPTURE);
+                }
             }
 
-            if (move.isCapture)
+            if (moveFlags & Move::CAPTURE)
             {
-                Piece p = gameState.getPieceAt(move.endSquare).value();
-                move.capturedPiece = CapturedPiece(p.color, p.type, move.endSquare);
+                Piece p = gameState.getPieceAt(targetSquare).value();
+                move.setCapturedPiece(CapturedPiece(p.color, p.type, targetSquare));
             }
 
             // The move is a castle if the king moves two squares
             const int twoSquares = 2;
-            if ( (move.piece == PieceType::KING) && (std::abs(move.endSquare - move.startSquare) == twoSquares) )
+            if ( (move.pieceType() == PieceType::KING) && (std::abs(targetSquare - startingSquare) == twoSquares) )
             {
-                move.isCastle = true;
+                // TODO: distinguish if this is a kingside castle or a queenside castle.
+                moveFlags |= (Move::KINGSIDE_CASTLE | Move::QUEENSIDE_CASTLE);
             }
 
             /*
              * END - set various flags about the type of move.
             */
-
+            move.setFlags(moveFlags);
             moves.push_back(move);
         }
     }
@@ -212,7 +219,7 @@ bool LegalMoveGenerator::isEnPassant(const Color activePlayer, const Square star
         return isEnPassant;
     }
 
-    if (opponentsPreviousMove.has_value() && opponentsPreviousMove->isPawnDoublePush)
+    if (opponentsPreviousMove.has_value() && opponentsPreviousMove->isPawnDoublePush())
     {
         // TODO:
         // To verify that the last pawn's double push is able to be captured en passant, you can:
@@ -230,8 +237,8 @@ bool LegalMoveGenerator::isEnPassant(const Color activePlayer, const Square star
 
         const File startingSquareFile = Chessboard::squareToFile(startingSquare);
         const File targetSquareFile = Chessboard::squareToFile(targetSquare);
-        const File opponentPawnFile = Chessboard::squareToFile(opponentsPreviousMove->endSquare);
-        const bool ranksAreSame = startingSquareRank == Chessboard::squareToRank(opponentsPreviousMove->endSquare);
+        const File opponentPawnFile = Chessboard::squareToFile(opponentsPreviousMove->endSquare());
+        const bool ranksAreSame = startingSquareRank == Chessboard::squareToRank(opponentsPreviousMove->endSquare());
         const bool filesAreNeighbors = std::abs(static_cast<int>(startingSquareFile - opponentPawnFile)) == 1;
         const bool targetSquareFileIsSameAsTargetPawnFile = (targetSquareFile == opponentPawnFile);
 
@@ -243,11 +250,11 @@ bool LegalMoveGenerator::isEnPassant(const Color activePlayer, const Square star
 
 bool LegalMoveGenerator::pawnMoveIsAttackWithNoCaptures(const Move & m, const Bitboard & opponentOccupancySet) const
 {
-    if (m.isEnPassant == false)
+    if (m.isEnPassant() == false)
     {
-        const bool startingFileAndEndingFileAreDifferent = (Chessboard::squareToFile(m.startSquare) != Chessboard::squareToFile(m.endSquare));
+        const bool startingFileAndEndingFileAreDifferent = (Chessboard::squareToFile(m.startSquare()) != Chessboard::squareToFile(m.endSquare()));
 
-        Bitboard targetSquareBitboard(static_cast<int>(m.endSquare));
+        Bitboard targetSquareBitboard(static_cast<int>(m.endSquare()));
         Bitboard possibleCaptures = targetSquareBitboard & opponentOccupancySet;
         if (startingFileAndEndingFileAreDifferent && possibleCaptures.numberOfSetBits() == 0)
         {

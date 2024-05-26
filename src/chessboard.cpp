@@ -73,30 +73,35 @@ void Chessboard::applyMove(const Move &move)
 {
     // Store the active player's castle rights state in case this move is later undone,
     // then we can quickly restore the castle rights back to this player
-    previousCastleRightsState = castleRights[move.color];
+    previousCastleRightsState = castleRights[move.color()];
 
     // Remove the captured piece from the board
-    if (move.isCapture)
+    if (move.isCapture())
     {
-        removePiece(move.capturedPiece.value().color, move.capturedPiece.value().type, move.endSquare);
+        removePiece(move.capturedPiece().value().color, move.capturedPiece().value().type, move.endSquare());
     }
     
-    if (move.isEnPassant)
+    if (move.isEnPassant())
     {
-        removePiece(move.capturedPiece.value().color, move.capturedPiece.value().type, move.capturedPiece.value().square);
+        removePiece(move.capturedPiece().value().color, move.capturedPiece().value().type, move.capturedPiece().value().square);
     }
 
-    if (move.isCastle)
+    if (move.isCastle())
     {
-        movePiece(move.color, move.piece, move.startSquare, move.endSquare);
-        // TODO: movePiece(move.color, PieceType::ROOK, rookStartSquare, rookEndSquare);
+        // CastleMove castleMove = constants::CASTLE_SQUARES[move.color()][move.castleSide];
+        movePiece(move.color(), move.pieceType(), move.startSquare(), move.endSquare());
+        // TODO: movePiece(move.color(), PieceType::ROOK, castleMove.rook.startSquare, castleMove.rook.endSquare);
     }
     else
     {
-        movePiece(move.color, move.piece, move.startSquare, move.endSquare);
+        movePiece(move.color(), move.pieceType(), move.startSquare(), move.endSquare());
     }
 
-    updateCastleRights(move);
+    if (move.pieceType() == PieceType::KING || move.pieceType() == PieceType::ROOK)
+    {
+        updateCastleRights(move);
+    }
+    
     moveHistory.push_back(move);
     toggleActivePlayer();
 }
@@ -136,40 +141,40 @@ bool Chessboard::squareIsOccupied(const Square square)
 
 void Chessboard::updateCastleRights(const Move &move)
 {
-    if (castleRights[move.color] == CastleRights::NONE)
+    if (castleRights[move.color()] == CastleRights::NONE)
     {
         return;
     }
-    else if (move.piece == PieceType::KING)
+    else if (move.pieceType() == PieceType::KING)
     {
-        castleRights[move.color] = CastleRights::NONE;
+        castleRights[move.color()] = CastleRights::NONE;
     }
-    else if (move.piece == PieceType::ROOK)
+    else if (move.pieceType() == PieceType::ROOK)
     {
         Square queenSideRookStartingSquare = Square::a1;
         Square kingSideRookStartingSquare = Square::h1;
 
-        if (move.color == Color::BLACK)
+        if (move.color() == Color::BLACK)
         {
             queenSideRookStartingSquare = Square::a8;
             kingSideRookStartingSquare = Square::h8;
         }
 
-        const Bitboard activePlayerRookBitboard = getBitboard(move.color, PieceType::ROOK);
+        const Bitboard activePlayerRookBitboard = getBitboard(move.color(), PieceType::ROOK);
         const bool queenSideRookHasMoved = (activePlayerRookBitboard.getBit(queenSideRookStartingSquare) == 0);
         const bool kingSideRookHasMoved = (activePlayerRookBitboard.getBit(kingSideRookStartingSquare) == 0);
 
         if (queenSideRookHasMoved && !kingSideRookHasMoved)
         {
-            castleRights[move.color] = CastleRights::ONLY_KING_SIDE;
+            castleRights[move.color()] = CastleRights::ONLY_KING_SIDE;
         }
         else if (!queenSideRookHasMoved && kingSideRookHasMoved)
         {
-            castleRights[move.color] = CastleRights::ONLY_QUEEN_SIDE;
+            castleRights[move.color()] = CastleRights::ONLY_QUEEN_SIDE;
         }
         else if (queenSideRookHasMoved && kingSideRookHasMoved)
         {
-            castleRights[move.color] = CastleRights::NONE;
+            castleRights[move.color()] = CastleRights::NONE;
         }
         else {}
     }
@@ -205,27 +210,27 @@ void Chessboard::undoMove(const Move &move)
     raiseExceptionIfMoveHistoryIsEmpty("There is no move history and therefore no moves to undo.");
     raiseExceptionIfMoveIsNotLastMove(move, "The requested move can not be undone. Only the last move to be made can be undone.");
 
-    movePiece(move.color, move.piece, move.endSquare, move.startSquare);
+    movePiece(move.color(), move.pieceType(), move.endSquare(), move.startSquare());
 
     // If the move captured a piece, we need to add that piece back to the board
-    if (move.isCapture)
+    if (move.isCapture())
     {
-        addPiece(move.capturedPiece.value().color, move.capturedPiece.value().type, move.endSquare);
+        addPiece(move.capturedPiece().value().color, move.capturedPiece().value().type, move.endSquare());
     }
     
     // If the move is en passant, restore the the piece back to the board in a different way
-    if (move.isEnPassant)
+    if (move.isEnPassant())
     {
-        addPiece(move.capturedPiece.value().color, move.capturedPiece.value().type, move.capturedPiece.value().square);
+        addPiece(move.capturedPiece().value().color, move.capturedPiece().value().type, move.capturedPiece().value().square);
     }
     
-    if (move.isCastle)
+    if (move.isCastle())
     {
 
     }
 
     // If castle rights were changed in the prior move, then reverse that
-    castleRights[move.color] = previousCastleRightsState;
+    castleRights[move.color()] = previousCastleRightsState;
 
     // Remove the last move from the move history
     moveHistory.pop_back();

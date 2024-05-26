@@ -389,8 +389,9 @@ TEST_F(ChessboardTest, undoMove_castleRightsGetRestoredAfterUndoingAMove)
 TEST_F(ChessboardTest, undoMove_capturedPieceGetsRestoredAfterUndoingMove)
 {
    Chessboard game;
-   CapturedPiece capturedPiece(BLACK, PAWN, d5);
-   const Move e4CapturesD5(WHITE, PAWN, e4, d5, false, false, false, false, true, capturedPiece);
+   CapturedPiece blackPawn(BLACK, PAWN, d5);
+   Move e4CapturesD5(WHITE, PAWN, e4, d5, Move::CAPTURE);
+   e4CapturesD5.setCapturedPiece(blackPawn);
 
    game.applyMove(Move(WHITE, PAWN, e2, e4));
    game.applyMove(Move(BLACK, PAWN, d7, d5));
@@ -404,8 +405,9 @@ TEST_F(ChessboardTest, undoMove_capturedPieceGetsRestoredAfterUndoingMove)
 TEST_F(ChessboardTest, undoMove_enPassantGetsCorrectlyUndone)
 {
    Chessboard game;
-   CapturedPiece capturedPiece(BLACK, PAWN, f5);
-   const Move enPassantCapture(WHITE, PAWN, e5, f6, false, false, false, true, false, capturedPiece);
+   CapturedPiece blackPawn(BLACK, PAWN, f5);
+   Move enPassantCapture(WHITE, PAWN, e5, f6, Move::EN_PASSANT);
+   enPassantCapture.setCapturedPiece(blackPawn);
 
    game.applyMove(Move(WHITE, PAWN, e2, e4));
    game.applyMove(Move(BLACK, PAWN, d7, d5));
@@ -421,7 +423,7 @@ TEST_F(ChessboardTest, undoMove_enPassantGetsCorrectlyUndone)
 TEST_F(ChessboardTest, undoMove_castleGetsCorrectlyUndone)
 {
    Chessboard game;
-   const Move castlingMove(WHITE, KING, e1, g1, false, false, true, false, false, std::nullopt);
+   const Move castlingMove(WHITE, KING, e1, g1, Move::KINGSIDE_CASTLE);
 
    game.applyMove(Move(WHITE, PAWN, e2, e4));
    game.applyMove(Move(BLACK, PAWN, d7, d6));
@@ -443,7 +445,7 @@ TEST_F(ChessboardTest, undoMove_promotionGetsCorrectlyUndone)
 TEST_F(ChessboardTest, castleMoveGetsCorrectlyApplied)
 {
    Chessboard game;
-   const Move castlingMove(WHITE, KING, e1, g1, false, false, true, false, false, std::nullopt);
+   const Move castlingMove(WHITE, KING, e1, g1, Move::KINGSIDE_CASTLE);
 
    game.applyMove(Move(WHITE, PAWN, e2, e4));
    game.applyMove(Move(BLACK, PAWN, d7, d6));
@@ -461,8 +463,9 @@ TEST_F(ChessboardTest, castleMoveGetsCorrectlyApplied)
 TEST_F(ChessboardTest, enPassantMoveGetsCorrectlyApplied)
 {
    Chessboard game;
-   CapturedPiece capturedPiece(BLACK, PAWN, f5);
-   const Move enPassantCapture(WHITE, PAWN, e5, f6, false, false, false, true, false, capturedPiece);
+   CapturedPiece blackPawn(BLACK, PAWN, f5);
+   Move enPassantCapture(WHITE, PAWN, e5, f6, Move::EN_PASSANT);
+   enPassantCapture.setCapturedPiece(blackPawn);
 
    game.applyMove(Move(WHITE, PAWN, e2, e4));
    game.applyMove(Move(BLACK, PAWN, d7, d5));
