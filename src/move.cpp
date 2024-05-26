@@ -1,13 +1,20 @@
 #include "move.h"
 
-Move::Move(const Color c, const PieceType p, const Square start, const Square end)
+Move::Move(const Color color, const PieceType pieceType, const Square start, const Square end)
 {
-    _encoded = static_cast<uint32_t>(c) << 0 | static_cast<uint32_t>(p) << 1 | static_cast<uint32_t>(start) << 4 | static_cast<uint32_t>(end) << 10;
+    _encoded |= static_cast<uint32_t>(color) << COLOR_POSITION;
+    _encoded |= static_cast<uint32_t>(pieceType) << PIECE_TYPE_POSITION;
+    _encoded |= static_cast<uint32_t>(start) << START_SQUARE_POSITION;
+    _encoded |= static_cast<uint32_t>(end) << END_SQUARE_POSITION;
 }
 
-Move::Move(const Color c, const PieceType p, const Square start, const Square end, const uint8_t flags) : _flags(flags)
+Move::Move(const Color color, const PieceType pieceType, const Square start, const Square end, const uint8_t flags) : _flags(flags)
 {
-    _encoded = static_cast<uint32_t>(c) << 0 | static_cast<uint32_t>(p) << 1 | static_cast<uint32_t>(start) << 4 | static_cast<uint32_t>(end) << 10 | static_cast<uint32_t>(flags) << 16;
+    _encoded |= static_cast<uint32_t>(color) << COLOR_POSITION;
+    _encoded |= static_cast<uint32_t>(pieceType) << PIECE_TYPE_POSITION;
+    _encoded |= static_cast<uint32_t>(start) << START_SQUARE_POSITION;
+    _encoded |= static_cast<uint32_t>(end) << END_SQUARE_POSITION;
+    _encoded |= static_cast<uint32_t>(flags) << 16;
 }
 
 uint32_t Move::getEncoded() const
@@ -73,22 +80,22 @@ bool Move::isCastle() const
 
 Color Move::color() const
 {
-    return static_cast<Color>(_encoded & EncodingMasks::COLOR);
+    return static_cast<Color>( (_encoded & COLOR_MASK) >> COLOR_POSITION );
 }
 
 PieceType Move::pieceType() const
 {
-    return static_cast<PieceType>( (_encoded & EncodingMasks::PIECE_TYPE) >> 1 );
+    return static_cast<PieceType>( (_encoded & PIECE_TYPE_MASK) >> PIECE_TYPE_POSITION );
 }
 
 Square Move::startSquare() const
 {
-    return static_cast<Square>( (_encoded & EncodingMasks::START_SQUARE) >> 4 );
+    return static_cast<Square>( (_encoded & START_SQUARE_MASK) >> START_SQUARE_POSITION );
 }
 
 Square Move::endSquare() const
 {
-    return static_cast<Square>( (_encoded & EncodingMasks::END_SQUARE) >> 10 );
+    return static_cast<Square>( (_encoded & END_SQUARE_MASK) >> END_SQUARE_POSITION );
 }
 
 std::optional<CapturedPiece> Move::capturedPiece() const

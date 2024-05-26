@@ -4,16 +4,21 @@
 
 #include <optional>
 
+// TODO: merge _flags into _encoded. It's redundant to keep both.
+
 namespace
 {
-    /* The positions of the information that is packed into the encoded move member variable. */
-    enum EncodingMasks
-    {
-        COLOR = 0b1,
-        PIECE_TYPE = 0b1110,
-        START_SQUARE = 0b1111110000,
-        END_SQUARE = 0b1111110000000000,
-    };
+    /* The starting bit for each piece of information. */
+    constexpr int COLOR_POSITION = 0;
+    constexpr int PIECE_TYPE_POSITION = 1;
+    constexpr int START_SQUARE_POSITION = 4;
+    constexpr int END_SQUARE_POSITION = 10;
+
+    /* Bitmasks that will extract the desired information from the encoded move. */
+    constexpr uint32_t COLOR_MASK = 0b1;
+    constexpr uint32_t PIECE_TYPE_MASK = 0b1110;
+    constexpr uint32_t START_SQUARE_MASK = 0b1111110000;
+    constexpr uint32_t END_SQUARE_MASK = 0b1111110000000000;
 }
 
 class Move

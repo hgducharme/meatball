@@ -88,7 +88,11 @@ void Chessboard::applyMove(const Move &move)
 
     if (move.isCastle())
     {
-        // CastleMove castleMove = constants::CASTLE_SQUARES[move.color()][move.castleSide];
+        // TODO:
+        // 1. Encode kingside vs queenside castle into the move
+        // 2. Come back here and use the castle side to get the castle squares for the king and rook
+        
+        // TODO: astleMove castleMove = constants::CASTLE_SQUARES[move.color()][move.castleSide];
         movePiece(move.color(), move.pieceType(), move.startSquare(), move.endSquare());
         // TODO: movePiece(move.color(), PieceType::ROOK, castleMove.rook.startSquare, castleMove.rook.endSquare);
     }
@@ -101,7 +105,7 @@ void Chessboard::applyMove(const Move &move)
     {
         updateCastleRights(move);
     }
-    
+
     moveHistory.push_back(move);
     toggleActivePlayer();
 }
