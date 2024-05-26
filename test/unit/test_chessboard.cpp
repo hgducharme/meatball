@@ -389,8 +389,8 @@ TEST_F(ChessboardTest, undoMove_castleRightsGetRestoredAfterUndoingAMove)
 TEST_F(ChessboardTest, undoMove_capturedPieceGetsRestoredAfterUndoingMove)
 {
    Chessboard game;
-   Piece capturedPiece(BLACK, PAWN);
-   const Move e4CapturesD5(WHITE, PAWN, e4, d5, false, false, false, true, capturedPiece);
+   CapturedPiece capturedPiece(BLACK, PAWN, d5);
+   const Move e4CapturesD5(WHITE, PAWN, e4, d5, false, false, false, false, true, capturedPiece);
 
    game.applyMove(Move(WHITE, PAWN, e2, e4));
    game.applyMove(Move(BLACK, PAWN, d7, d5));
@@ -405,7 +405,21 @@ TEST_F(ChessboardTest, undoMove_capturedPieceGetsRestoredAfterUndoingMove)
 
 TEST_F(ChessboardTest, undoMove_enPassantGetsCorrectlyUndone)
 {
-   ASSERT_TRUE(false);
+   Chessboard game;
+   CapturedPiece capturedPiece(BLACK, PAWN, f5);
+   const Move enPassantCapture(WHITE, PAWN, e5, f6, false, false, false, true, false, capturedPiece);
+
+   game.applyMove(Move(WHITE, PAWN, e2, e4));
+   game.applyMove(Move(BLACK, PAWN, d7, d5));
+   game.applyMove(Move(WHITE, PAWN, e4, e5));
+   game.applyMove(Move(BLACK, PAWN, f7, f5));
+
+   const Bitboard ORIGINAL_STATE = game.getOccupiedSquares();
+
+   game.applyMove(enPassantCapture);
+   game.undoMove(enPassantCapture);
+
+   ASSERT_EQ(game.getOccupiedSquares(), ORIGINAL_STATE);
 }
 
 TEST_F(ChessboardTest, undoMove_castleGetsCorrectlyUndone)

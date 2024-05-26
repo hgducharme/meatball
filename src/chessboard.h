@@ -43,7 +43,12 @@ class Chessboard {
         bool operator==(const Chessboard & other) const;
 
      private:
+        void movePiece(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare);
+        void addPiece(const Color color, const PieceType piece, const Square square);
+        void removePiece(const Color color, const PieceType piece, const Square square);
+        void updateCastleRights(const Move &move);
         void raiseExceptionIfSquareIsOccupied(const Square square);
+        void raiseExceptionIfMoveIsNotLastMove(const Move &move, const std::string &errorMessage) const;
         void raiseExceptionIfMoveHistoryIsEmpty(const std::string & errorMessage) const;
 };
 

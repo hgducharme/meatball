@@ -91,15 +91,24 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
                 const bool startingFileAndEndingFileAreDifferent = (Chessboard::squareToFile(move.startSquare) != Chessboard::squareToFile(move.endSquare));
                 Bitboard targetSquareBitboard(static_cast<int>(move.endSquare));
                 Bitboard possibleCaptures = targetSquareBitboard & opponentOccupancySet;
-                move.isCapture = move.isEnPassant | (startingFileAndEndingFileAreDifferent && (possibleCaptures.numberOfSetBits() == 1));
+                move.isCapture = (!move.isEnPassant) | (startingFileAndEndingFileAreDifferent && (possibleCaptures.numberOfSetBits() == 1));
             }
             else
             {
                 move.isCapture = ((opponentOccupancySet & Bitboard(move.endSquare)).numberOfSetBits() == 1);
-                if (move.isCapture)
-                {
-                    move.capturedPiece = gameState.getPieceAt(move.endSquare);
-                }
+            }
+
+            if (move.isCapture)
+            {
+                Piece p = gameState.getPieceAt(move.endSquare).value();
+                move.capturedPiece = CapturedPiece(p.color, p.type, move.endSquare);
+            }
+
+            // The move is a castle if the king moves two squares
+            const int twoSquares = 2;
+            if ( (move.piece == PieceType::KING) && (std::abs(move.endSquare - move.startSquare) == twoSquares) )
+            {
+                move.isCastle = true;
             }
 
             /*

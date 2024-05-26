@@ -1,32 +1,32 @@
 #include "chessboard.h"
-
 #include "exceptions.h"
+#include "utils.h"
 
 File Chessboard::squareToFile(const int square)
 {
-   /*
-   Let n be the square's rank [0, 8]
-   A file squares are multiples of 8
-   B file squares are multiples of 8n + 1
-   ...
-   H file squares are multiples of 8n + 7
-   Therefore, file = square % 8
-   */
-   return static_cast<File>(square % 8);
+    /*
+    Let n be the square's rank [0, 8]
+    A file squares are multiples of 8
+    B file squares are multiples of 8n + 1
+    ...
+    H file squares are multiples of 8n + 7
+    Therefore, file = square % 8
+    */
+    return static_cast<File>(square % 8);
 }
 
 Rank Chessboard::squareToRank(const int square)
 {
-   /*
-   Let n be the square's file [0, 8]
-   Rank 0 squares are in the range [0, 7] (less than 8*1)
-   Rank 1 squares are in the range [8, 15] (between 8*1 and 8*2)
-   ...
-   Rank 8 squares are in the range [56, 63] (between 8*7 and 8*8)
-   Therefore, rank = floor(square / 8)
-   Since integer division in C++ truncates towards zero, (square / 8) will produce the same result.
-   */
-   return static_cast<Rank>(square/8);
+    /*
+    Let n be the square's file [0, 8]
+    Rank 0 squares are in the range [0, 7] (less than 8*1)
+    Rank 1 squares are in the range [8, 15] (between 8*1 and 8*2)
+    ...
+    Rank 8 squares are in the range [56, 63] (between 8*7 and 8*8)
+    Therefore, rank = floor(square / 8)
+    Since integer division in C++ truncates towards zero, (square / 8) will produce the same result.
+    */
+    return static_cast<Rank>(square / 8);
 }
 
 Chessboard::Chessboard()
@@ -54,12 +54,12 @@ const Bitboard Chessboard::getOccupiedSquares() const
     return getBitboard(Color::WHITE) | getBitboard(Color::BLACK);
 }
 
-const Bitboard & Chessboard::getBitboard(const PieceType piece) const
+const Bitboard &Chessboard::getBitboard(const PieceType piece) const
 {
     return pieceBitboards_[piece];
 }
 
-const Bitboard & Chessboard::getBitboard(const Color color) const
+const Bitboard &Chessboard::getBitboard(const Color color) const
 {
     return colorBitboards_[color];
 }
@@ -69,16 +69,47 @@ Bitboard Chessboard::getBitboard(const Color color, const PieceType piece) const
     return pieceBitboards_[piece] & colorBitboards_[color];
 }
 
-void Chessboard::applyMove(const Move & move)
+void Chessboard::applyMove(const Move &move)
 {
     // Store the active player's castle rights state in case this move is later undone,
     // then we can quickly restore the castle rights back to this player
     previousCastleRightsState = castleRights[move.color];
 
-    updateBitboards(move.color, move.piece, move.startSquare, move.endSquare);
+    // Remove the captured piece from the board
+    if (move.isCapture)
+    {
+        removePiece(move.capturedPiece.value().color, move.capturedPiece.value().type, move.endSquare);
+    }
+    
+    if (move.isEnPassant)
+    {
+        removePiece(move.capturedPiece.value().color, move.capturedPiece.value().type, move.capturedPiece.value().square);
+    }
+
+    movePiece(move.color, move.piece, move.startSquare, move.endSquare);
     updateCastleRights(move);
     moveHistory.push_back(move);
     toggleActivePlayer();
+}
+
+void Chessboard::removePiece(const Color color, const PieceType piece, const Square square)
+{
+    pieceBitboards_[piece].clearBit(square);
+    colorBitboards_[color].clearBit(square);
+}
+
+void Chessboard::movePiece(const Color color, const PieceType piece, const Square start, const Square end)
+{
+    removePiece(color, piece, start);
+    addPiece(color, piece, end);
+}
+
+void Chessboard::addPiece(const Color color, const PieceType piece, const Square square)
+{
+    raiseExceptionIfSquareIsOccupied(square);
+
+    pieceBitboards_[piece].setBit(square);
+    colorBitboards_[color].setBit(square);
 }
 
 void Chessboard::raiseExceptionIfSquareIsOccupied(const Square square)
@@ -94,7 +125,7 @@ bool Chessboard::squareIsOccupied(const Square square)
     return static_cast<bool>(getOccupiedSquares() & Bitboard(square));
 }
 
-void Chessboard::updateCastleRights(const Move & move)
+void Chessboard::updateCastleRights(const Move &move)
 {
     if (castleRights[move.color] == CastleRights::NONE)
     {
@@ -119,7 +150,8 @@ void Chessboard::updateCastleRights(const Move & move)
         const bool queenSideRookHasMoved = (activePlayerRookBitboard.getBit(queenSideRookStartingSquare) == 0);
         const bool kingSideRookHasMoved = (activePlayerRookBitboard.getBit(kingSideRookStartingSquare) == 0);
 
-        if (queenSideRookHasMoved && !kingSideRookHasMoved) {
+        if (queenSideRookHasMoved && !kingSideRookHasMoved)
+        {
             castleRights[move.color] = CastleRights::ONLY_KING_SIDE;
         }
         else if (!queenSideRookHasMoved && kingSideRookHasMoved)
@@ -139,11 +171,12 @@ void Chessboard::toggleActivePlayer()
 {
     nonActivePlayer_ = activePlayer_;
 
-    if (activePlayer_ == Color::WHITE) 
+    if (activePlayer_ == Color::WHITE)
     {
         activePlayer_ = Color::BLACK;
     }
-    else {
+    else
+    {
         activePlayer_ = Color::WHITE;
     }
 }
@@ -158,18 +191,28 @@ Color Chessboard::getNonActivePlayer() const
     return nonActivePlayer_;
 }
 
-void Chessboard::undoMove(const Move & move)
+void Chessboard::undoMove(const Move &move)
 {
     raiseExceptionIfMoveHistoryIsEmpty("There is no move history and therefore no moves to undo.");
     raiseExceptionIfMoveIsNotLastMove(move, "The requested move can not be undone. Only the last move to be made can be undone.");
 
-    // Move the piece back to its original square
-    updateBitboards(move.color, move.piece, move.endSquare, move.startSquare);
+    movePiece(move.color, move.piece, move.endSquare, move.startSquare);
 
     // If the move captured a piece, we need to add that piece back to the board
     if (move.isCapture)
     {
-        updateBitboards(move.capturedPiece.value().color, move.capturedPiece.value().type, move.endSquare, move.endSquare);
+        addPiece(move.capturedPiece.value().color, move.capturedPiece.value().type, move.endSquare);
+    }
+    
+    // If the move is en passant, restore the the piece back to the board in a different way
+    if (move.isEnPassant)
+    {
+        addPiece(move.capturedPiece.value().color, move.capturedPiece.value().type, move.capturedPiece.value().square);
+    }
+    
+    if (move.isCastle)
+    {
+
     }
 
     // If castle rights were changed in the prior move, then reverse that
@@ -181,7 +224,7 @@ void Chessboard::undoMove(const Move & move)
     toggleActivePlayer();
 }
 
-void Chessboard::raiseExceptionIfMoveHistoryIsEmpty(const std::string & errorMessage) const
+void Chessboard::raiseExceptionIfMoveHistoryIsEmpty(const std::string &errorMessage) const
 {
     if (moveHistory.empty())
     {
@@ -189,7 +232,7 @@ void Chessboard::raiseExceptionIfMoveHistoryIsEmpty(const std::string & errorMes
     }
 }
 
-void Chessboard::raiseExceptionIfMoveIsNotLastMove(const Move & move, const std::string & errorMessage) const
+void Chessboard::raiseExceptionIfMoveIsNotLastMove(const Move &move, const std::string &errorMessage) const
 {
     Move lastMove = moveHistory.back();
     const bool moveIsNotTheLastMove = !(lastMove == move);
@@ -213,6 +256,7 @@ CastleRights Chessboard::getCastleRights(const Color color) const
 {
     return castleRights[color];
 }
+
 std::optional<Piece> Chessboard::getPieceAt(const Square square) const
 {
     Piece piece;
