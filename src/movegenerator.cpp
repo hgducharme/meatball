@@ -177,6 +177,8 @@ Bitboard LegalMoveGenerator::getPawnDoublePush(const Color activePlayer, const S
 {
     Bitboard doublePush;
 
+    /* TODO: Check to see if there's a piece in the way. That is, is the square 8 bits ahead already occupied? */
+
     if (pawnHasNotMoved(activePlayer, startingSquare))
     {
         doublePush |= utils::shiftSquareByDirection(startingSquare, 2 * direction);
