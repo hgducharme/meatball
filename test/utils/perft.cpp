@@ -7,6 +7,10 @@
 
 #include <iostream>
 
+/* TODO: clean up this code. The perft function should only be focusing on the perft. Maybe turn it into a class and 
+ * have it take a PertPrinter class as an injected dependency. Or at the minimum, separate out logging from the perft function.
+ */
+
 namespace
 {
 
@@ -83,6 +87,8 @@ PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t
    {
       Chessboard originalState = gameState;
       gameState.applyMove(move);
+      
+      /* TODO: add the rest of the move types to the results. */
       results.captures += static_cast<int>(move.isCapture());
 
       PerftResults childResults = __perft(gameState, depth - 1, initialDepth, showDivideOutput);
