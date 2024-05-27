@@ -91,6 +91,39 @@ namespace meatball
          Chessboard game;
          uint16_t depth = 3;
 
+         PerftResults results = perft(game, depth, false);
+
+         u64 EXPECTED_NODES = 8902;
+         int EXPECTED_CAPTURES = 34;
+         int EXPECTED_ENPASSANTS = 0;
+         int EXPECTED_CASTLES = 0;
+         int EXPECTED_PROMOTIONS = 0;
+         int EXPECTED_CHECKS = 12;
+         int EXPECTED_DISCOVERYCHECKS = 0;
+         int EXPECTED_DOUBLECHECKS = 0;
+         int EXPECTED_CHECKMATES = 0;
+
+         EXPECT_EQ(results.numberOfNodes, EXPECTED_NODES);
+         EXPECT_EQ(results.captures, EXPECTED_CAPTURES);
+         EXPECT_EQ(results.enPassants, EXPECTED_ENPASSANTS);
+         EXPECT_EQ(results.castles, EXPECTED_CASTLES);
+         EXPECT_EQ(results.promotions, EXPECTED_PROMOTIONS);
+         EXPECT_EQ(results.checks, EXPECTED_CHECKS);
+         EXPECT_EQ(results.discoveryChecks, EXPECTED_DISCOVERYCHECKS);
+         EXPECT_EQ(results.doubleChecks, EXPECTED_DOUBLECHECKS);
+         EXPECT_EQ(results.checkmates, EXPECTED_CHECKMATES);
+      }
+
+      TEST_F(MoveGeneratorTest, playground)
+      {
+         Chessboard game;
+
+         uint16_t depth = 1;
+         game.applyMove(Move(WHITE, KNIGHT, b1, a3));
+         game.applyMove(Move(BLACK, PAWN, a7, a6));
+         /* TODO: meatball thinks it can move white pawn a2a4 after this sequence of moves. */
+         /* That is to say, it thinks it can double push over pieces. */
+
          PerftResults results = perft(game, depth, true);
 
          u64 EXPECTED_NODES = 8902;
