@@ -114,8 +114,14 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
             const int twoSquares = 2;
             if ( (move.pieceType() == PieceType::KING) && (std::abs(targetSquare - startingSquare) == twoSquares) )
             {
-                // TODO: distinguish if this is a kingside castle or a queenside castle.
-                moveFlags |= (Move::KINGSIDE_CASTLE | Move::QUEENSIDE_CASTLE);
+                Move::Type castleSide = Move::KINGSIDE_CASTLE;
+
+                if (Chessboard::squareToFile(targetSquare) == FILE_C)
+                {
+                    castleSide = Move::QUEENSIDE_CASTLE;
+                }
+                
+                moveFlags |= castleSide;
             }
 
             /*

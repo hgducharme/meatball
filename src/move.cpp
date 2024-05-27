@@ -107,3 +107,11 @@ void Move::setCapturedPiece(const CapturedPiece p)
 {
     _capturedPiece = p;
 }
+
+std::optional<CastleSide> Move::castleSide() const
+{
+    if (isKingsideCastle()) { return CastleSide::KINGSIDE; }
+    if (isQueensideCastle()) { return CastleSide::QUEENSIDE; }
+
+    return std::nullopt;
+}

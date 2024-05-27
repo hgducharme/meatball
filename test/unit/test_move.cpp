@@ -206,6 +206,27 @@ TEST_F(MoveTest, setCapturedPiece)
    ASSERT_EQ(m.capturedPiece(), c);
 }
 
+TEST_F(MoveTest, castleSide_defaultsToNullOption)
+{
+   Move m(WHITE, PAWN, e2, e4);
+   ASSERT_FALSE(m.castleSide().has_value());
+}
+
+TEST_F(MoveTest, castleSide_returnsQueenside)
+{
+   Move m(WHITE, PAWN, e2, e4, Move::QUEENSIDE_CASTLE);
+   std::optional<CastleSide> castleSide = m.castleSide();
+   ASSERT_TRUE(castleSide.has_value());
+   ASSERT_EQ(castleSide.value(), CastleSide::QUEENSIDE);
+}
+
+TEST_F(MoveTest, castleSide_returnsKingside)
+{
+   Move m(WHITE, PAWN, e2, e4, Move::KINGSIDE_CASTLE);
+   std::optional<CastleSide> castleSide = m.castleSide();
+   ASSERT_TRUE(castleSide.has_value());
+   ASSERT_EQ(castleSide.value(), CastleSide::KINGSIDE);
+}
 
 }  // namespace
 }  // namespace meatball

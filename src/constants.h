@@ -39,6 +39,19 @@ constexpr int INDEX_OF_SEVENTH_BYTE = 48;
 
 constexpr Direction BISHOP_DIRECTIONS[4] = { Direction::NORTH_EAST, Direction::NORTH_WEST, Direction::SOUTH_WEST, Direction::SOUTH_EAST };
 constexpr Direction ROOK_DIRECTIONS[4] = { Direction::NORTH, Direction::WEST, Direction::SOUTH, Direction::EAST };
+
+/* This array holds the start and end squares for both the king and rook during a castle move. */
+constexpr CastleMove CASTLE_SQUARES[static_cast<int>(Color::NUMBER_OF_COLORS)][static_cast<int>(CastleSide::NUMBER_OF_CASTLE_SIDES)] = {
+   {
+      CastleMove(Square::e1, Square::g1, Square::h1, Square::f1), // White kingside
+      CastleMove(Square::e1, Square::c1, Square::a1, Square::d1)  // White queenside
+   },
+   {
+      CastleMove(Square::e8, Square::g8, Square::h8, Square::f8), // Black kingside
+      CastleMove(Square::e8, Square::c8, Square::a8, Square::d8)  // Black queenside
+   }
+};
+
 constexpr Square WHITE_KINGSIDE_CASTLE_SQUARE = Square::g1;
 constexpr Square WHITE_QUEENSIDE_CASTLE_SQUARE = Square::c1;
 constexpr Square BLACK_KINGSIDE_CASTLE_SQUARE = Square::g8;

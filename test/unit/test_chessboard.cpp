@@ -455,7 +455,7 @@ TEST_F(ChessboardTest, castleMoveGetsCorrectlyApplied)
    game.applyMove(castlingMove);
 
    ExpectedU64 EXPECTED_WHITE_ROOKS(0x21);
-   ExpectedU64 EXPECTED_WHITE_KING(0x10);
+   ExpectedU64 EXPECTED_WHITE_KING(0x40);
    EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::ROOK), EXPECTED_WHITE_ROOKS);
    EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::KING), EXPECTED_WHITE_KING);
 }

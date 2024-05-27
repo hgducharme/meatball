@@ -58,6 +58,7 @@ class Move
         bool isCastle() const;
         std::optional<CapturedPiece> capturedPiece() const;
         void setCapturedPiece(const CapturedPiece p);
+        std::optional<CastleSide> castleSide() const;
 
         Color color() const;
         PieceType pieceType() const;

@@ -96,7 +96,25 @@ enum class CastleRights
     KING_AND_QUEEN_SIDE,
     ONLY_KING_SIDE,
     ONLY_QUEEN_SIDE,
-    NONE
+    NONE,
+    NUMBER_OF_CASTLE_STATES = 4
+};
+
+struct CastleMove
+{
+    Square kingStart;
+    Square kingEnd;
+    Square rookStart;
+    Square rookEnd;
+
+    constexpr CastleMove(Square kingStart, Square kingEnd, Square rookStart, Square rookEnd)
+    : kingStart(kingStart), kingEnd(kingEnd), rookStart(rookStart), rookEnd(rookEnd) {}
+};
+
+enum class CastleSide {
+    KINGSIDE,
+    QUEENSIDE,
+    NUMBER_OF_CASTLE_SIDES = 2
 };
 
 struct Piece
