@@ -558,7 +558,7 @@ TEST_F(AttackTablesTest, knightAttackTable)
 // {
 //    for (int square = 0; square < 64; square++)
 //    {
-//       EXPECT_EQ(attack_tables::bishop[square], EXPECTED_BISHOP[square]);
+//       EXPECT_EQ((*attack_tables::BISHOP_ATTACKS[square]), EXPECTED_BISHOP[square]);
 //    }
 // }
 
