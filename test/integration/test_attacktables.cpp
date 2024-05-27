@@ -552,8 +552,6 @@ TEST_F(AttackTablesTest, knightAttackTable)
    }
 }
 
-// TODO: Should we add magic bitboard tests here? or should we just test our magic bitboards using a perft?
-// It's impossible to check every case and make sure our magic bitboards are producing correct attack tables.
 TEST_F(AttackTablesTest, bishopAttackTable)
 {
    for (int square = 0; square < 64; square++)
