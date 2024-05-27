@@ -89,13 +89,7 @@ Bitboard getSliderPieceAttacks(const SliderPiece sliderPiece, const Square squar
 
     const Bitboard blockers = boardState & hashingParameters.blockerMask;
     const int hashedIndex = magic_bitboards::hashBlockerVariation(blockers, hashingParameters.magicNumber, hashingParameters.shiftAmount);
-
-    // TODO: Once we index the magic bitboard attack database we need to add the edge of the board squares
-    // to the list of possible attacks. The edge of the board isn't getting computed because magic bitboards
-    // don't consider the edge of the board. Maybe AND the piece's attack ray with a board border mask
-    // (aka ranks 1 and 8, and files A and H), and then we will get the possible border moves?
-
-    return attackDatabase[hashedIndex];
+    return attackDatabase[hashedIndex];;
 }
 
 namespace

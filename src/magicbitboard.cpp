@@ -160,7 +160,7 @@ static inline Bitboard calculateAttacksFromSquare(const Square & square, const D
     {
         int distanceToEdge = utils::calculateDistanceToEdgeOfBoard(square, direction);
 
-        for (int i = 1; i < distanceToEdge; i++)
+        for (int i = 1; i <= distanceToEdge; i++)
         {
             Bitboard targetSquare = utils::shiftSquareByDirection(squareBitboard, i * direction);
             if (targetSquareIsBlocked(targetSquare, blockerVariation))

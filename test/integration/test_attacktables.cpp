@@ -554,29 +554,21 @@ TEST_F(AttackTablesTest, knightAttackTable)
 
 // TODO: Should we add magic bitboard tests here? or should we just test our magic bitboards using a perft?
 // It's impossible to check every case and make sure our magic bitboards are producing correct attack tables.
-// TEST_F(AttackTablesTest, bishopAttackTable)
-// {
-//    for (int square = 0; square < 64; square++)
-//    {
-//       EXPECT_EQ((*attack_tables::BISHOP_ATTACKS[square]), EXPECTED_BISHOP[square]);
-//    }
-// }
+TEST_F(AttackTablesTest, bishopAttackTable)
+{
+   for (int square = 0; square < 64; square++)
+   {
+      EXPECT_EQ((*attack_tables::BISHOP_ATTACKS[square]), EXPECTED_BISHOP[square]);
+   }
+}
 
-// TEST_F(AttackTablesTest, rookAttackTable)
-// {
-//    for (int square = 0; square < 64; square++)
-//    {
-//       EXPECT_EQ(attack_tables::rook[square], EXPECTED_ROOK[square]);
-//    }
-// }
-
-// TEST_F(AttackTablesTest, queenAttackTable)
-// {
-//    for (int square = 0; square < 64; square++)
-//    {
-//       EXPECT_EQ(attack_tables::queen[square], EXPECTED_QUEEN[square]);
-//    }
-// }
+TEST_F(AttackTablesTest, rookAttackTable)
+{
+   for (int square = 0; square < 64; square++)
+   {
+      EXPECT_EQ((*attack_tables::ROOK_ATTACKS[square]), EXPECTED_ROOK[square]);
+   }
+}
 
 TEST_F(AttackTablesTest, kingAttackTable)
 {

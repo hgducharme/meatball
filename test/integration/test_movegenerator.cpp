@@ -89,11 +89,8 @@ namespace meatball
       TEST_F(MoveGeneratorTest, perft_initialPositionDepth3)
       {
          Chessboard game;
-         uint16_t depth = 1;
+         uint16_t depth = 3;
 
-         // TODO: My chess engine is not seeing the move white bishop c1a3 after this move sequence.
-         game.applyMove(Move(WHITE, PAWN, b2, b3));
-         game.applyMove(Move(BLACK, PAWN, a7, a6));
          PerftResults results = perft(game, depth, true);
 
          u64 EXPECTED_NODES = 8902;
