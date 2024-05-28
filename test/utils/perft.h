@@ -47,8 +47,11 @@ std::ostream& operator<<(std::ostream& os, Square square);
 std::string moveToString(const Move & m);
 
 // Perft with divide functionality
-PerftResults __perft(Chessboard & gameState, const uint16_t depth, const uint16_t initialDepth, const bool showDivideOutput);
+PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t initialDepth, const bool showDivideOutput);
+void addTypeOfMoveToRunningTotal(PerftResults &results, const Move &move);
+void raiseExceptionIfGameStateNotProperlyRestored(Chessboard &gameState, Chessboard &originalState, const Move &move, const uint16_t depth, const uint16_t initialDepth);
+void printDivideOutput(const uint16_t depth, const uint16_t initialDepth, const Move &move, PerftResults &results, PerftResults &childResults, const bool showDivideOutput);
 }
 
 // Public interface to the perft function
-PerftResults perft(Chessboard & gameState, const uint16_t depth, const bool showDivideOutput);
+PerftResults perft(Chessboard &gameState, const uint16_t depth, const bool showDivideOutput);

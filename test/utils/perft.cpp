@@ -11,6 +11,14 @@
  * have it take a PertPrinter class as an injected dependency. Or at the minimum, separate out logging from the perft function.
  */
 
+/* This perft is just a nice wrapper to the actual __perft method.
+ * Set showDivideOutput to 'true' to have the divide results printed to the terminal
+*/
+PerftResults perft(Chessboard &gameState, const uint16_t depth, const bool showDivideOutput)
+{
+   return __perft(gameState, depth, depth, showDivideOutput);
+}
+
 namespace
 {
 
@@ -87,40 +95,57 @@ PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t
    {
       Chessboard originalState = gameState;
       gameState.applyMove(move);
-      
-      /* TODO: add the rest of the move types to the results. */
-      results.captures += static_cast<int>(move.isCapture());
 
       PerftResults childResults = __perft(gameState, depth - 1, initialDepth, showDivideOutput);
       results += childResults;
 
-      if (depth == initialDepth)
-      {
-         std::string topLevelNode = moveToString(move);
-
-         results.topLevelNodes.push_back(std::make_tuple(topLevelNode, childResults.numberOfNodes));
-
-         if (showDivideOutput)
-         {
-            std::cout << move.color() << " " << move.pieceType() << " : " << move.startSquare() << move.endSquare() << " - " << childResults.numberOfNodes << std::endl;
-         }
-      }
-
+      addTypeOfMoveToRunningTotal(results, move);
+      printDivideOutput(depth, initialDepth, move, results, childResults, showDivideOutput);
       gameState.undoMove(move);
-      if (!(gameState == originalState))
-      {
-         throw std::runtime_error("The state of the board was not correctly restored after making the move: " + moveToString(move) + ". Current depth: " + std::to_string(depth) + ". Initial depth: " + std::to_string(initialDepth));
-      }
+      raiseExceptionIfGameStateNotProperlyRestored(gameState, originalState, move, depth, initialDepth);
    }
 
    return results;
 }
 
-} // end anonymous namespace
-
-// This perft is just a nice interface wrapper
-// Set showDivideOutput to 'true' to have the divide results printed to the terminal
-PerftResults perft(Chessboard &gameState, const uint16_t depth, const bool showDivideOutput)
+void addTypeOfMoveToRunningTotal(PerftResults &results, const Move &move)
 {
-   return __perft(gameState, depth, depth, showDivideOutput);
+   results.captures += static_cast<int>(move.isCapture());
+   results.enPassants += static_cast<int>(move.isEnPassant());
+   results.castles += static_cast<int>(move.isCastle());
+   results.promotions += static_cast<int>(move.isPromotion());
+
+   /*
+   // TODO: add the rest of the move types to the results.
+   results.checks += static_cast<int>(move.isCheck());
+   results.discoveryChecks += static_cast<int>(move.isDiscoveryCheck());
+   results.doubleChecks += static_cast<int>(move.isDoubleCheck());
+   results.checkmates += static_cast<int>(move.isCheckmate());
+   */
 }
+
+void raiseExceptionIfGameStateNotProperlyRestored(Chessboard &gameState, Chessboard &originalState, const Move &move, const uint16_t depth, const uint16_t initialDepth)
+{
+   // Verify the game state got restored correctly after undoing the move
+   if (!(gameState == originalState))
+   {
+      throw std::runtime_error("The state of the board was not correctly restored after making the move: " + moveToString(move) + ". Current depth: " + std::to_string(depth) + ". Initial depth: " + std::to_string(initialDepth));
+   }
+}
+
+void printDivideOutput(const uint16_t depth, const uint16_t initialDepth, const Move &move, PerftResults &results, PerftResults &childResults, const bool showDivideOutput)
+{
+   if (depth == initialDepth)
+   {
+      std::string topLevelNode = moveToString(move);
+
+      results.topLevelNodes.push_back(std::make_tuple(topLevelNode, childResults.numberOfNodes));
+
+      if (showDivideOutput)
+      {
+         std::cout << move.color() << " " << move.pieceType() << " : " << move.startSquare() << move.endSquare() << " - " << childResults.numberOfNodes << std::endl;
+      }
+   }
+}
+
+} // end anonymous namespace
