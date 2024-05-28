@@ -66,10 +66,10 @@ TEST_F(MoveTest, equalityOperatorOverload)
 
 TEST_F(MoveTest, getFlags)
 {
-   uint8_t flags = Move::PROMOTION | Move::CAPTURE | Move::PAWN_DOUBLE_PUSH | Move::EN_PASSANT | Move::KINGSIDE_CASTLE | Move::QUEENSIDE_CASTLE;
+   uint8_t flags = Move::PROMOTION | Move::CAPTURE | Move::PAWN_DOUBLE_PUSH | Move::EN_PASSANT | Move::KINGSIDE_CASTLE | Move::QUEENSIDE_CASTLE | Move::CHECK;
    Move m(WHITE, PAWN, e2, e4, flags);
 
-   uint8_t EXPECTED = 0b111111;
+   uint8_t EXPECTED = 0b1111111;
    ASSERT_EQ(m.getFlags(), EXPECTED);
 }
 
@@ -135,8 +135,9 @@ TEST_F(MoveTest, isFlagSet)
    ASSERT_FALSE(m1.isFlagSet(Move::EN_PASSANT));
    ASSERT_FALSE(m1.isFlagSet(Move::KINGSIDE_CASTLE));
    ASSERT_FALSE(m1.isFlagSet(Move::QUEENSIDE_CASTLE));
+   ASSERT_FALSE(m1.isFlagSet(Move::CHECK));
 
-   uint8_t flags = Move::PROMOTION | Move::CAPTURE | Move::PAWN_DOUBLE_PUSH | Move::EN_PASSANT | Move::KINGSIDE_CASTLE | Move::QUEENSIDE_CASTLE;
+   uint8_t flags = Move::PROMOTION | Move::CAPTURE | Move::PAWN_DOUBLE_PUSH | Move::EN_PASSANT | Move::KINGSIDE_CASTLE | Move::QUEENSIDE_CASTLE | Move::CHECK;
    Move m2(WHITE, PAWN, e2, e4, flags);
 
    EXPECT_TRUE(m2.isFlagSet(Move::PROMOTION));
@@ -145,6 +146,7 @@ TEST_F(MoveTest, isFlagSet)
    EXPECT_TRUE(m2.isFlagSet(Move::EN_PASSANT));
    EXPECT_TRUE(m2.isFlagSet(Move::KINGSIDE_CASTLE));
    EXPECT_TRUE(m2.isFlagSet(Move::QUEENSIDE_CASTLE));
+   EXPECT_TRUE(m2.isFlagSet(Move::CHECK));
 }
 
 TEST_F(MoveTest, setFlag)
@@ -224,6 +226,12 @@ TEST_F(MoveTest, castleSide_returnsKingside)
    std::optional<CastleSide> castleSide = m.castleSide();
    ASSERT_TRUE(castleSide.has_value());
    ASSERT_EQ(castleSide.value(), CastleSide::KINGSIDE);
+}
+
+TEST_F(MoveTest, isCheck)
+{
+   Move m(WHITE, PAWN, e2, e4, Move::CHECK);
+   ASSERT_TRUE(m.isCheck());
 }
 
 }  // namespace

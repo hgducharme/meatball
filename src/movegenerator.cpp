@@ -86,12 +86,16 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
 
                 const std::optional<const Move> opponentsPreviousMove = gameState.getLastMove();
 
+                // Set flags: promotion, double push, en passant
                 if (isPawnPromotion(targetSquare)) { moveFlags |= Move::PROMOTION; }
                 if (isPawnDoublePush(startingSquare, targetSquare)) { moveFlags |= Move::PAWN_DOUBLE_PUSH; }
                 if (isEnPassant(activePlayer, startingSquare, targetSquare, opponentsPreviousMove)) { moveFlags |= Move::EN_PASSANT; }
+
+                // Set pawn capture flag
                 const bool startingFileAndEndingFileAreDifferent = (Chessboard::squareToFile(startingSquare) != Chessboard::squareToFile(targetSquare));
                 Bitboard targetSquareBitboard(static_cast<int>(targetSquare));
                 Bitboard possibleCaptures = targetSquareBitboard & opponentOccupancySet;
+
                 if (~(moveFlags & Move::EN_PASSANT) && ((startingFileAndEndingFileAreDifferent && (possibleCaptures.numberOfSetBits() == 1))))
                 {
                     moveFlags |= (Move::CAPTURE);
@@ -99,18 +103,21 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
             }
             else
             {
+                // Set capture flag for pieces that aren't pawns
                 if ((opponentOccupancySet & Bitboard(targetSquare)).numberOfSetBits() == 1)
                 {
                     moveFlags |= (Move::CAPTURE);
                 }
             }
 
+            // Set captured piece information
             if (moveFlags & Move::CAPTURE)
             {
                 Piece p = gameState.getPieceAt(targetSquare).value();
                 move.setCapturedPiece(CapturedPiece(p.color, p.type, targetSquare));
             }
 
+            // Set castle flag
             // TODO: The move is a castle if the king moves two squares
             const int twoSquares = 2;
             if ( (move.pieceType() == PieceType::KING) && (std::abs(targetSquare - startingSquare) == twoSquares) )
@@ -123,6 +130,20 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
                 }
                 
                 moveFlags |= castleSide;
+            }
+
+            // Set check flag
+            Chessboard gameCopy = gameState;
+            Move moveCopy = move;
+            moveCopy.setFlags(moveFlags);
+            gameCopy.applyMove(moveCopy);
+
+            /* If there are shared bits between the active player's attacked square and the
+             * non-active player's king bitboard, then this move puts the king into check.
+             */
+            if (attack_tables::getAttacks(gameCopy, activePlayer) & gameCopy.getBitboard(nonActivePlayer, PieceType::KING))
+            {
+                moveFlags |= Move::CHECK;
             }
 
             /*

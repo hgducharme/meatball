@@ -40,6 +40,7 @@ class Move
             EN_PASSANT =       0b001000,
             KINGSIDE_CASTLE =  0b010000,
             QUEENSIDE_CASTLE = 0b100000,
+            CHECK =            0b1000000,
         };
 
         Move(const Color c, const PieceType p, const Square start, const Square end);
@@ -57,6 +58,7 @@ class Move
         bool isKingsideCastle() const;
         bool isQueensideCastle() const;
         bool isCastle() const;
+        bool isCheck() const;
         Color color() const;
         PieceType pieceType() const;
         Square startSquare() const;

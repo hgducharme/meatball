@@ -43,6 +43,12 @@ bool Move::isCapture() const
     return isFlagSet(Move::CAPTURE);
 }
 
+bool Move::isCheck() const
+{
+
+    return isFlagSet(Move::CHECK);
+}
+
 bool Move::isFlagSet(const Move::Type moveFlag) const
 {
     return static_cast<bool>(_flags & moveFlag);

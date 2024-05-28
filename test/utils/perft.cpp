@@ -124,10 +124,10 @@ void tallyMoveType(PerftResults &results, const Move &move)
    results.enPassants += static_cast<int>(move.isEnPassant());
    results.castles += static_cast<int>(move.isCastle());
    results.promotions += static_cast<int>(move.isPromotion());
+   results.checks += static_cast<int>(move.isCheck());
 
    /*
    // TODO: add the rest of the move types to the results.
-   results.checks += static_cast<int>(move.isCheck());
    results.discoveryChecks += static_cast<int>(move.isDiscoveryCheck());
    results.doubleChecks += static_cast<int>(move.isDoubleCheck());
    results.checkmates += static_cast<int>(move.isCheckmate());
