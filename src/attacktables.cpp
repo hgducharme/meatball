@@ -110,13 +110,11 @@ static inline void initializeAttacksForLeaperPieces()
 
 static inline Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitboard)
 {
-    Bitboard potentialPawnAttacks;
+    // A pawn only has valid attacks if it exists on ranks 2 through 7
     Rank rank = Chessboard::squareToRank(bitboard.findIndexLSB());
-
-    // A pawn only has valid moves between ranks 2 and 7
     if (rank == RANK_1 || rank == RANK_8)
     {
-        return potentialPawnAttacks;
+        return constants::EMPTY_BOARD;
     }
 
     // White pawns can only move north and black pawns can only move south
@@ -129,6 +127,7 @@ static inline Bitboard calculatePawnAttacksFromSquare(const Color color, const B
     }
 
     // If we perform a move and end up on the opposite side of the board, that is an off-board move and we need to exclude that move
+    Bitboard potentialPawnAttacks;
     potentialPawnAttacks |= utils::shiftSquareByDirection(bitboard, eastDirection) & constants::bit_masks::EXCLUDE_FILE_A;
     potentialPawnAttacks |= utils::shiftSquareByDirection(bitboard, westDirection) & constants::bit_masks::EXCLUDE_FILE_H;
 
