@@ -75,7 +75,7 @@ static inline ArrayOfBitboardVectors calculateAttacks(const Direction (&attackDi
 template <uint8_t size>
 static inline Bitboard calculateAttacksFromSquare(const Square & square, const Direction (&directionsToAttack)[size], const Bitboard & blockerVariation);
 
-static inline bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares);
+static inline bool targetSquareIsOccupied(Bitboard targetSquare, Bitboard occupiedSquares);
 
 [[maybe_unused]] static inline void generateMagicNumbers(HashingParameters * hashingParametersLookup,
                           const int minimumBitsRequiredForHashing,

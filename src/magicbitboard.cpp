@@ -163,13 +163,12 @@ static inline Bitboard calculateAttacksFromSquare(const Square & square, const D
         for (int i = 1; i <= distanceToEdge; i++)
         {
             Bitboard targetSquare = utils::shiftSquareByDirection(squareBitboard, i * direction);
-            if (targetSquareIsBlocked(targetSquare, blockerVariation))
+            attackBoard |= targetSquare;
+
+            // The piece won't be able to move beyond the target square if it is occupied
+            if (targetSquareIsOccupied(targetSquare, blockerVariation))
             {
                 break;
-            }
-            else
-            {
-                attackBoard |= targetSquare;
             }
         }
     }
@@ -177,7 +176,7 @@ static inline Bitboard calculateAttacksFromSquare(const Square & square, const D
     return attackBoard;
 }
 
-static inline bool targetSquareIsBlocked(Bitboard targetSquare, Bitboard occupiedSquares)
+static inline bool targetSquareIsOccupied(Bitboard targetSquare, Bitboard occupiedSquares)
 {
     return ( (targetSquare & occupiedSquares).numberOfSetBits() == 1 );
 }
