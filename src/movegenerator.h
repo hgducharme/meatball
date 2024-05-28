@@ -22,8 +22,8 @@ class LegalMoveGenerator : public MoveGenerator
       MoveVector generatePsuedoLegalMoves(const Chessboard & gameState) const;
       MoveVector getMovesByPiece(const PieceType pieceType, const Chessboard &gameState) const;
       Bitboard getPawnPushes(const Color activePlayer, const Square startingSquare, const Bitboard opponentsPieces) const;
-      Bitboard getPawnSinglePush(const Color activePlayer, const Square startingSquare, Direction direction) const;
-      Bitboard getPawnDoublePush(const Color activePlayer, const Square startingSquare, Direction direction) const;
+      Bitboard getPawnSinglePush(const Color activePlayer, const Square startingSquare, Direction direction, const Bitboard occupiedSquares) const;
+      Bitboard getPawnDoublePush(const Color activePlayer, const Square startingSquare, Direction direction, const Bitboard occupiedSquares) const;
       bool pawnHasNotMoved(const Color activePlayer, const Square pawnLocation) const;
       bool pawnHasMoved(const Color activePlayer, const Square pawnLocation) const;
       bool isEnPassant(const Color activePlayer, const Square startingSquare, const Square targetSquare, const std::optional<const Move> opponentsPreviousMove) const;

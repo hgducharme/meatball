@@ -145,16 +145,13 @@ Bitboard LegalMoveGenerator::getPawnPushes(const Color activePlayer, const Squar
         direction = Direction::SOUTH;
     }
 
-    pawnPushes |= getPawnSinglePush(activePlayer, startingSquare, direction);
-    pawnPushes |= getPawnDoublePush(activePlayer, startingSquare, direction);
-
-    // Remove pushes to squares that are already occupied
-    pawnPushes &= (~occupiedSquares);
+    pawnPushes |= getPawnSinglePush(activePlayer, startingSquare, direction, occupiedSquares);
+    pawnPushes |= getPawnDoublePush(activePlayer, startingSquare, direction, occupiedSquares);
 
     return pawnPushes;
 }
 
-Bitboard LegalMoveGenerator::getPawnSinglePush(const Color activePlayer, const Square startingSquare, Direction direction) const
+Bitboard LegalMoveGenerator::getPawnSinglePush(const Color activePlayer, const Square startingSquare, Direction direction, const Bitboard occupiedSquares) const
 {
     Bitboard singlePush;
 
@@ -170,16 +167,22 @@ Bitboard LegalMoveGenerator::getPawnSinglePush(const Color activePlayer, const S
 
     singlePush &= excludeOverflowRank;
 
+    // Remove pushes to occupied squares
+    singlePush &= (~occupiedSquares);
+
     return singlePush;
 }
 
-Bitboard LegalMoveGenerator::getPawnDoublePush(const Color activePlayer, const Square startingSquare, Direction direction) const
+Bitboard LegalMoveGenerator::getPawnDoublePush(const Color activePlayer, const Square startingSquare, Direction direction, const Bitboard occupiedSquares) const
 {
     Bitboard doublePush;
 
-    /* TODO: Check to see if there's a piece in the way. That is, is the square 8 bits ahead already occupied? */
-
-    if (pawnHasNotMoved(activePlayer, startingSquare))
+    const Bitboard oneSquareForward = utils::shiftSquareByDirection(startingSquare, 1 * direction);
+    const Bitboard twoSquaresForward = utils::shiftSquareByDirection(startingSquare, 2 * direction);
+    const bool squareInFrontIsNotOccupied = (oneSquareForward & occupiedSquares).noBitsSet();
+    const bool twoSquaresInFrontIsNotOccupied = (twoSquaresForward & occupiedSquares).noBitsSet();
+    const bool squaresInFrontAreNotOccupied = (squareInFrontIsNotOccupied && twoSquaresInFrontIsNotOccupied);
+    if (squaresInFrontAreNotOccupied && pawnHasNotMoved(activePlayer, startingSquare))
     {
         doublePush |= utils::shiftSquareByDirection(startingSquare, 2 * direction);
     }
