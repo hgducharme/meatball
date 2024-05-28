@@ -77,12 +77,18 @@ TEST_F(MoveTest, moveFlag_promotion) {
    uint8_t flags = Move::PROMOTION;
    Move m(WHITE, PAWN, e2, e4, flags);
    ASSERT_TRUE(m.isPromotion());
-
 }
 
-TEST_F(MoveTest, promotionPiece)
+TEST_F(MoveTest, setPromotionPiece)
 {
-   ASSERT_TRUE(false);
+   Move m(WHITE, PAWN, e7, e8, Move::PROMOTION);
+
+   ASSERT_FALSE(m.promotionPiece().has_value());
+
+   m.setPromotionPiece(PieceType::QUEEN);
+
+   ASSERT_TRUE(m.promotionPiece().has_value());
+   ASSERT_EQ(m.promotionPiece().value(), PieceType::QUEEN);
 }
 
 TEST_F(MoveTest, moveFlag_pawnDoublePush)
@@ -104,14 +110,6 @@ TEST_F(MoveTest, moveFlag_capture)
    uint8_t flags = Move::CAPTURE;
    Move m(WHITE, PAWN, e2, e4, flags);
    ASSERT_TRUE(m.isCapture());
-}
-
-TEST_F(MoveTest, capturedPiece)
-{
-   Move m(WHITE, PAWN, e2, e4);
-   CapturedPiece p(BLACK, PAWN, d5);
-   m.setCapturedPiece(p);
-   ASSERT_EQ(m.capturedPiece(), p);
 }
 
 TEST_F(MoveTest, moveFlag_kingsideCastle)

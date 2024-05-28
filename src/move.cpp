@@ -115,3 +115,13 @@ std::optional<CastleSide> Move::castleSide() const
 
     return std::nullopt;
 }
+
+std::optional<PieceType> Move::promotionPiece() const
+{
+    return _promotionPiece;
+}
+
+void Move::setPromotionPiece(const PieceType pieceType)
+{
+    _promotionPiece = pieceType;
+}
