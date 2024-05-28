@@ -132,7 +132,7 @@ void Chessboard::raiseExceptionIfSquareIsOccupied(const Square square)
 {
     if (squareIsOccupied(square))
     {
-        throw exceptions::SquareAlreadyOccupied("Cannot add piece to " + utils::squareToString(square) + ". The square is already occupied.");
+        throw exceptions::chessboard::SquareAlreadyOccupied("Cannot add piece to " + utils::squareToString(square) + ". The square is already occupied.");
     }
 }
 
@@ -246,7 +246,7 @@ void Chessboard::raiseExceptionIfMoveHistoryIsEmpty(const std::string &errorMess
 {
     if (moveHistory.empty())
     {
-        throw exceptions::MoveHistoryIsEmpty(errorMessage);
+        throw exceptions::chessboard::MoveHistoryIsEmpty(errorMessage);
     }
 }
 
@@ -256,7 +256,7 @@ void Chessboard::raiseExceptionIfMoveIsNotLastMove(const Move &move, const std::
     const bool moveIsNotTheLastMove = !(lastMove == move);
     if (moveIsNotTheLastMove)
     {
-        throw exceptions::UndoMoveError(errorMessage);
+        throw exceptions::chessboard::UndoMoveError(errorMessage);
     }
 }
 

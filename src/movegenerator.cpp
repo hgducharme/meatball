@@ -3,6 +3,7 @@
 #include "move.h"
 #include "utils.h"
 #include "attacktables.h"
+#include "exceptions.h"
 
 #include <optional>
 #include <cmath>
@@ -309,6 +310,10 @@ Bitboard LegalMoveGenerator::getCastles(const Chessboard & gameState) const
             Bitboard queenSideCastle = computeCastleBitboard(gameState, squaresInBetweenKingAndRookQueenSide, queenSideTargetSquare);
 
             return kingSideCastle | queenSideCastle;
+        }
+        case CastleRights::NUMBER_OF_CASTLE_STATES:
+        {
+            throw exceptions::move_generation::InvalidSwitchCase("Not a valid switch case. Received 'NUMBER_OF_CASTLE_STATES'.");
         }
     }
 }
