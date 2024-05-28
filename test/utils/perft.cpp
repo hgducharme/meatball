@@ -7,16 +7,18 @@
 
 #include <iostream>
 
-/* TODO: clean up this code. The perft function should only be focusing on the perft. Maybe turn it into a class and 
- * have it take a PertPrinter class as an injected dependency. Or at the minimum, separate out logging from the perft function.
- */
-
-/* This perft is just a nice wrapper to the actual __perft method.
- * Set showDivideOutput to 'true' to have the divide results printed to the terminal
-*/
 PerftResults perft(Chessboard &gameState, const uint16_t depth, const bool showDivideOutput)
 {
    return __perft(gameState, depth, depth, showDivideOutput);
+}
+
+void PerftResults::printTopLevelNodes() const {
+    for (const auto& [move, childNodes] : topLevelNodes) {
+        std::cout << move << ": " << childNodes << std::endl;
+    }
+
+    std::cout << "==========" << std::endl;
+    std::cout << "Nodes searched: " << numberOfNodes << std::endl;
 }
 
 namespace
@@ -77,8 +79,6 @@ std::string moveToString(const Move &m)
    return utils::squareToString(m.startSquare()) + utils::squareToString(m.endSquare());
 }
 
-// This perft takes an initialDepth parameter so that we can implement perft divide functionality
-// Perft divide means that we can spit how many child nodes are located under each top level node
 PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t initialDepth, const bool showDivideOutput)
 {
    LegalMoveGenerator moveGenerator;
@@ -99,16 +99,26 @@ PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t
       PerftResults childResults = __perft(gameState, depth - 1, initialDepth, showDivideOutput);
       results += childResults;
 
-      addTypeOfMoveToRunningTotal(results, move);
-      printDivideOutput(depth, initialDepth, move, results, childResults, showDivideOutput);
+      trackMetaData(results, move, depth, initialDepth, childResults);
       gameState.undoMove(move);
       raiseExceptionIfGameStateNotProperlyRestored(gameState, originalState, move, depth, initialDepth);
+   }
+
+   if (depth == initialDepth && showDivideOutput)
+   {
+      printDivideOutput(results);
    }
 
    return results;
 }
 
-void addTypeOfMoveToRunningTotal(PerftResults &results, const Move &move)
+void trackMetaData(PerftResults &results, const Move &move, const uint16_t depth, const uint16_t initialDepth, PerftResults &childResults)
+{
+   tallyMoveType(results, move);
+   tallyTopLevelNodes(depth, initialDepth, move, results, childResults);
+}
+
+void tallyMoveType(PerftResults &results, const Move &move)
 {
    results.captures += static_cast<int>(move.isCapture());
    results.enPassants += static_cast<int>(move.isEnPassant());
@@ -124,28 +134,28 @@ void addTypeOfMoveToRunningTotal(PerftResults &results, const Move &move)
    */
 }
 
+void tallyTopLevelNodes(const uint16_t depth, const uint16_t initialDepth, const Move &move, PerftResults &results, PerftResults &childResults)
+{
+   if (depth == initialDepth)
+   {
+      std::string topLevelNode = moveToString(move);
+      results.topLevelNodes.push_back(std::make_tuple(topLevelNode, childResults.numberOfNodes));
+   }
+}
+
 void raiseExceptionIfGameStateNotProperlyRestored(Chessboard &gameState, Chessboard &originalState, const Move &move, const uint16_t depth, const uint16_t initialDepth)
 {
    // Verify the game state got restored correctly after undoing the move
    if (!(gameState == originalState))
    {
+      // TODO: print move history.
       throw std::runtime_error("The state of the board was not correctly restored after making the move: " + moveToString(move) + ". Current depth: " + std::to_string(depth) + ". Initial depth: " + std::to_string(initialDepth));
    }
 }
 
-void printDivideOutput(const uint16_t depth, const uint16_t initialDepth, const Move &move, PerftResults &results, PerftResults &childResults, const bool showDivideOutput)
+void printDivideOutput(const PerftResults &results)
 {
-   if (depth == initialDepth)
-   {
-      std::string topLevelNode = moveToString(move);
-
-      results.topLevelNodes.push_back(std::make_tuple(topLevelNode, childResults.numberOfNodes));
-
-      if (showDivideOutput)
-      {
-         std::cout << move.color() << " " << move.pieceType() << " : " << move.startSquare() << move.endSquare() << " - " << childResults.numberOfNodes << std::endl;
-      }
-   }
+   results.printTopLevelNodes();
 }
 
 } // end anonymous namespace
