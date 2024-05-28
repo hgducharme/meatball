@@ -619,5 +619,44 @@ TEST_F(ChessboardTest, applyMove_raisesExceptionIfPromotionInfoIsntSet)
    ASSERT_THROW(game.applyMove(Move(WHITE, PAWN, e2, e4, Move::PROMOTION)), std::runtime_error);
 }
 
+TEST_F(ChessboardTest, constructor_parsesFEN)
+{
+   std::string startingPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+   Chessboard game(startingPosition);
+
+   ExpectedU64 EXPECTED_WHITE_PAWNS(0xff00);
+   ExpectedU64 EXPECTED_WHITE_KNIGHTS(0x42);
+   ExpectedU64 EXPECTED_WHITE_BISHOPS(0x24);
+   ExpectedU64 EXPECTED_WHITE_ROOKS(0x81);
+   ExpectedU64 EXPECTED_WHITE_QUEEN(0x8);
+   ExpectedU64 EXPECTED_WHITE_KING(0x10);
+
+   ExpectedU64 EXPECTED_BLACK_PAWNS(0xff000000000000);
+   ExpectedU64 EXPECTED_BLACK_KNIGHTS(0x4200000000000000);
+   ExpectedU64 EXPECTED_BLACK_BISHOPS(0x2400000000000000);
+   ExpectedU64 EXPECTED_BLACK_ROOKS(0x8100000000000000);
+   ExpectedU64 EXPECTED_BLACK_QUEEN(0x800000000000000);
+   ExpectedU64 EXPECTED_BLACK_KING(0x1000000000000000);
+
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::PAWN), EXPECTED_WHITE_PAWNS);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::KNIGHT), EXPECTED_WHITE_KNIGHTS);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::BISHOP), EXPECTED_WHITE_BISHOPS);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::ROOK), EXPECTED_WHITE_ROOKS);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::QUEEN), EXPECTED_WHITE_QUEEN);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::KING), EXPECTED_WHITE_KING);
+
+   EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::PAWN), EXPECTED_BLACK_PAWNS);
+   EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::KNIGHT), EXPECTED_BLACK_KNIGHTS);
+   EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::BISHOP), EXPECTED_BLACK_BISHOPS);
+   EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::ROOK), EXPECTED_BLACK_ROOKS);
+   EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::QUEEN), EXPECTED_BLACK_QUEEN);
+   EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::KING), EXPECTED_BLACK_KING);
+
+   EXPECT_EQ(game.getActivePlayer(), Color::WHITE);
+   EXPECT_EQ(game.getNonActivePlayer(), Color::BLACK);
+   EXPECT_EQ(game.getCastleRights(Color::WHITE), CastleRights::KING_AND_QUEEN_SIDE);
+   EXPECT_EQ(game.getCastleRights(Color::BLACK), CastleRights::KING_AND_QUEEN_SIDE);
+}
+
 }  // namespace
 }  // namespace meatball

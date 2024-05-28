@@ -26,6 +26,7 @@ class Chessboard {
         Rank static squareToRank(const int square);
 
         Chessboard();
+        Chessboard(const std::string & fen);
         const Bitboard getOccupiedSquares() const;
         const Bitboard & getBitboard(const PieceType piece) const;
         const Bitboard & getBitboard(const Color color) const;

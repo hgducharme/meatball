@@ -49,6 +49,64 @@ Chessboard::Chessboard()
     previousCastleRightsState = CastleRights::KING_AND_QUEEN_SIDE;
 }
 
+Chessboard::Chessboard(const std::string & fen)
+{
+    // TODO: split the string into the known sections:
+    // 1. piece positions
+    // 2. active player
+    // 3. castle rights
+    // 4. - ?
+    // 5. 0 1 ?
+    for (const char c : fen)
+    {
+        switch (c)
+        {
+            case 'P':
+                break;
+            case 'N':
+                break;
+            case 'B':
+                break;
+            case 'R':
+                break;
+            case 'Q':
+                break;
+            case 'K':
+                break;
+            case 'p':
+                break;
+            case 'n':
+                break;
+            case 'b':
+                break;
+            case 'r':
+                break;
+            case 'q':
+                break;
+            case 'k':
+                break;
+            case '/':
+                break;
+            case ' ':
+                break;
+            case 'w':
+                break;
+            case '8':
+                break;
+            case '-':
+                break;
+            case '0':
+                break;
+            case '1':
+                break;
+            case 'KQ':
+                break;
+            case 'kq':
+                break;
+        }
+    }
+}
+
 const Bitboard Chessboard::getOccupiedSquares() const
 {
     return getBitboard(Color::WHITE) | getBitboard(Color::BLACK);
