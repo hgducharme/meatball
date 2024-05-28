@@ -24,4 +24,8 @@ std::string colorToString(const Color color);
 
 std::string moveToString(const Move & move);
 
+std::vector<std::string> tokenizeString(const std::string & str);
+
+int bigEndianRankFileToLittleEndianRankFile(const int position);
+
 } // namespace utils

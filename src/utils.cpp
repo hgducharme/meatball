@@ -6,6 +6,9 @@
 #include <cmath>     // std::abs
 #include <algorithm> // std::math
 #include <random>    // random number generation
+#include <sstream>
+#include <vector>
+#include <string>
 
 namespace utils
 {
@@ -268,6 +271,22 @@ std::string colorToString(const Color color)
 std::string moveToString(const Move & move)
 {
    return colorToString(move.color()) + " " + pieceTypeToString(move.pieceType()) + " " + utils::squareToString(move.startSquare()) + utils::squareToString(move.endSquare());
+}
+
+std::vector<std::string> tokenizeString(const std::string & str)
+{
+   std::istringstream split(str);
+   std::string temporaryToken;
+   std::vector<std::string> tokens;
+   while(std::getline(split, temporaryToken, ' ')) { tokens.push_back(temporaryToken); }
+   return tokens;
+}
+
+int bigEndianRankFileToLittleEndianRankFile(const int square)
+{
+   int rank = square / 8;
+   int file = square % 8;
+   return (7 - rank) * 8 + file;
 }
 
 } // namespace utils

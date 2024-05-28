@@ -29,6 +29,125 @@ Rank Chessboard::squareToRank(const int square)
     return static_cast<Rank>(square / 8);
 }
 
+const GameState & Chessboard::parseFEN(const std::string & fen)
+{
+    std::vector<std::string> fenSections = utils::tokenizeString(fen);
+    std::string piecePositions = fenSections[0];
+    std::string activePlayer = fenSections[1];
+    std::string castlingAvailability = fenSections[2];
+    std::string enPassantTargetSquare = fenSections[3];
+    std::string halfMoveClock = fenSections[4];
+    std::string fullMoveNumber = fenSections[5];
+
+    GameState pieceState = parsePiecePositions(piecePositions);
+    pieceState.activePlayer = parseActivePlayer(activePlayer);
+    // TODO:
+    // parseCastlingAvailability();
+    // parseEnPassantTargetSquare();
+    // parseHalfMoveClock();
+    // parseFullMoveNumber();
+
+    return pieceState;
+}
+
+const GameState & Chessboard::parsePiecePositions(const std::string & piecePositionsFEN)
+{    
+    // TODO: Make this more readable
+    GameState state;
+
+    int squarePosition = 0;
+    for (std::size_t i = 0; i < piecePositionsFEN.length(); ++i) {
+        int j = utils::bigEndianRankFileToLittleEndianRankFile(squarePosition);
+        const char c = piecePositionsFEN[i];
+        switch (c)
+        {
+            case 'P':
+                state.pawns |= (constants::ONE << j);
+                state.whiteOccupied |= (constants::ONE << j);
+                break;
+            case 'N':
+                state.knights |= (constants::ONE << j);
+                state.whiteOccupied |= (constants::ONE << j);
+                break;
+            case 'B':
+                state.bishops |= (constants::ONE << j);
+                state.whiteOccupied |= (constants::ONE << j);
+                break;
+            case 'R':
+                state.rooks |= (constants::ONE << j);
+                state.whiteOccupied |= (constants::ONE << j);
+                break;
+            case 'Q':
+                state.queens |= (constants::ONE << j);
+                state.whiteOccupied |= (constants::ONE << j);
+                break;
+            case 'K':
+                state.kings |= (constants::ONE << j);
+                state.whiteOccupied |= (constants::ONE << j);
+                break;
+            case 'p':
+                state.pawns |= (constants::ONE << j);
+                state.blackOccupied |= (constants::ONE << j);
+                break;
+            case 'n':
+                state.knights |= (constants::ONE << j);
+                state.blackOccupied |= (constants::ONE << j);
+                break;
+            case 'b':
+                state.bishops |= (constants::ONE << j);
+                state.blackOccupied |= (constants::ONE << j);
+                break;
+            case 'r':
+                state.rooks |= (constants::ONE << j);
+                state.blackOccupied |= (constants::ONE << j);
+                break;
+            case 'q':
+                state.queens |= (constants::ONE << j);
+                state.blackOccupied |= (constants::ONE << j);
+                break;
+            case 'k':
+                state.kings |= (constants::ONE << j);
+                state.blackOccupied |= (constants::ONE << j);
+                break;
+            case '/':
+                squarePosition -= 1;
+                break;
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+                int charToInt = c - '0';
+                squarePosition += (charToInt - 1);
+                break;
+        }
+        squarePosition++;
+    }
+
+    return state;
+}
+
+Color Chessboard::parseActivePlayer(const std::string & colorFEN)
+{
+    assert(colorFEN.length() == 1);
+
+    for (const char c : colorFEN)
+    {
+        switch (c)
+        {
+            case 'w':
+                return Color::WHITE;
+            case 'b':
+                return Color::BLACK;
+            default:
+                throw exceptions::fen::InvalidFEN("Unable to parse active player. Received: " + colorFEN);
+        }
+    }
+}
+
 Chessboard::Chessboard()
 {
     // Initialize the bitboards for each piece type
@@ -51,60 +170,24 @@ Chessboard::Chessboard()
 
 Chessboard::Chessboard(const std::string & fen)
 {
-    // TODO: split the string into the known sections:
-    // 1. piece positions
-    // 2. active player
-    // 3. castle rights
-    // 4. - ?
-    // 5. 0 1 ?
-    for (const char c : fen)
-    {
-        switch (c)
-        {
-            case 'P':
-                break;
-            case 'N':
-                break;
-            case 'B':
-                break;
-            case 'R':
-                break;
-            case 'Q':
-                break;
-            case 'K':
-                break;
-            case 'p':
-                break;
-            case 'n':
-                break;
-            case 'b':
-                break;
-            case 'r':
-                break;
-            case 'q':
-                break;
-            case 'k':
-                break;
-            case '/':
-                break;
-            case ' ':
-                break;
-            case 'w':
-                break;
-            case '8':
-                break;
-            case '-':
-                break;
-            case '0':
-                break;
-            case '1':
-                break;
-            case 'KQ':
-                break;
-            case 'kq':
-                break;
-        }
-    }
+    GameState parsedState = Chessboard::parseFEN(fen);
+
+    // Set bitboards
+    pieceBitboards_[PieceType::PAWN].setBoard(parsedState.pawns);
+    pieceBitboards_[PieceType::KNIGHT].setBoard(parsedState.knights);
+    pieceBitboards_[PieceType::BISHOP].setBoard(parsedState.bishops);
+    pieceBitboards_[PieceType::ROOK].setBoard(parsedState.rooks);
+    pieceBitboards_[PieceType::QUEEN].setBoard(parsedState.queens);
+    pieceBitboards_[PieceType::KING].setBoard(parsedState.kings);
+
+    // Initialize the white and black bitboards
+    colorBitboards_[Color::WHITE] = parsedState.whiteOccupied;
+    colorBitboards_[Color::BLACK] = parsedState.blackOccupied;
+
+    // Initialize castle rights
+    castleRights[Color::WHITE] = parsedState.whiteCastleRights;
+    castleRights[Color::BLACK] = parsedState.blackCastleRights;
+    /* TODO: Make sure that this doesn't cause some unexpected previousCastleRights situation. */
 }
 
 const Bitboard Chessboard::getOccupiedSquares() const

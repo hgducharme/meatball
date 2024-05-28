@@ -139,3 +139,21 @@ struct CapturedPiece : public Piece
         return Piece::operator==(rhs) && (square == rhs.square);
     }
 };
+
+struct GameState
+{
+    u64 pawns = 0;
+    u64 knights = 0;
+    u64 bishops = 0;
+    u64 rooks = 0;
+    u64 queens = 0;
+    u64 kings = 0;
+    u64 whiteOccupied = 0;
+    u64 blackOccupied = 0;
+    Color activePlayer;
+    CastleRights whiteCastleRights;
+    CastleRights blackCastleRights;
+    Square enPassantTargetSquare;
+    int halfMoveClock;
+    int fullMoveNumber;
+};

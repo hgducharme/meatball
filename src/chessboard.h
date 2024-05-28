@@ -24,6 +24,9 @@ class Chessboard {
     public:
         File static squareToFile(const int square);
         Rank static squareToRank(const int square);
+        static const GameState & parseFEN(const std::string & fen);
+        static const GameState & parsePiecePositions(const std::string & piecePositionsFEN);
+        static Color parseActivePlayer(const std::string & colorFEN);
 
         Chessboard();
         Chessboard(const std::string & fen);

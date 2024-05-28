@@ -32,6 +32,16 @@ namespace exceptions
       };
    } // end chessboard namespace
 
+   namespace fen
+   {
+      class InvalidFEN : public std::runtime_error
+      {
+         public:
+            explicit InvalidFEN(const std::string & message) : std::runtime_error(message) {};
+      };
+
+   } // end fen namespace
+
    namespace move_generation
    {
       class InvalidSwitchCase : public std::runtime_error
