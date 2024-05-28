@@ -24,6 +24,12 @@ namespace exceptions
          public:
             explicit SquareAlreadyOccupied(const std::string & message) : std::runtime_error(message) {};
       };
+
+      class InvalidMove : public std::runtime_error
+      {
+         public:
+            explicit InvalidMove(const std::string & message) : std::runtime_error(message) {};
+      };
    } // end chessboard namespace
 
    namespace move_generation

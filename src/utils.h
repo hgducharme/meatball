@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bitboard.h"
+#include "move.h"
 
 namespace utils
 {
@@ -16,5 +17,11 @@ u64 getRandom64BitInteger();
 u64 getSparselyPopulatedRandom64BitInteger();
 
 std::string squareToString(Square square);
+
+std::string pieceTypeToString(PieceType pieceType);
+
+std::string colorToString(const Color color);
+
+std::string moveToString(const Move & move);
 
 } // namespace utils

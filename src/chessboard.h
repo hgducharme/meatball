@@ -46,8 +46,9 @@ class Chessboard {
         void movePiece(const Color color, const PieceType piece, const Square startingSquare, const Square endingSquare);
         void addPiece(const Color color, const PieceType piece, const Square square);
         void removePiece(const Color color, const PieceType piece, const Square square);
+        void raiseExceptionIfPieceIsNotOnSquare(const Color color, const PieceType piece, const Square square, const std::string & errorMessage);
         void updateCastleRights(const Move &move);
-        void raiseExceptionIfSquareIsOccupied(const Square square);
+        void raiseExceptionIfSquareIsOccupied(const Square square, const std::string & errorMessage);
         void raiseExceptionIfMoveIsNotLastMove(const Move &move, const std::string &errorMessage) const;
         void raiseExceptionIfMoveHistoryIsEmpty(const std::string & errorMessage) const;
 };

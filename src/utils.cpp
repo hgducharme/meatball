@@ -231,4 +231,43 @@ std::string squareToString(Square square)
    }
 }
 
+std::string pieceTypeToString(PieceType pieceType)
+{
+   switch (pieceType)
+   {
+      case PAWN:
+         return "pawn";
+      case KNIGHT:
+         return "knight";
+      case BISHOP:
+         return "bishop";
+      case ROOK:
+         return "rook";
+      case QUEEN:
+         return "queen";
+      case KING:
+         return "king";
+      default:
+         return "UNKNOWN PIECE TYPE";
+   } 
+}
+
+std::string colorToString(const Color color)
+{
+   switch (color)
+   {
+      case WHITE:
+         return "white";
+      case BLACK:
+         return "black";
+      default:
+         return "UNKNOWN COLOR";
+   }
+}
+
+std::string moveToString(const Move & move)
+{
+   return colorToString(move.color()) + " " + pieceTypeToString(move.pieceType()) + " " + utils::squareToString(move.startSquare()) + utils::squareToString(move.endSquare());
+}
+
 } // namespace utils

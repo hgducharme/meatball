@@ -80,22 +80,41 @@ void Chessboard::applyMove(const Move &move)
     // then we can quickly restore the castle rights back to this player
     previousCastleRightsState = castleRights[activeColor];
 
-    // Remove the captured piece from the board
     if (move.isCapture() || move.isEnPassant())
     {
+        if (move.capturedPiece().has_value() == false)
+        {
+            throw exceptions::chessboard::InvalidMove("Attempting to capture piece but the move's captured piece is not set. Move information: " + utils::moveToString(move));
+        }
+
         CapturedPiece captured = move.capturedPiece().value();
         removePiece(captured.color, captured.type, captured.square);
     }
 
     if (move.isCastle())
     {
+        if (move.castleSide().has_value() == false)
+        {
+            throw exceptions::chessboard::InvalidMove("Attempting to castle but the move's castle side is not set. Move information: " + utils::moveToString(move));
+        }
         CastleSide side = move.castleSide().value();
         CastleMove castleInfo = constants::CASTLE_SQUARES[activeColor][static_cast<int>(side)];
-        movePiece(activeColor, movePieceType, castleInfo.kingStart, castleInfo.kingEnd);
         movePiece(activeColor, PieceType::ROOK, castleInfo.rookStart, castleInfo.rookEnd);
+    }
+
+    if (move.isPromotion())
+    {
+        if (move.promotionPiece().has_value() == false)
+        {
+            throw exceptions::chessboard::InvalidMove("Attempting to promote but the move's promotion piece is not set. Move information: " + utils::moveToString(move));
+        }
+        PieceType promotionPieceType = move.promotionPiece().value();
+        removePiece(activeColor, movePieceType, startSquare);
+        addPiece(activeColor, promotionPieceType, endSquare);
     }
     else
     {
+        // This movePiece will happen to all moves except for promotion moves
         movePiece(activeColor, movePieceType, startSquare, endSquare);
     }
 
@@ -110,8 +129,19 @@ void Chessboard::applyMove(const Move &move)
 
 void Chessboard::removePiece(const Color color, const PieceType piece, const Square square)
 {
+    std::string error = "Can not remove " + utils::pieceTypeToString(piece) + " from square " + utils::squareToString(square) + ". It does not exist.";
+    raiseExceptionIfPieceIsNotOnSquare(color, piece, square, error);
+
     pieceBitboards_[piece].clearBit(square);
     colorBitboards_[color].clearBit(square);
+}
+
+void Chessboard::raiseExceptionIfPieceIsNotOnSquare(const Color color, const PieceType piece, const Square square, const std::string & errorMessage)
+{
+    if (getBitboard(color, piece).getBit(square) == 0)
+    {
+        throw exceptions::chessboard::InvalidMove(errorMessage);
+    }
 }
 
 void Chessboard::movePiece(const Color color, const PieceType piece, const Square start, const Square end)
@@ -122,17 +152,18 @@ void Chessboard::movePiece(const Color color, const PieceType piece, const Squar
 
 void Chessboard::addPiece(const Color color, const PieceType piece, const Square square)
 {
-    raiseExceptionIfSquareIsOccupied(square);
+    std::string error = "Cannot add piece to " + utils::squareToString(square) + ". The square is already occupied.";
+    raiseExceptionIfSquareIsOccupied(square, error);
 
     pieceBitboards_[piece].setBit(square);
     colorBitboards_[color].setBit(square);
 }
 
-void Chessboard::raiseExceptionIfSquareIsOccupied(const Square square)
+void Chessboard::raiseExceptionIfSquareIsOccupied(const Square square, const std::string & errorMessage)
 {
     if (squareIsOccupied(square))
     {
-        throw exceptions::chessboard::SquareAlreadyOccupied("Cannot add piece to " + utils::squareToString(square) + ". The square is already occupied.");
+        throw exceptions::chessboard::InvalidMove(errorMessage);
     }
 }
 
@@ -217,7 +248,20 @@ void Chessboard::undoMove(const Move &move)
     Square startSquare = move.startSquare();
     Square endSquare = move.endSquare();
 
-    movePiece(activeColor, movePieceType, endSquare, startSquare);
+    /* NOTE: This must come before handling captured pieces.
+     * If a pawn captured a piece into promotion, we must first remove the promoted piece
+     * from the capture square before we can add the captured piece back to that square.
+     */
+    if (move.isPromotion())
+    {
+        PieceType promotionPieceType = move.promotionPiece().value();
+        removePiece(activeColor, promotionPieceType, endSquare);
+        addPiece(activeColor, movePieceType, startSquare);
+    }
+    else
+    {
+        movePiece(activeColor, movePieceType, endSquare, startSquare);
+    }
 
     // If the move captured a piece, we need to add that piece back to the board
     if (move.isCapture() || move.isEnPassant())

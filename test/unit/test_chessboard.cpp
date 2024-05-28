@@ -217,38 +217,6 @@ TEST_F(ChessboardTest, getOccupiedSquares)
    ASSERT_EQ(chessboard.getOccupiedSquares().toU64(), EXPECTED);
 }
 
-TEST_F(ChessboardTest, undoMove_throwsExceptionIfThereIsNoMoveHistory)
-{
-   Chessboard board;
-   Move m(WHITE, PAWN, e2, e4);
-   ASSERT_THROW(board.undoMove(m), std::runtime_error);
-}
-
-TEST_F(ChessboardTest, undoMove_throwsExceptionIfMoveIsNotLastMove)
-{
-   Chessboard board;
-   Move move1(WHITE, PAWN, e2, e4);
-   Move move2(BLACK, PAWN, e7, e5);
-
-   board.applyMove(move1);
-   board.applyMove(move2);
-
-   ASSERT_THROW(board.undoMove(move1), std::runtime_error);
-}
-
-TEST_F(ChessboardTest, undoMove)
-{
-   Chessboard board;
-   Move move(WHITE, PAWN, e2, e4);
-
-   board.applyMove(move);
-
-   ASSERT_NO_THROW(board.undoMove(move));
-
-   ExpectedU64 DEFAULT_INITAL_BOARD(0xFFFF00000000FFFF);
-   ASSERT_EQ(board.getOccupiedSquares(), DEFAULT_INITAL_BOARD);
-}
-
 TEST_F(ChessboardTest, getLastMove_returnsEmptyOptional)
 {
    Chessboard board;
@@ -372,6 +340,194 @@ TEST_F(ChessboardTest, getPieceAt)
    EXPECT_FALSE(game.getPieceAt(Square::e4).has_value());
 }
 
+TEST_F(ChessboardTest, applyMove_promotionMoveGetsCorrectlyApplied)
+{
+   Chessboard game;
+   Move promotionMove(WHITE, PAWN, g7, g8, Move::PROMOTION);
+   promotionMove.setPromotionPiece(PieceType::QUEEN);
+
+   game.applyMove(Move(WHITE, PAWN, f2, f4));
+   game.applyMove(Move(BLACK, PAWN, g7, g5));
+   Move captureG5(WHITE, PAWN, f4, g5, Move::CAPTURE);
+   CapturedPiece pawnG5(BLACK, PAWN, g5);
+   captureG5.setCapturedPiece(pawnG5);
+   game.applyMove(captureG5);
+   game.applyMove(Move(BLACK, KNIGHT, g8, h6));
+   game.applyMove(Move(WHITE, PAWN, g5, g6));
+   game.applyMove(Move(BLACK, PAWN, e7, e6));
+   game.applyMove(Move(WHITE, PAWN, g6, g7));
+   game.applyMove(Move(BLACK, PAWN, e6, e5));
+   game.applyMove(promotionMove);
+
+   ExpectedU64 EXPECTED_WHITE_PAWNS(0xdf00);
+   ExpectedU64 EXPECTED_WHITE_QUEENS(0x4000000000000008);
+   ExpectedU64 EXPECTED_WHITE_OCCUPANCY(0x400000000000dfff);
+   ExpectedU64 EXPECTED_BLACK_OCCUPANCY(0xbfaf801000000000);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::PAWN), EXPECTED_WHITE_PAWNS);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::QUEEN), EXPECTED_WHITE_QUEENS);
+   EXPECT_EQ(game.getBitboard(Color::WHITE), EXPECTED_WHITE_OCCUPANCY);
+   EXPECT_EQ(game.getBitboard(Color::BLACK), EXPECTED_BLACK_OCCUPANCY);
+}
+
+TEST_F(ChessboardTest, applyMove_captureIntoPromotionGetsCorrectlyApplied)
+{
+   Chessboard game;
+   CapturedPiece blackRookH8(Color::BLACK, PieceType::ROOK, Square::h8);
+   Move promotionMove(WHITE, PAWN, g7, h8, Move::PROMOTION | Move::CAPTURE);
+   promotionMove.setPromotionPiece(PieceType::QUEEN);
+   promotionMove.setCapturedPiece(blackRookH8);
+
+   game.applyMove(Move(WHITE, PAWN, f2, f4));
+   game.applyMove(Move(BLACK, PAWN, g7, g5));
+   Move captureG5(WHITE, PAWN, f4, g5, Move::CAPTURE);
+   CapturedPiece pawnG5(BLACK, PAWN, g5);
+   captureG5.setCapturedPiece(pawnG5);
+   game.applyMove(captureG5);
+   game.applyMove(Move(BLACK, KNIGHT, g8, h6));
+   game.applyMove(Move(WHITE, PAWN, g5, g6));
+   game.applyMove(Move(BLACK, PAWN, e7, e6));
+   game.applyMove(Move(WHITE, PAWN, g6, g7));
+   game.applyMove(Move(BLACK, PAWN, e6, e5));
+   game.applyMove(promotionMove);
+
+   ExpectedU64 EXPECTED_WHITE_PAWNS(0xdf00);
+   ExpectedU64 EXPECTED_WHITE_QUEENS(0x8000000000000008);
+   ExpectedU64 EXPECTED_WHITE_OCCUPANCY(0x800000000000dfff);
+   ExpectedU64 EXPECTED_BLACK_ROOKS(0x100000000000000);
+   ExpectedU64 EXPECTED_BLACK_OCCUPANCY(0x3faf801000000000);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::PAWN), EXPECTED_WHITE_PAWNS);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::QUEEN), EXPECTED_WHITE_QUEENS);
+   EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::ROOK), EXPECTED_BLACK_ROOKS);
+   EXPECT_EQ(game.getBitboard(Color::WHITE), EXPECTED_WHITE_OCCUPANCY);
+   EXPECT_EQ(game.getBitboard(Color::BLACK), EXPECTED_BLACK_OCCUPANCY);
+}
+
+TEST_F(ChessboardTest, undoMove_captureIntoPromotionGetsCorrectlyUndone)
+{
+   Chessboard game;
+   CapturedPiece blackRookH8(Color::BLACK, PieceType::ROOK, Square::h8);
+   Move captureIntoPromotion(WHITE, PAWN, g7, h8, Move::CAPTURE | Move::PROMOTION);
+   captureIntoPromotion.setPromotionPiece(PieceType::QUEEN);
+   captureIntoPromotion.setCapturedPiece(blackRookH8);
+
+   game.applyMove(Move(WHITE, PAWN, f2, f4));
+   game.applyMove(Move(BLACK, PAWN, g7, g5));
+   Move captureG5(WHITE, PAWN, f4, g5, Move::CAPTURE);
+   CapturedPiece pawnG5(BLACK, PAWN, g5);
+   captureG5.setCapturedPiece(pawnG5);
+   game.applyMove(captureG5);
+   game.applyMove(Move(BLACK, KNIGHT, g8, h6));
+   game.applyMove(Move(WHITE, PAWN, g5, g6));
+   game.applyMove(Move(BLACK, PAWN, e7, e6));
+   game.applyMove(Move(WHITE, PAWN, g6, g7));
+   game.applyMove(Move(BLACK, PAWN, e6, e5));
+   game.applyMove(captureIntoPromotion);
+   game.undoMove(captureIntoPromotion);
+
+   ExpectedU64 EXPECTED_WHITE_PAWNS(0x4000000000df00);
+   ExpectedU64 EXPECTED_WHITE_KNIGHTS(0x42);
+   ExpectedU64 EXPECTED_WHITE_BISHOPS(0x24);
+   ExpectedU64 EXPECTED_WHITE_ROOKS(0x81);
+   ExpectedU64 EXPECTED_WHITE_QUEEN(0x8);
+   ExpectedU64 EXPECTED_WHITE_KING(0x10);
+
+   ExpectedU64 EXPECTED_BLACK_PAWNS(0xaf001000000000);
+   ExpectedU64 EXPECTED_BLACK_KNIGHTS(0x200800000000000);
+   ExpectedU64 EXPECTED_BLACK_BISHOPS(0x2400000000000000);
+   ExpectedU64 EXPECTED_BLACK_ROOKS(0x8100000000000000);
+   ExpectedU64 EXPECTED_BLACK_QUEEN(0x800000000000000);
+   ExpectedU64 EXPECTED_BLACK_KING(0x1000000000000000);
+
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::PAWN), EXPECTED_WHITE_PAWNS);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::KNIGHT), EXPECTED_WHITE_KNIGHTS);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::BISHOP), EXPECTED_WHITE_BISHOPS);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::ROOK), EXPECTED_WHITE_ROOKS);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::QUEEN), EXPECTED_WHITE_QUEEN);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::KING), EXPECTED_WHITE_KING);
+
+   EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::PAWN), EXPECTED_BLACK_PAWNS);
+   EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::KNIGHT), EXPECTED_BLACK_KNIGHTS);
+   EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::BISHOP), EXPECTED_BLACK_BISHOPS);
+   EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::ROOK), EXPECTED_BLACK_ROOKS);
+   EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::QUEEN), EXPECTED_BLACK_QUEEN);
+   EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::KING), EXPECTED_BLACK_KING);
+}
+
+TEST_F(ChessboardTest, applyMove_enPassantMoveGetsCorrectlyApplied)
+{
+   Chessboard game;
+   CapturedPiece blackPawn(BLACK, PAWN, f5);
+   Move enPassantCapture(WHITE, PAWN, e5, f6, Move::EN_PASSANT);
+   enPassantCapture.setCapturedPiece(blackPawn);
+
+   game.applyMove(Move(WHITE, PAWN, e2, e4));
+   game.applyMove(Move(BLACK, PAWN, d7, d5));
+   game.applyMove(Move(WHITE, PAWN, e4, e5));
+   game.applyMove(Move(BLACK, PAWN, f7, f5));
+
+   ExpectedU64 EXPECTED_WHITE_PAWNS(0x100000ef00);
+   ExpectedU64 EXPECTED_BLACK_PAWNS(0xd7002800000000);
+   ASSERT_EQ(game.getBitboard(Color::WHITE, PieceType::PAWN), EXPECTED_WHITE_PAWNS);
+   ASSERT_EQ(game.getBitboard(Color::BLACK, PieceType::PAWN), EXPECTED_BLACK_PAWNS);
+
+   game.applyMove(enPassantCapture);
+
+   EXPECTED_WHITE_PAWNS.value = 0x20000000ef00;
+   EXPECTED_BLACK_PAWNS.value = 0xd7000800000000;
+   ASSERT_EQ(game.getBitboard(Color::WHITE, PieceType::PAWN), EXPECTED_WHITE_PAWNS);
+   ASSERT_EQ(game.getBitboard(Color::BLACK, PieceType::PAWN), EXPECTED_BLACK_PAWNS);
+}
+
+TEST_F(ChessboardTest, undoMove_enPassantGetsCorrectlyUndone)
+{
+   Chessboard game;
+   CapturedPiece blackPawn(BLACK, PAWN, f5);
+   Move enPassantCapture(WHITE, PAWN, e5, f6, Move::EN_PASSANT);
+   enPassantCapture.setCapturedPiece(blackPawn);
+
+   game.applyMove(Move(WHITE, PAWN, e2, e4));
+   game.applyMove(Move(BLACK, PAWN, d7, d5));
+   game.applyMove(Move(WHITE, PAWN, e4, e5));
+   game.applyMove(Move(BLACK, PAWN, f7, f5));
+   game.applyMove(enPassantCapture);
+   game.undoMove(enPassantCapture);
+
+   const ExpectedU64 EXPECTED(0xffd700380000efff);
+   ASSERT_EQ(game.getOccupiedSquares(), EXPECTED);
+}
+
+TEST_F(ChessboardTest, undoMove_throwsExceptionIfThereIsNoMoveHistory)
+{
+   Chessboard board;
+   Move m(WHITE, PAWN, e2, e4);
+   ASSERT_THROW(board.undoMove(m), std::runtime_error);
+}
+
+TEST_F(ChessboardTest, undoMove_throwsExceptionIfMoveIsNotLastMove)
+{
+   Chessboard board;
+   Move move1(WHITE, PAWN, e2, e4);
+   Move move2(BLACK, PAWN, e7, e5);
+
+   board.applyMove(move1);
+   board.applyMove(move2);
+
+   ASSERT_THROW(board.undoMove(move1), std::runtime_error);
+}
+
+TEST_F(ChessboardTest, undoMove)
+{
+   Chessboard board;
+   Move move(WHITE, PAWN, e2, e4);
+
+   board.applyMove(move);
+
+   ASSERT_NO_THROW(board.undoMove(move));
+
+   ExpectedU64 DEFAULT_INITAL_BOARD(0xFFFF00000000FFFF);
+   ASSERT_EQ(board.getOccupiedSquares(), DEFAULT_INITAL_BOARD);
+}
+
 TEST_F(ChessboardTest, undoMove_castleRightsGetRestoredAfterUndoingAMove)
 {
    Chessboard game;
@@ -402,22 +558,22 @@ TEST_F(ChessboardTest, undoMove_capturedPieceGetsRestoredAfterUndoingMove)
    ASSERT_EQ(game.getOccupiedSquares(), EXPECTED);
 }
 
-TEST_F(ChessboardTest, undoMove_enPassantGetsCorrectlyUndone)
+TEST_F(ChessboardTest, applyMove_castleMoveGetsCorrectlyApplied)
 {
    Chessboard game;
-   CapturedPiece blackPawn(BLACK, PAWN, f5);
-   Move enPassantCapture(WHITE, PAWN, e5, f6, Move::EN_PASSANT);
-   enPassantCapture.setCapturedPiece(blackPawn);
+   const Move castlingMove(WHITE, KING, e1, g1, Move::KINGSIDE_CASTLE);
 
    game.applyMove(Move(WHITE, PAWN, e2, e4));
-   game.applyMove(Move(BLACK, PAWN, d7, d5));
-   game.applyMove(Move(WHITE, PAWN, e4, e5));
-   game.applyMove(Move(BLACK, PAWN, f7, f5));
-   game.applyMove(enPassantCapture);
-   game.undoMove(enPassantCapture);
+   game.applyMove(Move(BLACK, PAWN, d7, d6));
+   game.applyMove(Move(WHITE, BISHOP, f1, d3));
+   game.applyMove(Move(BLACK, PAWN, a7, a6));
+   game.applyMove(Move(WHITE, KNIGHT, g1, f3));
+   game.applyMove(castlingMove);
 
-   const ExpectedU64 EXPECTED(0xffd700380000efff);
-   ASSERT_EQ(game.getOccupiedSquares(), EXPECTED);
+   ExpectedU64 EXPECTED_WHITE_ROOKS(0x21);
+   ExpectedU64 EXPECTED_WHITE_KING(0x40);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::ROOK), EXPECTED_WHITE_ROOKS);
+   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::KING), EXPECTED_WHITE_KING);
 }
 
 TEST_F(ChessboardTest, undoMove_castleGetsCorrectlyUndone)
@@ -437,52 +593,30 @@ TEST_F(ChessboardTest, undoMove_castleGetsCorrectlyUndone)
    ASSERT_EQ(game.getOccupiedSquares(), EXPECTED);
 }
 
-TEST_F(ChessboardTest, undoMove_promotionGetsCorrectlyUndone)
-{
-   ASSERT_TRUE(false);
-}
-
-TEST_F(ChessboardTest, castleMoveGetsCorrectlyApplied)
+TEST_F(ChessboardTest, applyMove_raisesExceptionIfPieceDoesNotExistOnRequestedSquare)
 {
    Chessboard game;
-   const Move castlingMove(WHITE, KING, e1, g1, Move::KINGSIDE_CASTLE);
-
-   game.applyMove(Move(WHITE, PAWN, e2, e4));
-   game.applyMove(Move(BLACK, PAWN, d7, d6));
-   game.applyMove(Move(WHITE, BISHOP, f1, d3));
-   game.applyMove(Move(BLACK, PAWN, a7, a6));
-   game.applyMove(Move(WHITE, KNIGHT, g1, f3));
-   game.applyMove(castlingMove);
-
-   ExpectedU64 EXPECTED_WHITE_ROOKS(0x21);
-   ExpectedU64 EXPECTED_WHITE_KING(0x40);
-   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::ROOK), EXPECTED_WHITE_ROOKS);
-   EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::KING), EXPECTED_WHITE_KING);
+   ASSERT_THROW(game.applyMove(Move(WHITE, KNIGHT, e4, g5)), std::runtime_error);
 }
 
-TEST_F(ChessboardTest, enPassantMoveGetsCorrectlyApplied)
+TEST_F(ChessboardTest, applyMove_raisesExceptionIfCaptureInfoIsntSet)
 {
    Chessboard game;
-   CapturedPiece blackPawn(BLACK, PAWN, f5);
-   Move enPassantCapture(WHITE, PAWN, e5, f6, Move::EN_PASSANT);
-   enPassantCapture.setCapturedPiece(blackPawn);
-
    game.applyMove(Move(WHITE, PAWN, e2, e4));
    game.applyMove(Move(BLACK, PAWN, d7, d5));
-   game.applyMove(Move(WHITE, PAWN, e4, e5));
-   game.applyMove(Move(BLACK, PAWN, f7, f5));
+   Move capture(WHITE, PAWN, e4, d5, Move::CAPTURE);
 
-   ExpectedU64 EXPECTED_WHITE_PAWNS(0x100000ef00);
-   ExpectedU64 EXPECTED_BLACK_PAWNS(0xd7002800000000);
-   ASSERT_EQ(game.getBitboard(Color::WHITE, PieceType::PAWN), EXPECTED_WHITE_PAWNS);
-   ASSERT_EQ(game.getBitboard(Color::BLACK, PieceType::PAWN), EXPECTED_BLACK_PAWNS);
+   ASSERT_THROW(game.applyMove(capture), std::runtime_error);
+}
 
-   game.applyMove(enPassantCapture);
+TEST_F(ChessboardTest, applyMove_raisesExceptionIfPromotionInfoIsntSet)
+{
+   Chessboard game;
 
-   EXPECTED_WHITE_PAWNS.value = 0x20000000ef00;
-   EXPECTED_BLACK_PAWNS.value = 0xd7000800000000;
-   ASSERT_EQ(game.getBitboard(Color::WHITE, PieceType::PAWN), EXPECTED_WHITE_PAWNS);
-   ASSERT_EQ(game.getBitboard(Color::BLACK, PieceType::PAWN), EXPECTED_BLACK_PAWNS);
+   /* This should throw an exception not because the pawn isn't moving to the last rank,
+    * but because the move's promotion piece hasn't been set.
+    */
+   ASSERT_THROW(game.applyMove(Move(WHITE, PAWN, e2, e4, Move::PROMOTION)), std::runtime_error);
 }
 
 }  // namespace
