@@ -102,7 +102,7 @@ PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t
       }
       catch (std::runtime_error e)
       {
-         std::cout << "Exception occured when trying to apply move: " << e.what() << std::endl;
+         std::cerr << "Exception occured when trying to apply move: " << e.what() << std::endl;
          printMoveHistory(moveHistory);
       }
       PerftResults childResults = __perft(gameState, depth - 1, initialDepth, showDivideOutput, moveHistory);
@@ -116,7 +116,7 @@ PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t
       }
       catch (std::runtime_error e)
       {
-         std::cout << "Exception occured when trying to undo move: " << e.what() << std::endl;
+         std::cerr << "Exception occured when trying to undo move: " << e.what() << std::endl;
          printMoveHistory(moveHistory);
       }
       raiseExceptionIfGameStateNotProperlyRestored(gameState, originalState, move, depth, initialDepth, moveHistory);
