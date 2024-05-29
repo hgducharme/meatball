@@ -173,7 +173,7 @@ TEST_F(ChessboardTest, squareToFile)
       // Using this method for verifying file calculation:
       // https://www.chessprogramming.org/Squares#Square_by_Rank_and_File
       File EXPECTED = static_cast<File>(static_cast<u64>(i) & static_cast<u64>(7));
-      EXPECT_EQ(file, EXPECTED);
+      ASSERT_EQ(file, EXPECTED);
    }
 }
 
@@ -187,7 +187,20 @@ TEST_F(ChessboardTest, squareToRank)
       // Using this method for verifying rank calculation:
       // https://www.chessprogramming.org/Squares#Square_by_Rank_and_File
       Rank EXPECTED = static_cast<Rank>(static_cast<u64>(i) >> static_cast<u64>(3));
-      EXPECT_EQ(rank, EXPECTED);
+      ASSERT_EQ(rank, EXPECTED);
+   }
+}
+
+TEST_F(ChessboardTest, coordiantesToSquare)
+{
+   for (int i = Square::a1; i <= Square::h8; i++)
+   {
+      const int rank = i / 8;
+      const int file = i % 8;
+      const Square square = Chessboard::coordinatesToSquare(rank, file);
+
+      Square EXPECTED = static_cast<Square>(i);
+      ASSERT_EQ(square, EXPECTED);
    }
 }
 
@@ -244,8 +257,8 @@ TEST_F(ChessboardTest, castleRights_allCastleRightsAreTrueByDefault)
    CastleRights whiteCastleRights = board.getCastleRights(WHITE);
    CastleRights blackCastleRights = board.getCastleRights(BLACK);
 
-   EXPECT_EQ(whiteCastleRights, CastleRights::KING_AND_QUEEN_SIDE);
-   EXPECT_EQ(blackCastleRights, CastleRights::KING_AND_QUEEN_SIDE);
+   EXPECT_EQ(whiteCastleRights, CastleRights::KING_AND_QUEENSIDE);
+   EXPECT_EQ(blackCastleRights, CastleRights::KING_AND_QUEENSIDE);
 }
 
 TEST_F(ChessboardTest, castleRights_castleRightsAreTurnedOffIfKingMoves)
@@ -259,7 +272,7 @@ TEST_F(ChessboardTest, castleRights_castleRightsAreTurnedOffIfKingMoves)
    CastleRights blackCastleRights = board.getCastleRights(BLACK);
 
    EXPECT_EQ(whiteCastleRights, CastleRights::NONE);
-   EXPECT_EQ(blackCastleRights, CastleRights::KING_AND_QUEEN_SIDE);
+   EXPECT_EQ(blackCastleRights, CastleRights::KING_AND_QUEENSIDE);
 
    board.applyMove(Move(BLACK, PAWN, e7, e5));
    board.applyMove(Move(BLACK, KING, e8, e7));
@@ -281,8 +294,8 @@ TEST_F(ChessboardTest, castleRights_kingSideCastleRightsAreTurnedOffIfKingSideRo
    CastleRights whiteCastleRights = board.getCastleRights(WHITE);
    CastleRights blackCastleRights = board.getCastleRights(BLACK);
 
-   EXPECT_EQ(whiteCastleRights, CastleRights::ONLY_QUEEN_SIDE);
-   EXPECT_EQ(blackCastleRights, CastleRights::KING_AND_QUEEN_SIDE);
+   EXPECT_EQ(whiteCastleRights, CastleRights::ONLY_QUEENSIDE);
+   EXPECT_EQ(blackCastleRights, CastleRights::KING_AND_QUEENSIDE);
 
    board.applyMove(Move(BLACK, PAWN, h7, h5));
    board.applyMove(Move(BLACK, ROOK, h8, h7));
@@ -290,8 +303,8 @@ TEST_F(ChessboardTest, castleRights_kingSideCastleRightsAreTurnedOffIfKingSideRo
    whiteCastleRights = board.getCastleRights(WHITE);
    blackCastleRights = board.getCastleRights(BLACK);
 
-   EXPECT_EQ(whiteCastleRights, CastleRights::ONLY_QUEEN_SIDE);
-   EXPECT_EQ(blackCastleRights, CastleRights::ONLY_QUEEN_SIDE);
+   EXPECT_EQ(whiteCastleRights, CastleRights::ONLY_QUEENSIDE);
+   EXPECT_EQ(blackCastleRights, CastleRights::ONLY_QUEENSIDE);
 }
 
 TEST_F(ChessboardTest, castleRights_queenSideCastleRightsAreTurnedOffIfQueenSideRookMoves)
@@ -304,8 +317,8 @@ TEST_F(ChessboardTest, castleRights_queenSideCastleRightsAreTurnedOffIfQueenSide
    CastleRights whiteCastleRights = board.getCastleRights(WHITE);
    CastleRights blackCastleRights = board.getCastleRights(BLACK);
 
-   EXPECT_EQ(whiteCastleRights, CastleRights::ONLY_KING_SIDE);
-   EXPECT_EQ(blackCastleRights, CastleRights::KING_AND_QUEEN_SIDE);
+   EXPECT_EQ(whiteCastleRights, CastleRights::ONLY_KINGSIDE);
+   EXPECT_EQ(blackCastleRights, CastleRights::KING_AND_QUEENSIDE);
 
    board.applyMove(Move(BLACK, PAWN, a7, a5));
    board.applyMove(Move(BLACK, ROOK, a8, a7));
@@ -313,8 +326,8 @@ TEST_F(ChessboardTest, castleRights_queenSideCastleRightsAreTurnedOffIfQueenSide
    whiteCastleRights = board.getCastleRights(WHITE);
    blackCastleRights = board.getCastleRights(BLACK);
 
-   EXPECT_EQ(whiteCastleRights, CastleRights::ONLY_KING_SIDE);
-   EXPECT_EQ(blackCastleRights, CastleRights::ONLY_KING_SIDE);
+   EXPECT_EQ(whiteCastleRights, CastleRights::ONLY_KINGSIDE);
+   EXPECT_EQ(blackCastleRights, CastleRights::ONLY_KINGSIDE);
 }
 
 TEST_F(ChessboardTest, squareIsOccupied)
@@ -539,7 +552,7 @@ TEST_F(ChessboardTest, undoMove_castleRightsGetRestoredAfterUndoingAMove)
 
    game.undoMove(Move(WHITE, KING, e1, e2));
 
-   EXPECT_EQ(game.getCastleRights(WHITE), CastleRights::KING_AND_QUEEN_SIDE);
+   EXPECT_EQ(game.getCastleRights(WHITE), CastleRights::KING_AND_QUEENSIDE);
 }
 
 TEST_F(ChessboardTest, undoMove_capturedPieceGetsRestoredAfterUndoingMove)
@@ -654,8 +667,11 @@ TEST_F(ChessboardTest, constructor_parsesFEN)
 
    EXPECT_EQ(game.getActivePlayer(), Color::WHITE);
    EXPECT_EQ(game.getNonActivePlayer(), Color::BLACK);
-   EXPECT_EQ(game.getCastleRights(Color::WHITE), CastleRights::KING_AND_QUEEN_SIDE);
-   EXPECT_EQ(game.getCastleRights(Color::BLACK), CastleRights::KING_AND_QUEEN_SIDE);
+   EXPECT_EQ(game.getCastleRights(Color::WHITE), CastleRights::KING_AND_QUEENSIDE);
+   EXPECT_EQ(game.getCastleRights(Color::BLACK), CastleRights::KING_AND_QUEENSIDE);
+   EXPECT_EQ(game.getEnPassantSquare(), Square::NO_SQUARE);
+   EXPECT_EQ(game.getHalfMoveClock(), 0);
+   EXPECT_EQ(game.getMoveNumber(), 1);
 }
 
 }  // namespace

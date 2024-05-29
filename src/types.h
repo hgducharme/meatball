@@ -56,13 +56,15 @@ enum Square
     a7, b7, c7, d7, e7, f7, g7, h7,
     a8, b8, c8, d8, e8, f8, g8, h8,
     NUMBER_OF_SQUARES = 64,
+    NO_SQUARE = -1,
 };
 
 enum Color
 {
     WHITE,
     BLACK,
-    NUMBER_OF_COLORS = 2
+    NUMBER_OF_COLORS = 2,
+    NO_COLOR = -1
 };
 
 enum File
@@ -75,7 +77,8 @@ enum File
    FILE_F,
    FILE_G,
    FILE_H,
-   NUMBER_OF_FILES = 8
+   NUMBER_OF_FILES = 8,
+   NO_FILE = -1
 };
 
 enum Rank
@@ -88,15 +91,19 @@ enum Rank
    RANK_6,
    RANK_7,
    RANK_8,
-   NUMBER_OF_RANKS = 8
+   NUMBER_OF_RANKS = 8,
+   NO_RANK = -1
 };
 
-enum class CastleRights
+enum class CastleRights : uint8_t
 {
-    KING_AND_QUEEN_SIDE,
-    ONLY_KING_SIDE,
-    ONLY_QUEEN_SIDE,
-    NONE,
+    /* The code will mostly use the enumeration names, but when parsing FEN it can be
+     * helpful to use these as bit flags.
+     */
+    NONE               = 0b00,
+    ONLY_KINGSIDE      = 0b01,
+    ONLY_QUEENSIDE     = 0b10,
+    KING_AND_QUEENSIDE = 0b11,
     NUMBER_OF_CASTLE_STATES = 4
 };
 
@@ -153,7 +160,7 @@ struct GameState
     Color activePlayer;
     CastleRights whiteCastleRights;
     CastleRights blackCastleRights;
-    Square enPassantTargetSquare;
+    Square enPassantSquare;
     int halfMoveClock;
-    int fullMoveNumber;
+    int moveNumber;
 };

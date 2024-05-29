@@ -29,28 +29,36 @@ Rank Chessboard::squareToRank(const int square)
     return static_cast<Rank>(square / 8);
 }
 
-const GameState & Chessboard::parseFEN(const std::string & fen)
+Square Chessboard::coordinatesToSquare(const int rank, const int file)
+{
+    return static_cast<Square>(8 * rank + file);
+}
+
+const GameState Chessboard::parseFEN(const std::string & fen)
 {
     std::vector<std::string> fenSections = utils::tokenizeString(fen);
     std::string piecePositions = fenSections[0];
     std::string activePlayer = fenSections[1];
-    std::string castlingAvailability = fenSections[2];
+    std::string castleAvailability = fenSections[2];
     std::string enPassantTargetSquare = fenSections[3];
     std::string halfMoveClock = fenSections[4];
-    std::string fullMoveNumber = fenSections[5];
+    std::string moveNumber = fenSections[5];
 
-    GameState pieceState = parsePiecePositions(piecePositions);
-    pieceState.activePlayer = parseActivePlayer(activePlayer);
-    // TODO:
-    // parseCastlingAvailability();
-    // parseEnPassantTargetSquare();
-    // parseHalfMoveClock();
-    // parseFullMoveNumber();
+    GameState gameState = parsePiecePositions(piecePositions);
+    gameState.activePlayer = parseActivePlayer(activePlayer);
 
-    return pieceState;
+    std::pair<CastleRights, CastleRights> castleRights = parseCastleRights(castleAvailability);
+    gameState.whiteCastleRights = castleRights.first;
+    gameState.blackCastleRights = castleRights.second;
+
+    gameState.enPassantSquare = parseEnPassantSquare(enPassantTargetSquare);
+    gameState.halfMoveClock = parseHalfMoveClock(halfMoveClock);
+    gameState.moveNumber = parseMoveNumber(moveNumber);
+
+    return gameState;
 }
 
-const GameState & Chessboard::parsePiecePositions(const std::string & piecePositionsFEN)
+const GameState Chessboard::parsePiecePositions(const std::string & piecePositionsFEN)
 {    
     // TODO: Make this more readable
     GameState state;
@@ -62,56 +70,82 @@ const GameState & Chessboard::parsePiecePositions(const std::string & piecePosit
         switch (c)
         {
             case 'P':
+            {
                 state.pawns |= (constants::ONE << j);
                 state.whiteOccupied |= (constants::ONE << j);
                 break;
+            }
             case 'N':
+            {
                 state.knights |= (constants::ONE << j);
                 state.whiteOccupied |= (constants::ONE << j);
                 break;
+            }
             case 'B':
+            {
                 state.bishops |= (constants::ONE << j);
                 state.whiteOccupied |= (constants::ONE << j);
                 break;
+            }
             case 'R':
+            {
                 state.rooks |= (constants::ONE << j);
                 state.whiteOccupied |= (constants::ONE << j);
                 break;
+            }
             case 'Q':
+            {
                 state.queens |= (constants::ONE << j);
                 state.whiteOccupied |= (constants::ONE << j);
                 break;
+            }
             case 'K':
+            {
                 state.kings |= (constants::ONE << j);
                 state.whiteOccupied |= (constants::ONE << j);
                 break;
+            }
             case 'p':
+            {
                 state.pawns |= (constants::ONE << j);
                 state.blackOccupied |= (constants::ONE << j);
                 break;
+            }
             case 'n':
+            {
                 state.knights |= (constants::ONE << j);
                 state.blackOccupied |= (constants::ONE << j);
                 break;
+            }
             case 'b':
+            {
                 state.bishops |= (constants::ONE << j);
                 state.blackOccupied |= (constants::ONE << j);
                 break;
+            }
             case 'r':
+            {
                 state.rooks |= (constants::ONE << j);
                 state.blackOccupied |= (constants::ONE << j);
                 break;
+            }
             case 'q':
+            {
                 state.queens |= (constants::ONE << j);
                 state.blackOccupied |= (constants::ONE << j);
                 break;
+            }
             case 'k':
+            {
                 state.kings |= (constants::ONE << j);
                 state.blackOccupied |= (constants::ONE << j);
                 break;
+            }
             case '/':
+            {
                 squarePosition -= 1;
                 break;
+            }
             case '1':
             case '2':
             case '3':
@@ -120,9 +154,16 @@ const GameState & Chessboard::parsePiecePositions(const std::string & piecePosit
             case '6':
             case '7':
             case '8':
+            {
                 int charToInt = c - '0';
                 squarePosition += (charToInt - 1);
                 break;
+            }
+            default:
+            {
+                throw exceptions::fen::InvalidFEN("Unable to parse piece positions. Received unknwon character: '" + utils::charToString(c) + "'");
+                break;
+            }
         }
         squarePosition++;
     }
@@ -132,20 +173,204 @@ const GameState & Chessboard::parsePiecePositions(const std::string & piecePosit
 
 Color Chessboard::parseActivePlayer(const std::string & colorFEN)
 {
-    assert(colorFEN.length() == 1);
+    if (colorFEN.length() != 1)
+    {
+        throw exceptions::fen::InvalidFEN("Unable to parse active player. Received multiple characters: '" + colorFEN + "'");
+    }
 
+    Color activePlayer = Color::NO_COLOR;
     for (const char c : colorFEN)
     {
         switch (c)
         {
             case 'w':
-                return Color::WHITE;
+            {
+                activePlayer = Color::WHITE;
+                break;
+            }
             case 'b':
-                return Color::BLACK;
+            {
+                activePlayer = Color::BLACK;
+                break;
+            }
             default:
-                throw exceptions::fen::InvalidFEN("Unable to parse active player. Received: " + colorFEN);
+            {
+                throw exceptions::fen::InvalidFEN("Unable to parse active player. Received unknown character: '" + utils::charToString(c) + "'");
+                break;
+            }
         }
     }
+
+    return activePlayer;
+}
+
+const std::pair<CastleRights, CastleRights> Chessboard::parseCastleRights(const std::string & castleRightsFEN)
+{
+    std::pair<CastleRights, CastleRights> castleRights(CastleRights::NONE, CastleRights::NONE);
+
+    if (castleRightsFEN == "-")
+    {
+        return castleRights;
+    }
+    
+    for (const char c : castleRightsFEN)
+    {
+        switch (c)
+        {
+            case 'K':
+            {
+                castleRights.first = static_cast<CastleRights>(static_cast<uint8_t>(castleRights.first) | static_cast<uint8_t>(CastleRights::ONLY_KINGSIDE));
+                break;
+            }
+            case 'Q':
+            {
+                castleRights.first = static_cast<CastleRights>(static_cast<uint8_t>(castleRights.first) | static_cast<uint8_t>(CastleRights::ONLY_QUEENSIDE));
+                break;
+            }
+            case 'k':
+            {
+                castleRights.second = static_cast<CastleRights>(static_cast<uint8_t>(castleRights.second) | static_cast<uint8_t>(CastleRights::ONLY_KINGSIDE));
+                break;
+            }
+            case 'q':
+            {
+                castleRights.second = static_cast<CastleRights>(static_cast<uint8_t>(castleRights.second) | static_cast<uint8_t>(CastleRights::ONLY_QUEENSIDE));
+                break;
+            }
+            default:
+            {
+                throw exceptions::fen::InvalidFEN("Unable to parse castle rights. Received unknown character: '" + utils::charToString(c) + "'");
+                break;
+            }
+        }
+    }
+
+    return castleRights;
+}
+
+Square Chessboard::parseEnPassantSquare(const std::string & enPassantSquareFEN)
+{
+    if (enPassantSquareFEN.length() > 2)
+    {
+        throw exceptions::fen::InvalidFEN("Unable to parse en passant square. Received string with more than two characters: '" + enPassantSquareFEN + "'");
+    }
+
+    Rank rank = Rank::NO_RANK;
+    File file = File::NO_FILE;
+
+    for (const char c : enPassantSquareFEN)
+    {
+        switch (c)
+        {
+            case 'a':
+            case 'A':
+            {
+                file = File::FILE_A;
+                break;
+            }
+            case 'b':
+            case 'B':
+            {
+                file = File::FILE_B;
+                break;
+            }
+            case 'c':
+            case 'C':
+            {
+                file = File::FILE_C;
+                break;
+            }
+            case 'd':
+            case 'D':
+            {
+                file = File::FILE_D;
+                break;
+            }
+            case 'e':
+            case 'E':
+            {
+                file = File::FILE_E;
+                break;
+            }
+            case 'f':
+            case 'F':
+            {
+                file = File::FILE_F;
+                break;
+            }
+            case 'g':
+            case 'G':
+            {
+                file = File::FILE_G;
+                break;
+            }
+            case 'h':
+            case 'H':
+            {
+                file = File::FILE_H;
+                break;
+            }
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            {
+                int charToInt = c - '0';
+                int rankConvertedToZeroBasedIndex = charToInt - 1;
+                rank = static_cast<Rank>(rankConvertedToZeroBasedIndex);
+                break;
+            }
+            case '-':
+            {
+                return Square::NO_SQUARE;
+                break;
+            }
+            default:
+            {
+                throw exceptions::fen::InvalidFEN("Unable to parse en passant square. Received unknown character: '" + utils::charToString(c) + "'");
+                break;
+            }
+        }
+    }
+
+    return Chessboard::coordinatesToSquare(rank, file);
+}
+
+int Chessboard::parseHalfMoveClock(const std::string & halfMoveClockFEN)
+{
+    int halfMoveClock = 0;
+    try
+    {
+        halfMoveClock = std::stoi(halfMoveClockFEN);
+    }
+    catch (std::logic_error & e)
+    {
+        std::cerr << "Exception caught from std::stoi(): " << e.what() << std::endl;
+        throw exceptions::fen::InvalidFEN("Unable to parse half move clocked. Received input: '" + halfMoveClockFEN + "'");
+    }
+
+    return halfMoveClock;
+}
+
+int Chessboard::parseMoveNumber(const std::string & moveNumberFEN)
+{
+    int moveNumber = 0;
+
+    try
+    {
+        moveNumber = std::stoi(moveNumberFEN);
+    }
+    catch (std::logic_error & e)
+    {
+        std::cerr << "Exception caught from std::stoi(): " << e.what() << std::endl;
+        throw exceptions::fen::InvalidFEN("Unable to parse move number. Received input: '" + moveNumberFEN + "'");
+    }
+
+    return moveNumber;
 }
 
 Chessboard::Chessboard()
@@ -163,9 +388,9 @@ Chessboard::Chessboard()
     colorBitboards_[Color::BLACK] = constants::DEFAULT_BLACK_OCCUPIED;
 
     // Initialize castle rights
-    castleRights[Color::WHITE] = CastleRights::KING_AND_QUEEN_SIDE;
-    castleRights[Color::BLACK] = CastleRights::KING_AND_QUEEN_SIDE;
-    previousCastleRightsState = CastleRights::KING_AND_QUEEN_SIDE;
+    castleRights[Color::WHITE] = CastleRights::KING_AND_QUEENSIDE;
+    castleRights[Color::BLACK] = CastleRights::KING_AND_QUEENSIDE;
+    previousCastleRightsState = CastleRights::KING_AND_QUEENSIDE;
 }
 
 Chessboard::Chessboard(const std::string & fen)
@@ -188,6 +413,10 @@ Chessboard::Chessboard(const std::string & fen)
     castleRights[Color::WHITE] = parsedState.whiteCastleRights;
     castleRights[Color::BLACK] = parsedState.blackCastleRights;
     /* TODO: Make sure that this doesn't cause some unexpected previousCastleRights situation. */
+
+    enPassantSquare_ = parsedState.enPassantSquare;
+    halfMoveClock_ = parsedState.halfMoveClock;
+    moveNumber_ = parsedState.moveNumber;
 }
 
 const Bitboard Chessboard::getOccupiedSquares() const
@@ -340,11 +569,11 @@ void Chessboard::updateCastleRights(const Move &move)
 
         if (queenSideRookHasMoved && !kingSideRookHasMoved)
         {
-            castleRights[move.color()] = CastleRights::ONLY_KING_SIDE;
+            castleRights[move.color()] = CastleRights::ONLY_KINGSIDE;
         }
         else if (!queenSideRookHasMoved && kingSideRookHasMoved)
         {
-            castleRights[move.color()] = CastleRights::ONLY_QUEEN_SIDE;
+            castleRights[move.color()] = CastleRights::ONLY_QUEENSIDE;
         }
         else if (queenSideRookHasMoved && kingSideRookHasMoved)
         {
@@ -479,4 +708,19 @@ std::optional<Piece> Chessboard::getPieceAt(const Square square) const
     else { piece.color = Color::BLACK; }
     
     return piece;
+}
+
+Square Chessboard::getEnPassantSquare() const
+{
+    return enPassantSquare_;
+}
+
+int Chessboard::getHalfMoveClock() const
+{
+    return halfMoveClock_;
+}
+
+int Chessboard::getMoveNumber() const
+{
+    return moveNumber_;
 }

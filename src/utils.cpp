@@ -273,6 +273,11 @@ std::string moveToString(const Move & move)
    return colorToString(move.color()) + " " + pieceTypeToString(move.pieceType()) + " " + utils::squareToString(move.startSquare()) + utils::squareToString(move.endSquare());
 }
 
+std::string charToString(const char c)
+{
+   return std::string(1, c);
+}
+
 std::vector<std::string> tokenizeString(const std::string & str)
 {
    std::istringstream split(str);

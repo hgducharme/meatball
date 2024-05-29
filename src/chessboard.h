@@ -4,7 +4,6 @@
 #include "types.h"
 #include "move.h"
 
-#include <vector>
 #include <string>
 #include <optional>
 
@@ -15,18 +14,26 @@ class Chessboard {
         CastleRights castleRights[Color::NUMBER_OF_COLORS];
         Color activePlayer_ = Color::WHITE;
         Color nonActivePlayer_ = Color::BLACK;
-        std::vector<Move> moveHistory;
+        MoveVector moveHistory;
+        Square enPassantSquare_ = Square::NO_SQUARE;
+        int halfMoveClock_ = 0;
+        int moveNumber_ = 0;
 
         /* We freeze the castle rights state before a move is applied in the event
          * that the move is later undone, then we can restore the castle rights after undoing the move. */
         CastleRights previousCastleRightsState;
 
     public:
-        File static squareToFile(const int square);
-        Rank static squareToRank(const int square);
-        static const GameState & parseFEN(const std::string & fen);
-        static const GameState & parsePiecePositions(const std::string & piecePositionsFEN);
+        static File squareToFile(const int square);
+        static Rank squareToRank(const int square);
+        static Square coordinatesToSquare(const int rank, const int file);
+        static const GameState parseFEN(const std::string & fen);
+        static const GameState parsePiecePositions(const std::string & piecePositionsFEN);
         static Color parseActivePlayer(const std::string & colorFEN);
+        static const std::pair<CastleRights, CastleRights> parseCastleRights(const std::string & castleRightsFEN);
+        static Square parseEnPassantSquare(const std::string & enPassantSquareFEN);
+        static int parseHalfMoveClock(const std::string & halfMoveClockFEN);
+        static int parseMoveNumber(const std::string & moveNumberFEN);
 
         Chessboard();
         Chessboard(const std::string & fen);
@@ -43,6 +50,9 @@ class Chessboard {
         CastleRights getCastleRights(const Color color) const;
         std::optional<Piece> getPieceAt(const Square square) const;
         bool squareIsOccupied(const Square square);
+        Square getEnPassantSquare() const;
+        int getHalfMoveClock() const;
+        int getMoveNumber() const;
 
         bool operator==(const Chessboard & other) const;
 

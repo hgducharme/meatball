@@ -315,19 +315,19 @@ Bitboard LegalMoveGenerator::getCastles(const Chessboard & gameState) const
             return Bitboard();
         }
 
-        case CastleRights::ONLY_KING_SIDE:
+        case CastleRights::ONLY_KINGSIDE:
         {
             auto [kingTargetSquare, squaresInBetweenKingAndRook] = getKingSideCastleSquares(activePlayer);
             return computeCastleBitboard(gameState, squaresInBetweenKingAndRook, kingTargetSquare);
         }
 
-        case CastleRights::ONLY_QUEEN_SIDE:
+        case CastleRights::ONLY_QUEENSIDE:
         {
             auto [kingTargetSquare, squaresInBetweenKingAndRook] = getQueenSideCastleSquares(activePlayer);
             return computeCastleBitboard(gameState, squaresInBetweenKingAndRook, kingTargetSquare);
         }
 
-        case CastleRights::KING_AND_QUEEN_SIDE:
+        case CastleRights::KING_AND_QUEENSIDE:
         {
             auto [kingSideTargetSquare, squaresInBetweenKingAndRookKingSide] = getKingSideCastleSquares(activePlayer);
             Bitboard kingSideCastle = computeCastleBitboard(gameState, squaresInBetweenKingAndRookKingSide, kingSideTargetSquare);
