@@ -68,23 +68,35 @@ class Chessboard {
 };
 
 inline bool Chessboard::operator == (const Chessboard & other) const {
+    // Check piece bitboards
     for (int i = 0; i < PieceType::NUMBER_OF_PIECES; ++i) {
         if (pieceBitboards_[i] != other.pieceBitboards_[i]) {
             return false;
         }
     }
 
+    // Check color occupancy sets
     for (int i = 0; i < Color::NUMBER_OF_COLORS; ++i) {
-        if (colorBitboards_[i] != other.colorBitboards_[i] ||
-            castleRights[i] != other.castleRights[i]) {
+        if (colorBitboards_[i] != other.colorBitboards_[i]) {
             return false;
         }
     }
 
+    // Check castle rights
+    for (int i = 0; i < Color::NUMBER_OF_COLORS; ++i) {
+        if (castleRights[i] != other.castleRights[i]) {
+            return false;
+        }
+    }
+
+    // Check all other member variables
     if (activePlayer_ != other.activePlayer_ ||
         nonActivePlayer_ != other.nonActivePlayer_ ||
         moveHistory != other.moveHistory ||
-        previousCastleRightsState != other.previousCastleRightsState)
+        previousCastleRightsState != other.previousCastleRightsState ||
+        enPassantSquare_ != other.enPassantSquare_ ||
+        halfMoveClock_ != other.halfMoveClock_ ||
+        moveNumber_ != other.moveNumber_)
     {
         return false;
     }
