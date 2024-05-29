@@ -7,9 +7,9 @@
 
 #include <iostream>
 
-PerftResults perft(Chessboard &gameState, const uint16_t depth, const bool showDivideOutput)
+PerftResults perft(Chessboard &gameState, const uint16_t depth, const bool showDivideOutput, MoveVector & moveHistory)
 {
-   return __perft(gameState, depth, depth, showDivideOutput);
+   return __perft(gameState, depth, depth, showDivideOutput, moveHistory);
 }
 
 void PerftResults::printTopLevelNodes() const {
@@ -79,7 +79,7 @@ std::string moveToString(const Move &m)
    return utils::squareToString(m.startSquare()) + utils::squareToString(m.endSquare());
 }
 
-PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t initialDepth, const bool showDivideOutput)
+PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t initialDepth, const bool showDivideOutput, MoveVector & moveHistory)
 {
    LegalMoveGenerator moveGenerator;
    PerftResults results;
@@ -94,14 +94,34 @@ PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t
    for (const Move & move : moves)
    {
       Chessboard originalState = gameState;
-      gameState.applyMove(move);
+      moveHistory.push_back(move);
 
-      PerftResults childResults = __perft(gameState, depth - 1, initialDepth, showDivideOutput);
+      try
+      {
+         gameState.applyMove(move);
+      }
+      catch (std::runtime_error e)
+      {
+         std::cout << "Exception occured when trying to apply move: " << e.what() << std::endl;
+         printMoveHistory(moveHistory);
+      }
+      PerftResults childResults = __perft(gameState, depth - 1, initialDepth, showDivideOutput, moveHistory);
       results += childResults;
 
       trackMetaData(results, move, depth, initialDepth, childResults);
-      gameState.undoMove(move);
-      raiseExceptionIfGameStateNotProperlyRestored(gameState, originalState, move, depth, initialDepth);
+
+      try
+      {
+         gameState.undoMove(move);
+      }
+      catch (std::runtime_error e)
+      {
+         std::cout << "Exception occured when trying to undo move: " << e.what() << std::endl;
+         printMoveHistory(moveHistory);
+      }
+      raiseExceptionIfGameStateNotProperlyRestored(gameState, originalState, move, depth, initialDepth, moveHistory);
+
+      moveHistory.pop_back();
    }
 
    if (depth == initialDepth && showDivideOutput)
@@ -143,12 +163,13 @@ void tallyTopLevelNodes(const uint16_t depth, const uint16_t initialDepth, const
    }
 }
 
-void raiseExceptionIfGameStateNotProperlyRestored(Chessboard &gameState, Chessboard &originalState, const Move &move, const uint16_t depth, const uint16_t initialDepth)
+void raiseExceptionIfGameStateNotProperlyRestored(Chessboard &gameState, Chessboard &originalState, const Move &move, const uint16_t depth, const uint16_t initialDepth, const MoveVector & moveHistory)
 {
    // Verify the game state got restored correctly after undoing the move
    if (!(gameState == originalState))
    {
-      // TODO: print move history.
+      printMoveHistory(moveHistory);
+
       throw std::runtime_error("The state of the board was not correctly restored after making the move: " + moveToString(move) + ". Current depth: " + std::to_string(depth) + ". Initial depth: " + std::to_string(initialDepth));
    }
 }
@@ -156,6 +177,15 @@ void raiseExceptionIfGameStateNotProperlyRestored(Chessboard &gameState, Chessbo
 void printDivideOutput(const PerftResults &results)
 {
    results.printTopLevelNodes();
+}
+
+void printMoveHistory(const MoveVector & moveHistory)
+{
+   std::cout << "Move history:" << std::endl;
+   for (const Move & m : moveHistory)
+   {
+      std::cout << moveToString(m) << std::endl;
+   }
 }
 
 } // end anonymous namespace
