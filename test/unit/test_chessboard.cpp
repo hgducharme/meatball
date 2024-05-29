@@ -634,22 +634,22 @@ TEST_F(ChessboardTest, applyMove_raisesExceptionIfPromotionInfoIsntSet)
 
 TEST_F(ChessboardTest, constructor_parsesFEN)
 {
-   std::string startingPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-   Chessboard game(startingPosition);
+   std::string fen = "7b/8/1PK3p1/1p3k2/NN1P1n2/B1n4b/1P5p/4r3 w k d2 27 108";
+   Chessboard game(fen);
 
-   ExpectedU64 EXPECTED_WHITE_PAWNS(0xff00);
-   ExpectedU64 EXPECTED_WHITE_KNIGHTS(0x42);
-   ExpectedU64 EXPECTED_WHITE_BISHOPS(0x24);
-   ExpectedU64 EXPECTED_WHITE_ROOKS(0x81);
-   ExpectedU64 EXPECTED_WHITE_QUEEN(0x8);
-   ExpectedU64 EXPECTED_WHITE_KING(0x10);
+   ExpectedU64 EXPECTED_WHITE_PAWNS(0x20008000200);
+   ExpectedU64 EXPECTED_WHITE_KNIGHTS(0x3000000);
+   ExpectedU64 EXPECTED_WHITE_BISHOPS(0x10000);
+   ExpectedU64 EXPECTED_WHITE_ROOKS(0x0);
+   ExpectedU64 EXPECTED_WHITE_QUEEN(0x0);
+   ExpectedU64 EXPECTED_WHITE_KING(0x40000000000);
 
-   ExpectedU64 EXPECTED_BLACK_PAWNS(0xff000000000000);
-   ExpectedU64 EXPECTED_BLACK_KNIGHTS(0x4200000000000000);
-   ExpectedU64 EXPECTED_BLACK_BISHOPS(0x2400000000000000);
-   ExpectedU64 EXPECTED_BLACK_ROOKS(0x8100000000000000);
-   ExpectedU64 EXPECTED_BLACK_QUEEN(0x800000000000000);
-   ExpectedU64 EXPECTED_BLACK_KING(0x1000000000000000);
+   ExpectedU64 EXPECTED_BLACK_PAWNS(0x400200008000);
+   ExpectedU64 EXPECTED_BLACK_KNIGHTS(0x20040000);
+   ExpectedU64 EXPECTED_BLACK_BISHOPS(0x8000000000800000);
+   ExpectedU64 EXPECTED_BLACK_ROOKS(0x10);
+   ExpectedU64 EXPECTED_BLACK_QUEEN(0x0);
+   ExpectedU64 EXPECTED_BLACK_KING(0x2000000000);
 
    EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::PAWN), EXPECTED_WHITE_PAWNS);
    EXPECT_EQ(game.getBitboard(Color::WHITE, PieceType::KNIGHT), EXPECTED_WHITE_KNIGHTS);
@@ -667,11 +667,11 @@ TEST_F(ChessboardTest, constructor_parsesFEN)
 
    EXPECT_EQ(game.getActivePlayer(), Color::WHITE);
    EXPECT_EQ(game.getNonActivePlayer(), Color::BLACK);
-   EXPECT_EQ(game.getCastleRights(Color::WHITE), CastleRights::KING_AND_QUEENSIDE);
-   EXPECT_EQ(game.getCastleRights(Color::BLACK), CastleRights::KING_AND_QUEENSIDE);
-   EXPECT_EQ(game.getEnPassantSquare(), Square::NO_SQUARE);
-   EXPECT_EQ(game.getHalfMoveClock(), 0);
-   EXPECT_EQ(game.getMoveNumber(), 1);
+   EXPECT_EQ(game.getCastleRights(Color::WHITE), CastleRights::NONE);
+   EXPECT_EQ(game.getCastleRights(Color::BLACK), CastleRights::ONLY_KINGSIDE);
+   EXPECT_EQ(game.getEnPassantSquare(), Square::d2);
+   EXPECT_EQ(game.getHalfMoveClock(), 27);
+   EXPECT_EQ(game.getMoveNumber(), 108);
 }
 
 }  // namespace
