@@ -3,6 +3,7 @@
 #include "types.h"
 
 #include <optional>
+#include <vector>
 
 // TODO: merge _flags into _encoded. It's redundant to keep both.
 
@@ -72,4 +73,7 @@ class Move
 
 inline bool operator == (const Move & lhs, const Move & rhs)
 {
-    return (lhs.getEncoded() == rhs.getEncoded());}
+    return (lhs.getEncoded() == rhs.getEncoded());
+}
+
+using MoveVector = std::vector<Move>;

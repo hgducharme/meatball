@@ -2,10 +2,6 @@
 
 #include "chessboard.h"
 
-#include <vector>
-
-using MoveVector = std::vector<Move>;
-
 class MoveGenerator
 {
    public:

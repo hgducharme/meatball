@@ -29,6 +29,8 @@ uint8_t Move::getFlags() const
 
 void Move::setFlag(const Move::Type flag)
 {
+    // TODO: This doesn't update _encoded
+    
     _flags |= flag;
 }
 

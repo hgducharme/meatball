@@ -87,7 +87,12 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
                 const std::optional<const Move> opponentsPreviousMove = gameState.getLastMove();
 
                 // Set flags: promotion, double push, en passant
-                if (isPawnPromotion(targetSquare)) { moveFlags |= Move::PROMOTION; }
+                if (isPawnPromotion(targetSquare))
+                {
+                    moveFlags |= Move::PROMOTION;
+                    move.setPromotionPiece(PieceType::QUEEN);
+                }
+
                 if (isPawnDoublePush(startingSquare, targetSquare)) { moveFlags |= Move::PAWN_DOUBLE_PUSH; }
                 if (isEnPassant(activePlayer, startingSquare, targetSquare, opponentsPreviousMove)) { moveFlags |= Move::EN_PASSANT; }
 
