@@ -412,7 +412,12 @@ Chessboard::Chessboard(const std::string & fen)
     // Initialize castle rights
     castleRights[Color::WHITE] = parsedState.whiteCastleRights;
     castleRights[Color::BLACK] = parsedState.blackCastleRights;
-    /* TODO: Make sure that this doesn't cause some unexpected previousCastleRights situation. */
+
+    // Set the previous castle rights to the current player's castle rights.
+    // When the current player makes a move, and then unmakes the move, they will
+    // get their proper castle rights restored.
+    previousCastleRightsState = parsedState.whiteCastleRights;
+    if (parsedState.activePlayer == Color::BLACK) { previousCastleRightsState = parsedState.blackCastleRights; }
 
     enPassantSquare_ = parsedState.enPassantSquare;
     halfMoveClock_ = parsedState.halfMoveClock;
@@ -459,6 +464,25 @@ void Chessboard::applyMove(const Move &move)
 
         CapturedPiece captured = move.capturedPiece().value();
         removePiece(captured.color, captured.type, captured.square);
+
+        // TODO: Clean up this montrosity
+        if (captured.type == PieceType::ROOK && castleRights[captured.color] != CastleRights::NONE)
+        {
+            const Bitboard captureSquare(captured.square);
+            bool isKingsideRook = (captureSquare & constants::DEFAULT_KINGSIDE_ROOKS).anyBitsSet();
+            bool isQueensideRook = (captureSquare & constants::DEFAULT_QUEENSIDE_ROOKS).anyBitsSet();
+            uint8_t currentCastleRights = static_cast<uint8_t>(castleRights[captured.color]);
+            if (isKingsideRook)
+            { 
+                uint8_t updatedCastleRights = currentCastleRights ^ static_cast<uint8_t>(CastleRights::ONLY_KINGSIDE);
+                castleRights[captured.color] = static_cast<CastleRights>(updatedCastleRights);
+            }
+            if (isQueensideRook)
+            {
+                uint8_t updatedCastleRights = currentCastleRights ^ static_cast<uint8_t>(CastleRights::ONLY_QUEENSIDE);
+                castleRights[captured.color] = static_cast<CastleRights>(updatedCastleRights);
+            }
+        }
     }
 
     if (move.isCastle())
@@ -610,8 +634,12 @@ Color Chessboard::getNonActivePlayer() const
 
 void Chessboard::undoMove(const Move &move)
 {
+
     raiseExceptionIfMoveHistoryIsEmpty("There is no move history and therefore no moves to undo.");
     raiseExceptionIfMoveIsNotLastMove(move, "The requested move can not be undone. Only the last move to be made can be undone.");
+
+    // Toggling the active player first will put the active player variable in sync with the move's color
+    toggleActivePlayer();
 
     Color activeColor = move.color();
     PieceType movePieceType = move.pieceType();
@@ -638,6 +666,34 @@ void Chessboard::undoMove(const Move &move)
     {
         CapturedPiece captured = move.capturedPiece().value();
         addPiece(captured.color, captured.type, captured.square);
+
+        // TODO: If the last piece was a rook on the default square and the captured player
+        // had castle rights to that side, then give them back their castle rights
+        // TODO: We don't currently hold the previousCastleRightsState for the captured color.
+        // We need to either:
+        // 1. Store two GameState objects. The current game state and previous game state. Then restoring the
+        // state would honestly be so much easier. I think undoMove() would essentially just be
+        // looping through the game state and setting all the bitboards and everything to the game state object.
+        // I think we would no longer need to have chess logic in this function.
+        // 2. we need to maintain a previousCastleRights array indexable by color exactly like the current
+        // castleRights array, and we grab the previousCastleRights of the captured color to use here
+        // to restore the castle rights to the captured color.
+        if (captured.type == PieceType::ROOK && castleRights[captured.color] != CastleRights::NONE)
+        {
+            const Bitboard captureSquare(captured.square);
+            bool isKingsideRook = (captureSquare & constants::DEFAULT_KINGSIDE_ROOKS).anyBitsSet();
+            bool isQueensideRook = (captureSquare & constants::DEFAULT_QUEENSIDE_ROOKS).anyBitsSet();
+            uint8_t currentCastleRights = static_cast<uint8_t>(castleRights[captured.color]);
+            if (isKingsideRook)
+            { 
+                uint8_t updatedCastleRights = currentCastleRights ^ static_cast<uint8_t>(CastleRights::ONLY_KINGSIDE);
+                castleRights[captured.color] = static_cast<CastleRights>(updatedCastleRights);
+            }
+            if (isQueensideRook)
+            {
+                uint8_t updatedCastleRights = currentCastleRights ^ static_cast<uint8_t>(CastleRights::ONLY_QUEENSIDE);
+                castleRights[captured.color] = static_cast<CastleRights>(updatedCastleRights);
+            }
     }
     
     if (move.isCastle())
@@ -648,12 +704,13 @@ void Chessboard::undoMove(const Move &move)
     }
 
     // If castle rights were changed in the prior move, then reverse that
+    // Also, the move is now being given back to the non active player, so
+    // set the previous castle rights state to the non active player's castle rights
     castleRights[activeColor] = previousCastleRightsState;
+    previousCastleRightsState = castleRights[nonActivePlayer_];
 
     // Remove the last move from the move history
     moveHistory.pop_back();
-
-    toggleActivePlayer();
 }
 
 void Chessboard::raiseExceptionIfMoveHistoryIsEmpty(const std::string &errorMessage) const
