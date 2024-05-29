@@ -694,6 +694,7 @@ void Chessboard::undoMove(const Move &move)
                 uint8_t updatedCastleRights = currentCastleRights ^ static_cast<uint8_t>(CastleRights::ONLY_QUEENSIDE);
                 castleRights[captured.color] = static_cast<CastleRights>(updatedCastleRights);
             }
+        }
     }
     
     if (move.isCastle())
