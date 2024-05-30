@@ -634,7 +634,7 @@ TEST_F(ChessboardTest, applyMove_raisesExceptionIfPromotionInfoIsntSet)
 
 TEST_F(ChessboardTest, constructor_parsesFEN)
 {
-   std::string fen = "7b/8/1PK3p1/1p3k2/NN1P1n2/B1n4b/1P5p/4r3 w k d2 27 108";
+   std::string fen = "7b/8/1PK3p1/1p3k2/NN1P1n2/B1n4b/1P5p/4r3 b k d2 27 108";
    Chessboard game(fen);
 
    ExpectedU64 EXPECTED_WHITE_PAWNS(0x20008000200);
@@ -665,13 +665,61 @@ TEST_F(ChessboardTest, constructor_parsesFEN)
    EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::QUEEN), EXPECTED_BLACK_QUEEN);
    EXPECT_EQ(game.getBitboard(Color::BLACK, PieceType::KING), EXPECTED_BLACK_KING);
 
-   EXPECT_EQ(game.getActivePlayer(), Color::WHITE);
-   EXPECT_EQ(game.getNonActivePlayer(), Color::BLACK);
+   EXPECT_EQ(game.getActivePlayer(), Color::BLACK);
+   EXPECT_EQ(game.getNonActivePlayer(), Color::WHITE);
    EXPECT_EQ(game.getCastleRights(Color::WHITE), CastleRights::NONE);
    EXPECT_EQ(game.getCastleRights(Color::BLACK), CastleRights::ONLY_KINGSIDE);
    EXPECT_EQ(game.getEnPassantSquare(), Square::d2);
    EXPECT_EQ(game.getHalfMoveClock(), 27);
    EXPECT_EQ(game.getMoveNumber(), 108);
+}
+
+TEST_F(ChessboardTest, capturingWhiteKingsideRookRemovesWhiteKingsideCastleRights)
+{
+   std::string fen = "rnbqk2r/pppp1ppp/8/2b1p3/4P3/PP1P4/2PQ1nPP/RNB1KBNR b KQkq - 1 6";
+   Chessboard game(fen);
+   Move Nxh1(BLACK, KNIGHT, f2, h1, Move::CAPTURE);
+   Nxh1.setCapturedPiece(CapturedPiece(WHITE, ROOK, h1));
+
+   ASSERT_EQ(game.getCastleRights(Color::WHITE), CastleRights::KING_AND_QUEENSIDE);
+   ASSERT_EQ(game.getCastleRights(Color::BLACK), CastleRights::KING_AND_QUEENSIDE);
+   
+   game.applyMove(Nxh1);
+
+   ASSERT_EQ(game.getCastleRights(Color::WHITE), CastleRights::ONLY_QUEENSIDE);
+   ASSERT_EQ(game.getCastleRights(Color::BLACK), CastleRights::KING_AND_QUEENSIDE);
+
+   game.undoMove(Nxh1);
+
+   ASSERT_EQ(game.getCastleRights(Color::WHITE), CastleRights::KING_AND_QUEENSIDE);
+   ASSERT_EQ(game.getCastleRights(Color::BLACK), CastleRights::KING_AND_QUEENSIDE);
+}
+
+TEST_F(ChessboardTest, capturingBlackQueensideRookRemovesBlackQueensideCastleRights)
+{
+   std::string fen = "rnbqkbnr/ppppp3/1N3ppp/8/8/8/PPPPPPPP/R1BQKBNR w KQkq - 0 4";
+   Chessboard game(fen);
+   Move Nxa8(WHITE, KNIGHT, b6, a8, Move::CAPTURE);
+   Nxa8.setCapturedPiece(CapturedPiece(BLACK, ROOK, a8));
+
+   ASSERT_EQ(game.getCastleRights(Color::WHITE), CastleRights::KING_AND_QUEENSIDE);
+   ASSERT_EQ(game.getCastleRights(Color::BLACK), CastleRights::KING_AND_QUEENSIDE);
+   
+   game.applyMove(Nxa8);
+
+   ASSERT_EQ(game.getCastleRights(Color::WHITE), CastleRights::KING_AND_QUEENSIDE);
+   ASSERT_EQ(game.getCastleRights(Color::BLACK), CastleRights::ONLY_KINGSIDE);
+
+   game.undoMove(Nxa8);
+
+   ASSERT_EQ(game.getCastleRights(Color::WHITE), CastleRights::KING_AND_QUEENSIDE);
+   ASSERT_EQ(game.getCastleRights(Color::BLACK), CastleRights::KING_AND_QUEENSIDE);
+}
+
+TEST_F(ChessboardTest, getOpponentColor)
+{
+   EXPECT_EQ(Chessboard::getOpponentColor(Color::WHITE), Color::BLACK);
+   EXPECT_EQ(Chessboard::getOpponentColor(Color::BLACK), Color::WHITE);
 }
 
 }  // namespace

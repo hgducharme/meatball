@@ -21,12 +21,13 @@ class Chessboard {
 
         /* We freeze the castle rights state before a move is applied in the event
          * that the move is later undone, then we can restore the castle rights after undoing the move. */
-        CastleRights previousCastleRightsState;
+        CastleRights previousCastleRightsState[Color::NUMBER_OF_COLORS];
 
     public:
         static File squareToFile(const int square);
         static Rank squareToRank(const int square);
         static Square coordinatesToSquare(const int rank, const int file);
+        static Color getOpponentColor(const Color color);
         static const GameState parseFEN(const std::string & fen);
         static const GameState parsePiecePositions(const std::string & piecePositionsFEN);
         static Color parseActivePlayer(const std::string & colorFEN);
