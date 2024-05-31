@@ -116,13 +116,13 @@ namespace meatball
          EXPECT_EQ(results.checkmates, EXPECTED_CHECKMATES);
       }
 
-      TEST_F(MoveGeneratorTest, TODO)
+      TEST_F(MoveGeneratorTest, perft_testPosition1)
       {
          Chessboard game("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8");
          uint16_t depth = 3;
          MoveVector moveHistory;
 
-         PerftResults results = perft(game, depth, true, moveHistory);
+         PerftResults results = perft(game, depth, false, moveHistory);
 
          u64 EXPECTED_NODES = 62379;
          EXPECT_EQ(results.numberOfNodes, EXPECTED_NODES);
