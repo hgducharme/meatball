@@ -136,15 +136,14 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
              * be checked individually if they are a check move. This is ultimately because of bad design. We need to refactor this function, it's
              * gotten too out of control.
              */
-            /* TODO: We need to replace the promotion move with four different moves: one for each promotion piece. */
-            /* If the move is pawn d7c8, then this needs to become d7c8b, d7c8n, d7c8r, d7c8q */
+            // If the move is a promotion, replace this move with 4 moves: one of each type of promotion
             if (move.isPromotion())
             {
                 for (const PieceType promotionPiece : { PieceType::KNIGHT, PieceType::BISHOP, PieceType::ROOK, PieceType::QUEEN })
                 {
                     Move promotionMove = move;
                     promotionMove.setPromotionPiece(promotionPiece);
-                    if (isCheck(gameState, promotionMove, activePlayer, nonActivePlayer)) { promotionMove.setFlag(Move::CHECK); }
+                    if (movePutsOpponentInCheck(gameState, promotionMove)) { promotionMove.setFlag(Move::CHECK); }
                     moves.push_back(promotionMove);
                 }
             }
@@ -152,7 +151,7 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
             else
             {
                 // Set check flag
-                if (isCheck(gameState, move, activePlayer, nonActivePlayer)) { move.setFlag(Move::CHECK); }
+                if (movePutsOpponentInCheck(gameState, move)) { move.setFlag(Move::CHECK); }
                 moves.push_back(move);
             }
 
@@ -166,21 +165,26 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
     return moves;
 }
 
-bool LegalMoveGenerator::isCheck(const Chessboard &gameState, const Move &move, const Color activePlayer, const Color nonActivePlayer) const
+bool LegalMoveGenerator::movePutsOpponentInCheck(const Chessboard & gameState, const Move & move) const
 {
-    Move moveCopy = move;
+    const Color opponent = Chessboard::getOpponentColor(move.color());
     Chessboard gameCopy = gameState;
-    gameCopy.applyMove(moveCopy);
-
-    /* If there are shared bits between the active player's attacked square and the
-     * non-active player's king bitboard, then this move puts the king into check.
-     */
-    if (attack_tables::getAttacks(gameCopy, activePlayer) & gameCopy.getBitboard(nonActivePlayer, PieceType::KING))
+    gameCopy.applyMove(move);
+    if (isKingInCheck(gameCopy, opponent))
     {
         return true;
     }
 
     return false;
+}
+
+bool LegalMoveGenerator::isKingInCheck(const Chessboard & gameState, const Color kingsColor) const
+{
+    /* If there are shared bits between the attacking player's attacked squares and the
+     * opponent player's king bitboard, then this move puts the king into check.
+     */
+    const Color attackingPlayer = Chessboard::getOpponentColor(kingsColor);
+    return static_cast<bool>(attack_tables::getAttacks(gameState, attackingPlayer) & gameState.getBitboard(kingsColor, PieceType::KING));
 }
 
 Bitboard LegalMoveGenerator::getPawnPushes(const Color activePlayer, const Square startingSquare, const Bitboard occupiedSquares) const
@@ -333,23 +337,36 @@ Bitboard LegalMoveGenerator::getCastles(const Chessboard & gameState) const
     {
         case CastleRights::NONE:
         {
-            return Bitboard();
+            return Bitboard(constants::EMPTY_BOARD);
         }
 
         case CastleRights::ONLY_KINGSIDE:
         {
+            if (isKingInCheck(gameState, activePlayer))
+            {
+                return Bitboard(constants::EMPTY_BOARD);
+            }
             auto [kingTargetSquare, squaresInBetweenKingAndRook] = getKingSideCastleSquares(activePlayer);
             return computeCastleBitboard(gameState, squaresInBetweenKingAndRook, kingTargetSquare);
         }
 
         case CastleRights::ONLY_QUEENSIDE:
         {
+
+            if (isKingInCheck(gameState, activePlayer))
+            {
+                return Bitboard(constants::EMPTY_BOARD);
+            }
             auto [kingTargetSquare, squaresInBetweenKingAndRook] = getQueenSideCastleSquares(activePlayer);
             return computeCastleBitboard(gameState, squaresInBetweenKingAndRook, kingTargetSquare);
         }
 
         case CastleRights::KING_AND_QUEENSIDE:
         {
+            if (isKingInCheck(gameState, activePlayer))
+            {
+                return Bitboard(constants::EMPTY_BOARD);
+            }
             auto [kingSideTargetSquare, squaresInBetweenKingAndRookKingSide] = getKingSideCastleSquares(activePlayer);
             Bitboard kingSideCastle = computeCastleBitboard(gameState, squaresInBetweenKingAndRookKingSide, kingSideTargetSquare);
 
@@ -416,24 +433,13 @@ bool LegalMoveGenerator::isPawnPromotion(const Square targetSquare) const
 
 void LegalMoveGenerator::filterOutIllegalMoves(MoveVector & psuedoLegalMoves, const Chessboard & gameState) const
 {
-
-    // TODO: if the king is in check after this move, then we either moved the King into check, or we moved a piece that was pinned. Everything below this relates to checking if the king is in check.
-
-    // TODO: This will be hard to check for castling. After castling we may no longer be in check. Also
-    // we need to check attacked squares I think to determine if a castling move is moving through check.
-    // For castling we can't just check the before and end state. We must check the intermediate step.
-
     const Color activePlayer = gameState.getActivePlayer();
-    const Color nonActivePlayer = gameState.getNonActivePlayer();
 
     auto movePutsOrLeavesKingInCheck = [&](const Move & move) -> bool
     {
         Chessboard simulatedGameState = gameState;
         simulatedGameState.applyMove(move);
-        Bitboard activePlayerKingPosition = simulatedGameState.getBitboard(activePlayer, PieceType::KING);
-        Bitboard attackedSquaresByNonActivePlayer = attack_tables::getAttacks(gameState, nonActivePlayer);
-        bool isKingUnderAttack = (attackedSquaresByNonActivePlayer & activePlayerKingPosition).numberOfSetBits() != 0;
-        return isKingUnderAttack;
+        return isKingInCheck(simulatedGameState, activePlayer);
     };
 
     // Remove moves from the move vector that make the lambda function true

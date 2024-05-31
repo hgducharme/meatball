@@ -2,6 +2,10 @@
 
 #include "chessboard.h"
 
+/* TODO: This doesn't need to be a class because there is no state being persisted. Instead,
+ * this can be turned into a namespace with free functions.
+ */
+
 class MoveGenerator
 {
    public:
@@ -17,7 +21,8 @@ class LegalMoveGenerator : public MoveGenerator
    private:
       MoveVector generatePsuedoLegalMoves(const Chessboard & gameState) const;
       MoveVector getMovesByPiece(const PieceType pieceType, const Chessboard &gameState) const;
-      bool isCheck(const Chessboard & gameState, const Move &move, const Color activePlayer, const Color nonActivePlayer) const;
+      bool movePutsOpponentInCheck(const Chessboard & gameState, const Move & move) const;
+      bool isKingInCheck(const Chessboard & gameState, const Color kingsColor) const;
       Bitboard getPawnPushes(const Color activePlayer, const Square startingSquare, const Bitboard opponentsPieces) const;
       Bitboard getPawnSinglePush(const Color activePlayer, const Square startingSquare, Direction direction, const Bitboard occupiedSquares) const;
       Bitboard getPawnDoublePush(const Color activePlayer, const Square startingSquare, Direction direction, const Bitboard occupiedSquares) const;
