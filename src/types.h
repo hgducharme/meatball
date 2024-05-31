@@ -1,32 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include <bitset>
 
 using u64 = std::uint64_t;
-
-namespace bitboard
-{
-
-constexpr u64 ONE = 1;
-constexpr u64 EMPTY_BOARD = 0;
-constexpr u64 UNIVERSE = 0xFFFFFFFFFFFFFFFF;
-
-constexpr u64 DEFAULT_BLACK_PAWN_STRUCTURE =   0x00FF000000000000;
-constexpr u64 DEFAULT_BLACK_KNIGHT_STRUCTURE = 0x4200000000000000;
-constexpr u64 DEFAULT_BLACK_BISHOP_STRUCTURE = 0x2400000000000000;
-constexpr u64 DEFAULT_BLACK_ROOK_STRUCTURE =   0x8100000000000000;
-constexpr u64 DEFAULT_BLACK_QUEEN_STRUCTURE =  0x0800000000000000;
-constexpr u64 DEFAULT_BLACK_KING_STRUCTURE =   0x1000000000000000;
-
-constexpr u64 DEFAULT_WHITE_PAWN_STRUCTURE =   0x000000000000FF00;
-constexpr u64 DEFAULT_WHITE_KNIGHT_STRUCTURE = 0x0000000000000042;
-constexpr u64 DEFAULT_WHITE_BISHOP_STRUCTURE = 0x0000000000000024;
-constexpr u64 DEFAULT_WHITE_ROOK_STRUCTURE =   0x0000000000000081;
-constexpr u64 DEFAULT_WHITE_QUEEN_STRUCTURE =  0x0000000000000008;
-constexpr u64 DEFAULT_WHITE_KING_STRUCTURE =   0x0000000000000010;
-
-} // namespace bitboard
 
 enum PieceType
 {
@@ -35,19 +11,38 @@ enum PieceType
     BISHOP,
     ROOK,
     QUEEN,
-    KING
+    KING,
+    NUMBER_OF_PIECES = 6
 };
 
-enum Directions
+enum class SliderPiece
 {
-    NORTH = 1,
-    SOUTH = -1,
-    EAST = 2,
-    WEST = -2,
-    NORTH_EAST = 3,
-    SOUTH_WEST = -3,
-    NORTH_WEST = 4,
-    SOUTH_EAST = -4
+    BISHOP = PieceType::BISHOP,
+    ROOK = PieceType::ROOK,
+    QUEEN = PieceType::QUEEN
+};
+
+enum class LeaperPiece
+{
+    PAWN = PieceType::PAWN,
+    KNIGHT = PieceType::KNIGHT,
+    KING = PieceType::KING
+};
+
+// This enum maps the concept of a direction on a chessboard to a corresponding number of bits
+// - one move to the north west corresponds to the bit 7 positions larger than the current bit
+// - one move to the north      corresponds to the bit 8 positions larger than the current bit
+// - one move to the north east corresponds to the bit 9 positions larger than the current bit
+enum Direction
+{
+    NORTH = 8,
+    SOUTH = -8,
+    NORTH_EAST = 9,
+    SOUTH_WEST = -9,
+    NORTH_WEST = 7,
+    SOUTH_EAST = -7,
+    EAST = 1,
+    WEST = -1,
 };
 
 enum Square
@@ -59,11 +54,113 @@ enum Square
     a5, b5, c5, d5, e5, f5, g5, h5,
     a6, b6, c6, d6, e6, f6, g6, h6,
     a7, b7, c7, d7, e7, f7, g7, h7,
-    a8, b8, c8, d8, e8, f8, g8, h8
+    a8, b8, c8, d8, e8, f8, g8, h8,
+    NUMBER_OF_SQUARES = 64,
+    NO_SQUARE = -1,
 };
 
 enum Color
 {
     WHITE,
-    BLACK
+    BLACK,
+    NUMBER_OF_COLORS = 2,
+    NO_COLOR = -1
+};
+
+enum File
+{
+   FILE_A,
+   FILE_B,
+   FILE_C,
+   FILE_D,
+   FILE_E,
+   FILE_F,
+   FILE_G,
+   FILE_H,
+   NUMBER_OF_FILES = 8,
+   NO_FILE = -1
+};
+
+enum Rank
+{
+   RANK_1,
+   RANK_2,
+   RANK_3,
+   RANK_4,
+   RANK_5,
+   RANK_6,
+   RANK_7,
+   RANK_8,
+   NUMBER_OF_RANKS = 8,
+   NO_RANK = -1
+};
+
+enum class CastleRights : uint8_t
+{
+    /* The code will mostly use the enumeration names, but when parsing FEN it can be
+     * helpful to use these as bit flags.
+     */
+    NONE               = 0b00,
+    ONLY_KINGSIDE      = 0b01,
+    ONLY_QUEENSIDE     = 0b10,
+    KING_AND_QUEENSIDE = 0b11,
+    NUMBER_OF_CASTLE_STATES = 4
+};
+
+struct CastleMove
+{
+    Square kingStart;
+    Square kingEnd;
+    Square rookStart;
+    Square rookEnd;
+
+    constexpr CastleMove(Square kingStart, Square kingEnd, Square rookStart, Square rookEnd)
+    : kingStart(kingStart), kingEnd(kingEnd), rookStart(rookStart), rookEnd(rookEnd) {}
+};
+
+enum class CastleSide {
+    KINGSIDE,
+    QUEENSIDE,
+    NUMBER_OF_CASTLE_SIDES = 2
+};
+
+struct Piece
+{
+    Color color;
+    PieceType type;
+
+    inline Piece() {}
+    inline Piece(const Color c, const PieceType pt) : color(c), type(pt) {}
+
+    inline bool operator == (const Piece & rhs) const { return ( (color == rhs.color) && (type == rhs.type) ); }
+};
+
+struct CapturedPiece : public Piece
+{
+    Square square;
+
+    inline CapturedPiece() {}
+    inline CapturedPiece(const Color c, const PieceType pt, const Square loc) : Piece(c, pt), square(loc) {}
+
+    inline bool operator == (const CapturedPiece & rhs) const {
+        return Piece::operator==(rhs) && (square == rhs.square);
+    }
+};
+
+struct GameState
+{
+    u64 pawns = 0;
+    u64 knights = 0;
+    u64 bishops = 0;
+    u64 rooks = 0;
+    u64 queens = 0;
+    u64 kings = 0;
+    u64 whiteOccupied = 0;
+    u64 blackOccupied = 0;
+    Color activePlayer;
+    CastleRights whiteCastleRights;
+    CastleRights blackCastleRights;
+    Square enPassantSquare;
+    int halfMoveClock;
+    int moveNumber;
 };
