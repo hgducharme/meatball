@@ -56,7 +56,7 @@ std::string moveToString(const Move & m);
 /* This perft takes an initialDepth parameter so that we can implement perft divide functionality.
  * Perft divide means that we can show how many child nodes are located under each top level node.
  */
-PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t initialDepth, const bool showDivideOutput, MoveVector & moveHistory);
+PerftResults __perft(Chessboard gameState, const uint16_t depth, const uint16_t initialDepth, const bool showDivideOutput, MoveVector & moveHistory);
 void trackMetaData(PerftResults &results, const Move &move, const uint16_t depth, const uint16_t initialDepth, PerftResults &childResults);
 void tallyTopLevelNodes(const uint16_t depth, const uint16_t initialDepth, const Move &move, PerftResults &results, PerftResults &childResults);
 void tallyMoveType(PerftResults &results, const Move &move);

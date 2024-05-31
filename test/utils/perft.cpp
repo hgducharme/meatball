@@ -79,7 +79,7 @@ std::string moveToString(const Move &m)
    return utils::squareToString(m.startSquare()) + utils::squareToString(m.endSquare());
 }
 
-PerftResults __perft(Chessboard &gameState, const uint16_t depth, const uint16_t initialDepth, const bool showDivideOutput, MoveVector & moveHistory)
+PerftResults __perft(Chessboard gameState, const uint16_t depth, const uint16_t initialDepth, const bool showDivideOutput, MoveVector & moveHistory)
 {
    LegalMoveGenerator moveGenerator;
    PerftResults results;

@@ -125,7 +125,6 @@ namespace meatball
          PerftResults results = perft(game, depth, true, moveHistory);
 
          u64 EXPECTED_NODES = 62379;
-   
          EXPECT_EQ(results.numberOfNodes, EXPECTED_NODES);
       }
    } // namespace
