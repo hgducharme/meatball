@@ -30,6 +30,10 @@ class Move
         uint8_t _flags = 0;
         std::optional<CapturedPiece> _capturedPiece;
         std::optional<PieceType> _promotionPiece;
+        Color _color;
+        PieceType _pieceType;
+        Square _startSquare;
+        Square _endSquare;
 
     public:
         /* Flags to indicate what type of move this is. For en passant captures, only the en passant flag should be used, NOT the capture flag. */
@@ -42,6 +46,7 @@ class Move
             KINGSIDE_CASTLE =  0b010000,
             QUEENSIDE_CASTLE = 0b100000,
             CHECK =            0b1000000,
+            CHECKMATE =        0b10000000,
         };
 
         Move(const Color c, const PieceType p, const Square start, const Square end);
@@ -69,6 +74,12 @@ class Move
         void setCapturedPiece(const CapturedPiece p);
         std::optional<PieceType> promotionPiece() const;
         void setPromotionPiece(const PieceType pieceType);
+
+        /* TODO:
+         * std::string algebraic()
+         * flags() instead of getFlags()
+         * encoded() instead of getEncoded()
+        */
 };
 
 inline bool operator == (const Move & lhs, const Move & rhs)

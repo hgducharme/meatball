@@ -1,6 +1,7 @@
 #include "move.h"
 
-Move::Move(const Color color, const PieceType pieceType, const Square start, const Square end)
+Move::Move(const Color color, const PieceType pieceType, const Square start, const Square end) :
+    _color(color), _pieceType(pieceType), _startSquare(start), _endSquare(end)
 {
     _encoded |= static_cast<uint32_t>(color) << COLOR_POSITION;
     _encoded |= static_cast<uint32_t>(pieceType) << PIECE_TYPE_POSITION;
@@ -8,7 +9,8 @@ Move::Move(const Color color, const PieceType pieceType, const Square start, con
     _encoded |= static_cast<uint32_t>(end) << END_SQUARE_POSITION;
 }
 
-Move::Move(const Color color, const PieceType pieceType, const Square start, const Square end, const uint8_t flags) : _flags(flags)
+Move::Move(const Color color, const PieceType pieceType, const Square start, const Square end, const uint8_t flags) :
+    _color(color), _pieceType(pieceType), _startSquare(start), _endSquare(end), _flags(flags)
 {
     _encoded |= static_cast<uint32_t>(color) << COLOR_POSITION;
     _encoded |= static_cast<uint32_t>(pieceType) << PIECE_TYPE_POSITION;
