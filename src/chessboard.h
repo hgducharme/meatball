@@ -94,7 +94,12 @@ inline bool Chessboard::operator == (const Chessboard & other) const {
     if (activePlayer_ != other.activePlayer_ ||
         nonActivePlayer_ != other.nonActivePlayer_ ||
         moveHistory != other.moveHistory ||
-        previousCastleRightsState != other.previousCastleRightsState ||
+        /* TODO: Is this ok? This only gives us problems when we recursively edit a Chessboard instance,
+         * and then the recursive function edits the board and we can't get back to the previousCastleRights
+         * that happened 2 moves ago.
+         */
+        // previousCastleRightsState[Color::WHITE] != other.previousCastleRightsState[Color::WHITE] ||
+        // previousCastleRightsState[Color::BLACK] != other.previousCastleRightsState[Color::BLACK] ||
         enPassantSquare_ != other.enPassantSquare_ ||
         halfMoveClock_ != other.halfMoveClock_ ||
         moveNumber_ != other.moveNumber_)
