@@ -37,4 +37,5 @@ class LegalMoveGenerator : public MoveGenerator
       const Bitboard computeCastleBitboard(const Chessboard & gameState, u64 squaresInBetweenKingAndRook, Square kingTargetSquare) const;
       bool isPawnPromotion(const Square targetSquare) const;
       void filterOutIllegalMoves(MoveVector & psuedoLegalMoves, const Chessboard & gameState) const;
+      bool moveIsCheckmate(const Chessboard & gameState, const Move & move) const;
 };

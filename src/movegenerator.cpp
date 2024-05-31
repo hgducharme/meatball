@@ -143,7 +143,19 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
                 {
                     Move promotionMove = move;
                     promotionMove.setPromotionPiece(promotionPiece);
-                    if (movePutsOpponentInCheck(gameState, promotionMove)) { promotionMove.setFlag(Move::CHECK); }
+                    if (movePutsOpponentInCheck(gameState, promotionMove))
+                    {
+                        promotionMove.setFlag(Move::CHECK);
+                        // TODO: handle checkmate flag
+                        // if (moveIsCheckmate(gameState, promotionMove))
+                        // {
+                        //     promotionMove.setFlag(Move::CHECKMATE);
+                        // }
+                        // else
+                        // {
+                        //     promotionMove.setFlag(Move::CHECK);
+                        // }
+                    }
                     moves.push_back(promotionMove);
                 }
             }
@@ -151,7 +163,18 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
             else
             {
                 // Set check flag
-                if (movePutsOpponentInCheck(gameState, move)) { move.setFlag(Move::CHECK); }
+                if (movePutsOpponentInCheck(gameState, move)) {
+                    move.setFlag(Move::CHECK);
+                    // TODO: handle checkmate flag
+                    // if (moveIsCheckmate(gameState, move))
+                    // {
+                    //     move.setFlag(Move::CHECKMATE);
+                    // }
+                    // else
+                    // {
+                    //     move.setFlag(Move::CHECK);
+                    // }
+                }
                 moves.push_back(move);
             }
 
@@ -168,9 +191,9 @@ MoveVector LegalMoveGenerator::getMovesByPiece(const PieceType pieceType, const 
 bool LegalMoveGenerator::movePutsOpponentInCheck(const Chessboard & gameState, const Move & move) const
 {
     const Color opponent = Chessboard::getOpponentColor(move.color());
-    Chessboard gameCopy = gameState;
-    gameCopy.applyMove(move);
-    if (isKingInCheck(gameCopy, opponent))
+    Chessboard simulatedGame = gameState;
+    simulatedGame.applyMove(move);
+    if (isKingInCheck(simulatedGame, opponent))
     {
         return true;
     }
@@ -444,6 +467,21 @@ void LegalMoveGenerator::filterOutIllegalMoves(MoveVector & psuedoLegalMoves, co
 
     // Remove moves from the move vector that make the lambda function true
     psuedoLegalMoves.erase(std::remove_if(psuedoLegalMoves.begin(), psuedoLegalMoves.end(), movePutsOrLeavesKingInCheck), psuedoLegalMoves.end());
+}
+
+bool LegalMoveGenerator::moveIsCheckmate(const Chessboard & gameState, const Move & move) const
+{
+    const Color opponent = Chessboard::getOpponentColor(move.color());
+    Chessboard simulatedGame = gameState;
+    simulatedGame.applyMove(move);
+    LegalMoveGenerator generator;
+    MoveVector opponentsLegalMoves = generator.generateLegalMoves(simulatedGame);
+    if ( isKingInCheck(simulatedGame, opponent) && (opponentsLegalMoves.size() == 0) )
+    {
+        return true;
+    }
+
+    return false;
 }
 
 MoveVector LegalMoveGenerator::generateLegalMoves(const Chessboard & gameState)
