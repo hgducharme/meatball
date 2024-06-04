@@ -28,7 +28,7 @@ CXX := clang++
 # Compiler flags
 DEBUG = -g
 COVERAGE := -O0 -fPIC --coverage # (--coverage is a synonym for: -fprofile-arcs -ftest-coverage)
-CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -std=c++17 $(DEBUG) $(COVERAGE)
+CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -std=c++23 $(DEBUG) $(COVERAGE)
 
 # C PreProcessor flags, generally used for path management, dependency file generation, and dumping preprocessor state
 # Include source subdirectories and generate dependency files during compilation
@@ -88,9 +88,9 @@ gcov_files = $(shell find $(BUILD_DIR) -name "*.gcno")
 # -------------------------------------- #
 # Targets
 # -------------------------------------- #
-.PHONY: all clean $(BIN_DIR) $(BUILD_DIR) $(COVERAGE_DIR)
+.PHONY: all clean $(appname) $(BIN_DIR) $(BUILD_DIR) $(COVERAGE_DIR)
 
-all: $(appname) unit_tests
+all: $(appname)
 
 $(appname): $(EXECUTABLE)
 
@@ -138,6 +138,19 @@ coverage: tests | $(COVERAGE_DIR)
 	gcov --color $(sourcefiles_without_main) -o=$(BUILD_DIR)/src
 	mv *.gcov $(COVERAGE_DIR)/gcov
 	gcovr --exclude-unreachable-branches --exclude-throw-branches --decisions --html-details $(COVERAGE_DIR)/html/coverage.html $(BUILD_DIR)/src
+
+# -------------------------------------- #
+# Docker targets
+# -------------------------------------- #
+clang-build:
+	@echo "Running build in docker container..."
+	docker build -t build-environment .
+	docker run --rm build-environment make
+
+gpp-build:
+	@echo "Running build in docker container..."
+	docker build -t build-environment .
+	docker run --rm build-environment make CXX=g++
 
 # -------------------------------------- #
 # Folder targets

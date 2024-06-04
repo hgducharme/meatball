@@ -1,0 +1,9 @@
+.git
+.vscode
+.gitignore
+README.md
+LICENSE
+Dockerfile
+.dockerignore
+./bin
+./build
