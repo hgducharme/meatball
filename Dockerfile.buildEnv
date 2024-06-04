@@ -40,7 +40,3 @@ RUN adduser \
 RUN mkdir -p /usr/src/app && chown -R basicuser:basicuser /usr/src/app
 
 USER basicuser
-
-# RUN make clean
-
-LABEL Name=build-env
