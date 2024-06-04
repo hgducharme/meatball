@@ -3,7 +3,7 @@
 .gitignore
 README.md
 LICENSE
-Dockerfile
+Dockerfile**
 .dockerignore
 ./bin
 ./build

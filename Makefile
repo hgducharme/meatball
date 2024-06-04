@@ -2,7 +2,7 @@ SHELL = /bin/sh
 appname := meatball
 
 # -------------------------------------- #
-# Paths and executables
+# Customizable paths and executables
 # -------------------------------------- #
 PROJECT_DIR := .
 SOURCE_DIR := $(PROJECT_DIR)/src
@@ -19,10 +19,7 @@ TEST_EXECUTABLE = $(BIN_DIR)/tests
 UNIT_TEST_EXECUTABLE = $(BIN_DIR)/unit_tests
 INTEGRATION_TEST_EXECUTABLE = $(BIN_DIR)/integration_tests
 
-# -------------------------------------- #
-# Docker files
-# -------------------------------------- #
-DOCKER_BUILD_ENV_IMAGE_NAME = cpp-build-env
+DOCKER_BUILD_ENV_IMAGE_NAME = build-env
 
 # -------------------------------------- #
 # Compiling configuration
@@ -33,7 +30,7 @@ CXX := clang++
 # Compiler flags
 DEBUG = -g
 COVERAGE := -O0 -fPIC --coverage # (--coverage is a synonym for: -fprofile-arcs -ftest-coverage)
-CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -std=c++23 $(DEBUG) $(COVERAGE)
+CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -std=c++17 $(DEBUG) $(COVERAGE)
 
 # C PreProcessor flags, generally used for path management, dependency file generation, and dumping preprocessor state
 # Include source subdirectories and generate dependency files during compilation
@@ -93,42 +90,58 @@ gcov_files = $(shell find $(BUILD_DIR) -name "*.gcno")
 # -------------------------------------- #
 # Targets
 # -------------------------------------- #
-.PHONY: all clean $(appname) $(BIN_DIR) $(BUILD_DIR) $(COVERAGE_DIR)
 
-all: $(appname)
+##
+## Executables
+##
 
-$(appname): $(EXECUTABLE)
-
-# Build the source code executable
-$(EXECUTABLE): $(objectfiles) | $(BIN_DIR)
+$(appname): ## Build the main executable
+$(appname): $(objectfiles) | $(BIN_DIR)
 	@echo
-	@echo "Building: $@"
+	@echo "Generating executable: $@"
 	@echo "Linking file(s): $^"
-	$(LINK.cpp) $^ $(LDLIBS) --output $@
+	$(LINK.cpp) $^ $(LDLIBS) --output $(EXECUTABLE)
 
 # Build the test executable by linking source objects (without main.o) and test objects
+tests: ## Build unit and integration tests into one executable
 tests: $(objectfiles_without_main) $(test_objectfiles) | $(BIN_DIR)
 	@echo
-	@echo "Building: $@"
+	@echo "Generating executable: $@"
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(GOOGLETEST) --output $(TEST_EXECUTABLE)
-	./$(TEST_EXECUTABLE)
 
 # Build the unit tests executable by linking source objects (without main.o) and unit test objects
+unit_tests: ## Build the unit tests executable
 unit_tests: $(objectfiles_without_main) $(unit_test_objectfiles) $(test_utility_objectfiles) | $(BIN_DIR)
 	@echo
-	@echo "Building: $@"
+	@echo "Generating executable: $@"
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(GOOGLETEST) --output $(UNIT_TEST_EXECUTABLE)
-	./$(UNIT_TEST_EXECUTABLE)
 
 # Build the integration tests executable by linking source objects (without main.o) and integration test objects
+integration_tests: ## Build the integration tests executable
 integration_tests: $(objectfiles_without_main) $(integration_test_objectfiles) $(test_utility_objectfiles) | $(BIN_DIR)
 	@echo
-	@echo "Building: $@"
+	@echo "Generating executable: $@"
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(GOOGLETEST) --output $(INTEGRATION_TEST_EXECUTABLE)
-	./$(INTEGRATION_TEST_EXECUTABLE)
+
+##
+## Builds
+##
+
+build: ## Build the source code
+build: $(objectfiles)
+	@echo
+
+coverage-report: ## Run the tests and build a coverage report
+coverage-report: tests | $(COVERAGE_DIR)
+	@echo
+	@echo "Generating test coverage data..."
+	./$(TEST_EXECUTABLE)
+	gcov --color $(sourcefiles_without_main) -o=$(BUILD_DIR)/src
+	mv *.gcov $(COVERAGE_DIR)/gcov
+	gcovr --exclude-unreachable-branches --exclude-throw-branches --decisions --html-details $(COVERAGE_DIR)/html/coverage.html $(BUILD_DIR)/src
 
 # Compile .cpp into .o
 $(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
@@ -137,50 +150,75 @@ $(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
 	mkdir -p $(dir $@)
 	$(COMPILE.cpp) $< --output $@
 
-coverage: tests | $(COVERAGE_DIR)
-	@echo
-	@echo "Generating test coverage data..."
-	gcov --color $(sourcefiles_without_main) -o=$(BUILD_DIR)/src
-	mv *.gcov $(COVERAGE_DIR)/gcov
-	gcovr --exclude-unreachable-branches --exclude-throw-branches --decisions --html-details $(COVERAGE_DIR)/html/coverage.html $(BUILD_DIR)/src
-
 # -------------------------------------- #
 # Docker targets
 # -------------------------------------- #
-clang-build:
-	@echo "Running build in docker container..."
-	docker build -t $(DOCKER_BUILD_ENV_IMAGE_NAME) .
-	docker run --rm $(DOCKER_BUILD_ENV_IMAGE_NAME) make CXX=clang++
 
-gpp-build:
+##
+## Docker
+##
+
+docker-build-env: ## Generate a docker image containing the build environment
+	@echo "Generating a docker image with the build environment dependencies..."
+	docker build -t $(appname)/$(DOCKER_BUILD_ENV_IMAGE_NAME):0.1 -f Dockerfile.buildEnv .
+
+docker-build: ## Build the source code in a docker container
 	@echo "Running build in docker container..."
-	docker build -t $(DOCKER_BUILD_ENV_IMAGE_NAME) .
-	docker run --rm $(DOCKER_BUILD_ENV_IMAGE_NAME) make CXX=g++
+	docker run --rm --name=$(appname)-build --mount type=bind,source=${PROJECT_DIR},target=/usr/src/app ${appname}/$(DOCKER_BUILD_ENV_IMAGE_NAME):0.1
 
 # -------------------------------------- #
-# Folder targets
+# File Targets
 # -------------------------------------- #
+
+.PHONY: $(BIN_DIR)
 $(BIN_DIR):
+	@echo
 	mkdir -p $@
 
-$(BUILD_DIR):
-	mkdir -p $@
-
+.PHONY: $(COVERAGE_DIR)
 $(COVERAGE_DIR):
+	@echo
 	mkdir -p $@/gcov
 	mkdir -p $@/html
 
 # -------------------------------------- #
 # Clean
 # -------------------------------------- #
-clean:
+
+##
+## Clean
+##
+
+.PHONY: clean
+clean: ## Remove all build artifacts
 	$(RM) -r $(BIN_DIR) $(BUILD_DIR) $(COVERAGE_DIR)
 
-clean-tests:
+.PHONY: clean-tests
+clean-tests: ## Remove test build artifacts
 	$(RM) -r $(TEST_EXECUTABLE) $(BUILD_DIR)/test
 
-clean-coverage:
+.PHONY: clean-coverage
+clean-coverage: ## Remove coverage build artifacts
 	$(RM) -r $(COVERAGE_DIR)
+
+# -------------------------------------- #
+# Misc commands
+# -------------------------------------- #
+
+##
+## Misc commands
+##
+
+.PHONY: help
+help:: ## (Default) Show this help screen
+	@gawk -vG=$$(tput setaf 2) -vR=$$(tput sgr0) ' \
+	  match($$0, "^(([^#:]*[^ :]) *:)?([^#]*)##([^#].+|)$$",a) { \
+	    if (a[2] != "") { printf "    make %s%-18s%s %s\n", G, a[2], R, a[4]; next }\
+	    if (a[3] == "") { print a[4]; next }\
+	    printf "\n%-36s %s\n","",a[4]\
+	  }' $(MAKEFILE_LIST)
+	@echo "" # blank line at the end
+.DEFAULT_GOAL := help
 
 # -------------------------------------- #
 # Dependencies
