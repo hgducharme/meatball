@@ -29,6 +29,4 @@ WORKDIR /workspace
 
 RUN make clean
 
-CMD ["make" "docker-build"]
-
 LABEL Name=build-environment
