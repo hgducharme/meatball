@@ -20,6 +20,11 @@ UNIT_TEST_EXECUTABLE = $(BIN_DIR)/unit_tests
 INTEGRATION_TEST_EXECUTABLE = $(BIN_DIR)/integration_tests
 
 # -------------------------------------- #
+# Docker files
+# -------------------------------------- #
+$(DOCKER_BUILD_ENV_IMAGE_NAME) = cpp-build-env
+
+# -------------------------------------- #
 # Compiling configuration
 # -------------------------------------- #
 # Compiler
@@ -144,13 +149,13 @@ coverage: tests | $(COVERAGE_DIR)
 # -------------------------------------- #
 clang-build:
 	@echo "Running build in docker container..."
-	docker build -t build-environment .
-	docker run --rm build-environment make
+	docker build -t $(DOCKER_BUILD_ENV_IMAGE_NAME) .
+	docker run --rm $(DOCKER_BUILD_ENV_IMAGE_NAME) make CXX=clang++
 
 gpp-build:
 	@echo "Running build in docker container..."
-	docker build -t build-environment .
-	docker run --rm build-environment make CXX=g++
+	docker build -t $(DOCKER_BUILD_ENV_IMAGE_NAME) .
+	docker run --rm $(DOCKER_BUILD_ENV_IMAGE_NAME) make CXX=g++
 
 # -------------------------------------- #
 # Folder targets

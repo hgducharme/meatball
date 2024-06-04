@@ -29,4 +29,4 @@ WORKDIR /workspace
 
 RUN make clean
 
-LABEL Name=build-environment
+LABEL Name=cpp-build-env
