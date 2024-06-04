@@ -35,15 +35,20 @@ If successful, you should see the executable `/bin/meatball`
 
 To run the tests make sure you have [googletest 1.13.0](https://github.com/google/googletest/releases/tag/v1.13.0) and `cmake` installed on your system.
 
-To install `googletest`, download the zip file, unzip it, then
+To install `googletest-1.13.0`:
 
 ```bash
-cd /path/to/googletest/
+cd /tmp
+wget https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz
+tar xf v1.13.0.tar.gz
+cd googletest-1.13.0
 mkdir install
-cd install/
+cd install
 cmake ..
 make
 make install
+cd ../../
+rm -rf googletest-1.13.0 && v1.13.0.tar.gz
 ```
 
 Next, edit the `GOOGLETEST` variable inside `meatball/Makefile` to point to where `googletest` was installed. Replace `/usr/local/lib` with the directory that houses your `libgtest.a` and `libgtest_main.a` files.
@@ -73,7 +78,10 @@ make integration_tests
 
 ### Test coverage
 
-Make sure you have `gcov` and `gcovr` installed on your system.
+Make sure you have `gcov` and `gcovr` installed on your system:
+
+- `gcov` is included with `gcc` and `clang`
+- `gcovr` can be installed with `pip` and `brew`
 
 ```bash
 make coverage
