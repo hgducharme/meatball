@@ -22,7 +22,7 @@ INTEGRATION_TEST_EXECUTABLE = $(BIN_DIR)/integration_tests
 # -------------------------------------- #
 # Docker files
 # -------------------------------------- #
-$(DOCKER_BUILD_ENV_IMAGE_NAME) = cpp-build-env
+DOCKER_BUILD_ENV_IMAGE_NAME = cpp-build-env
 
 # -------------------------------------- #
 # Compiling configuration
