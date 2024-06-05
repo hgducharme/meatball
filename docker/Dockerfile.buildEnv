@@ -1,4 +1,4 @@
-FROM alpine:latest as build-env
+FROM alpine:3.20 as build-env
 
 RUN apk update && \
     apk add --no-cache \
@@ -7,6 +7,7 @@ RUN apk update && \
     g++ \
     clang \
     llvm \
+    compiler-rt \
     gdb \
     lldb
 
@@ -40,3 +41,5 @@ RUN adduser \
 RUN mkdir -p /usr/src/app && chown -R basicuser:basicuser /usr/src/app
 
 USER basicuser
+
+WORKDIR /usr/src/app

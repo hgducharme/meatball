@@ -19,7 +19,11 @@ TEST_EXECUTABLE = $(BIN_DIR)/tests
 UNIT_TEST_EXECUTABLE = $(BIN_DIR)/unit_tests
 INTEGRATION_TEST_EXECUTABLE = $(BIN_DIR)/integration_tests
 
+DOCKER_DIR = $(PROJECT_DIR)/docker
+DOCKERFILE_BUILD_ENV_PATH = $(DOCKER_DIR)/Dockerfile.buildEnv
 DOCKER_BUILD_ENV_IMAGE_NAME = build-env
+DOCKER_BUILD_ENV_CONTAINER_NAME = $(appname)-$(DOCKER_BUILD_ENV_IMAGE_NAME)
+DOCKER_SHELL_ENV = /bin/sh
 
 # -------------------------------------- #
 # Compiling configuration
@@ -30,7 +34,8 @@ CXX := clang++
 # Compiler flags
 DEBUG = -g
 COVERAGE := -O0 -fPIC --coverage # (--coverage is a synonym for: -fprofile-arcs -ftest-coverage)
-CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -std=c++17 $(DEBUG) $(COVERAGE)
+CPP = 17
+CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -std=c++${CPP} $(DEBUG) $(COVERAGE)
 
 # C PreProcessor flags, generally used for path management, dependency file generation, and dumping preprocessor state
 # Include source subdirectories and generate dependency files during compilation
@@ -57,6 +62,15 @@ LINK.cpp := $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 # -------------------------------------- #
 # googletest flags for the linker
 GOOGLETEST := --library-directory /usr/local/lib -lgtest -lgtest_main
+
+# -------------------------------------- #
+# Docker configuration
+# -------------------------------------- #
+IF_CONTAINER_RUNNING=$(shell docker container inspect -f '{{.State.Running}}' ${DOCKER_BUILD_ENV_CONTAINER_NAME} 2>/dev/null)
+
+DOCKER_RUN_OPTIONS = --rm -t --name=$(DOCKER_BUILD_ENV_CONTAINER_NAME) --mount type=bind,source=${PROJECT_DIR},target=/usr/src/app ${appname}/$(DOCKER_BUILD_ENV_IMAGE_NAME):0.1
+DOCKER_RUN = docker run $(DOCKER_RUN_OPTIONS)
+DOCKER_INTERACTIVE_RUN = docker run -it $(DOCKER_RUN_OPTIONS)
 
 # -------------------------------------- #
 # Files
@@ -95,7 +109,7 @@ gcov_files = $(shell find $(BUILD_DIR) -name "*.gcno")
 ## Executables
 ##
 
-$(appname): ## Build the main executable
+meatball: ## Build the main executable
 $(appname): $(objectfiles) | $(BIN_DIR)
 	@echo
 	@echo "Generating executable: $@"
@@ -157,14 +171,49 @@ $(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
 ##
 ## Docker
 ##
+## You can specify build flags to pass through to the docker container using BUILD_FLAGS=""
+## (e.g., make docker-build BUILD_FLAGS="CXX=g++ CPP=17")
+##
 
 docker-build-env: ## Generate a docker image containing the build environment
 	@echo "Generating a docker image with the build environment dependencies..."
-	docker build -t $(appname)/$(DOCKER_BUILD_ENV_IMAGE_NAME):0.1 -f Dockerfile.buildEnv .
+	docker build -t $(appname)/$(DOCKER_BUILD_ENV_IMAGE_NAME):0.1 -f $(DOCKERFILE_BUILD_ENV_PATH) .
+	@echo
+	@echo "Pruning unused docker images..."
+	docker image prune -f
+
+docker-login: ## Log into the build environment container. Note: if the container is already running, login into existing one
+	@if [ "${IF_CONTAINER_RUNNING}" == "true" ]; then \
+		echo "\nFound running container, attaching to it...\n"; \
+		docker exec -it $(DOCKER_BUILD_ENV_CONTAINER_NAME) sh; \
+	else \
+		echo "\nStarting an interactive docker container session, you can exit with ctrl+D... \n"; \
+		$(DOCKER_INTERACTIVE_RUN); \
+	fi
 
 docker-build: ## Build the source code in a docker container
 	@echo "Running build in docker container..."
-	docker run --rm --name=$(appname)-build --mount type=bind,source=${PROJECT_DIR},target=/usr/src/app ${appname}/$(DOCKER_BUILD_ENV_IMAGE_NAME):0.1
+	$(DOCKER_RUN) make build $(BUILD_FLAGS)
+
+docker-tests: ## Build and run the unit and integration tests in a docker container
+	@echo "Running unit and integration tests in docker container..."
+	$(DOCKER_RUN) sh -c 'make tests $(BUILD_FLAGS) && $(TEST_EXECUTABLE)'
+
+docker-unit-tests: ## Build and run the unit tests in a docker container
+	@echo "Running unit tests in docker container..."
+	$(DOCKER_RUN) sh -c 'make unit_tests $(BUILD_FLAGS) && $(UNIT_TEST_EXECUTABLE)'
+
+docker-integration-tests: ## Build and run the integration tests in a docker container
+	@echo "Running integration tests in docker container..."
+	$(DOCKER_RUN) sh -c 'make integration_tests $(BUILD_FLAGS) && $(INTEGRATION_TEST_EXECUTABLE)'
+
+docker-stop: ## Stop the docker container if it's running
+	@if [ "${IF_CONTAINER_RUNNING}" == "true" ]; then \
+		echo "\nStopping running container '$(DOCKER_BUILD_ENV_CONTAINER_NAME)'\n"; \
+		docker stop $(DOCKER_BUILD_ENV_CONTAINER_NAME); \
+	else \
+		echo "\nNo container to stop, exiting."; \
+	fi
 
 # -------------------------------------- #
 # File Targets
@@ -210,14 +259,16 @@ clean-coverage: ## Remove coverage build artifacts
 ##
 
 .PHONY: help
-help:: ## (Default) Show this help screen
+help: ## (Default) Show this help screen
+	@printf "\nUsage: make <command>\n"
 	@gawk -vG=$$(tput setaf 2) -vR=$$(tput sgr0) ' \
-	  match($$0, "^(([^#:]*[^ :]) *:)?([^#]*)##([^#].+|)$$",a) { \
-	    if (a[2] != "") { printf "    make %s%-18s%s %s\n", G, a[2], R, a[4]; next }\
-	    if (a[3] == "") { print a[4]; next }\
-	    printf "\n%-36s %s\n","",a[4]\
-	  }' $(MAKEFILE_LIST)
+	match($$0, "^(([^#:]*[^ :]) *:)?([^#]*)##([^#].+|)$$",a) { \
+		if (a[2] != "") { printf "    make %s%-18s%s %s\n", G, a[2], R, a[4]; next }\
+		if (a[3] == "") { print a[4]; next }\
+		printf "\n%-36s %s\n","",a[4]\
+	}' $(MAKEFILE_LIST)
 	@echo "" # blank line at the end
+
 .DEFAULT_GOAL := help
 
 # -------------------------------------- #
