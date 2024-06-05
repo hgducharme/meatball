@@ -13,6 +13,7 @@ jobs:
     steps:
     - name: Install analyzer
       run: sudo apt-get install cppcheck
+    - uses: actions/checkout@v4
     - name: Run cppcheck
       run: cppcheck ./src ./tests/
   tests:
