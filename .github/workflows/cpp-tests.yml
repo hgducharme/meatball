@@ -1,6 +1,8 @@
 name: C++ CI
 
 on:
+  push:
+    branchs: [ "main" ]
   pull_request:
     branches: [ "main" ]
     paths: [ "**.cpp", "**.h", "Makefile" ]
