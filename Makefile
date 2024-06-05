@@ -182,15 +182,6 @@ docker-build-env: ## Generate a docker image containing the build environment
 	@echo "Pruning unused docker images..."
 	docker image prune -f
 
-docker-login: ## Log into the build environment container. Note: if the container is already running, login into existing one
-	@if [ "${IF_CONTAINER_RUNNING}" == "true" ]; then \
-		echo "\nFound running container, attaching to it...\n"; \
-		docker exec -it $(DOCKER_BUILD_ENV_CONTAINER_NAME) sh; \
-	else \
-		echo "\nStarting an interactive docker container session, you can exit with ctrl+D... \n"; \
-		$(DOCKER_INTERACTIVE_RUN); \
-	fi
-
 docker-build: ## Build the source code in a docker container
 	@echo "Running build in docker container..."
 	$(DOCKER_RUN) make build $(BUILD_FLAGS)
@@ -206,6 +197,15 @@ docker-unit-tests: ## Build and run the unit tests in a docker container
 docker-integration-tests: ## Build and run the integration tests in a docker container
 	@echo "Running integration tests in docker container..."
 	$(DOCKER_RUN) sh -c 'make integration_tests $(BUILD_FLAGS) && $(INTEGRATION_TEST_EXECUTABLE)'
+
+docker-login: ## Log into the build environment container. Note: if the container is already running, login into existing one
+	@if [ "${IF_CONTAINER_RUNNING}" == "true" ]; then \
+		echo "\nFound running container, attaching to it...\n"; \
+		docker exec -it $(DOCKER_BUILD_ENV_CONTAINER_NAME) sh; \
+	else \
+		echo "\nStarting an interactive docker container session, you can exit with ctrl+D... \n"; \
+		$(DOCKER_INTERACTIVE_RUN); \
+	fi
 
 docker-stop: ## Stop the docker container if it's running
 	@if [ "${IF_CONTAINER_RUNNING}" == "true" ]; then \
@@ -260,7 +260,7 @@ clean-coverage: ## Remove coverage build artifacts
 
 .PHONY: help
 help: ## (Default) Show this help screen
-	@printf "\nUsage: make <command>\n"
+	@printf "\nUsage: make <target>\n"
 	@gawk -vG=$$(tput setaf 2) -vR=$$(tput sgr0) ' \
 	match($$0, "^(([^#:]*[^ :]) *:)?([^#]*)##([^#].+|)$$",a) { \
 		if (a[2] != "") { printf "    make %s%-18s%s %s\n", G, a[2], R, a[4]; next }\
