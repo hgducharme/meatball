@@ -1,9 +1,7 @@
 .git
+.github
 .vscode
 .gitignore
-README.md
+docker
 LICENSE
-Dockerfile**
-.dockerignore
-./bin
-./build
+README.md
