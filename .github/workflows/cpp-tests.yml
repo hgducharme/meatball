@@ -1,14 +1,12 @@
 name: C++ CI
 
 on:
-  push:
-    branches: [ "dev/**" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - name: Install gtest manually
       run: sudo apt-get install libgtest-dev cmake && cd /usr/src/gtest && sudo cmake CMakeLists.txt && sudo make && sudo cp ./lib/libgtest*.a /usr/lib && sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a && sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
