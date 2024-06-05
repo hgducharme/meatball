@@ -36,7 +36,7 @@ CPP := 17
 DEBUG_LEVEL := 0
 OPTIMIZATION_LEVEL := 1
 COVERAGE := --coverage
-CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -fPIC -std=c++${CPP} -O${OPTIMIZATION_LEVEL} -g$(DEBUG_LEVEL) $(COVERAGE)
+CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -fPIC -std=c++$(CPP) -O$(OPTIMIZATION_LEVEL) -g$(DEBUG_LEVEL) $(COVERAGE)
 
 # C PreProcessor flags, generally used for path management, dependency file generation, and dumping preprocessor state
 # Include source subdirectories and generate dependency files during compilation
