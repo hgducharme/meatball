@@ -1,3 +1,5 @@
+cppcheck/
+
 # directories with build artifacts
 bin/
 build/

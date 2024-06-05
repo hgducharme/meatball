@@ -1,4 +1,4 @@
-FROM alpine:3.20 as build-env
+FROM alpine:3.20 as cppcheck
 
 RUN apk update && \
     apk add --no-cache \
@@ -9,21 +9,8 @@ RUN apk update && \
     llvm \
     compiler-rt \
     gdb \
-    lldb
-
-# Install googletest
-RUN cd /tmp && \
-    wget https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz && \
-    tar xf v1.13.0.tar.gz && \
-    cd googletest-1.13.0 && \
-    mkdir install && \
-    cd install && \
-    cmake .. && \
-    make && \
-    make install && \
-    cd ../../ && \
-    rm -rf googletest-1.13.0 && \
-    rm -rf v1.13.0.tar.g
+    lldb \
+    cppcheck
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
@@ -38,7 +25,9 @@ RUN adduser \
     basicuser
 
 # Set permissions for /usr/src/app
-RUN mkdir -p /usr/src/app && chown -R basicuser:basicuser /usr/src/app
+RUN mkdir -p /usr/src/app && mkdir /usr/src/app/cppcheck && chown -R basicuser:basicuser /usr/src/app
 
 USER basicuser
 WORKDIR /usr/src/app
+
+ENTRYPOINT [ "cppcheck", "--cppcheck-build-dir=cppcheck", "src", "--enable=all", "--suppress=missingIncludeSystem", "--suppress=unusedFunction", "--suppress=unmatchedSuppression", "--check-level=exhaustive" ]

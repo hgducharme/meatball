@@ -3,5 +3,6 @@
 .vscode
 .gitignore
 docker
+cppcheck
 LICENSE
 README.md
