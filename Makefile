@@ -36,6 +36,7 @@ CPP := 17
 DEBUG_LEVEL := 0
 OPTIMIZATION_LEVEL := 1
 COVERAGE := --coverage
+
 CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -fPIC -std=c++$(CPP) -O$(OPTIMIZATION_LEVEL) -g$(DEBUG_LEVEL) $(COVERAGE)
 
 # C PreProcessor flags, generally used for path management, dependency file generation, and dumping preprocessor state
@@ -167,7 +168,7 @@ $(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
 	$(COMPILE.cpp) $< --output $@
 	@echo "Built '$<'"
 
-w##
+##
 ## Docker
 ##
 ## You can specify build flags to pass through to the docker container using BUILD_FLAGS=""
@@ -190,7 +191,7 @@ docker-login: ## Log into the build environment container. Note: if the containe
 		echo "\nFound running container, attaching to it...\n"; \
 		docker exec -it $(DOCKER_BUILD_ENV_CONTAINER_NAME) sh; \
 	else \
-		echo "\nStarting an interactive docker container session, you can exit with ctrl+D... \n"; \
+		echo "\nStarting an interactive docker container session, you can exit by typing 'exit'... \n"; \
 		$(DOCKER_INTERACTIVE_RUN); \
 	fi
 
