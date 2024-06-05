@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <cmath>
+#include <algorithm>
 
 MoveVector LegalMoveGenerator::generatePsuedoLegalMoves(const Chessboard & gameState) const
 {
