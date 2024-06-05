@@ -1,0 +1,32 @@
+FROM alpine:3.20 as analysis
+
+RUN apk update && \
+    apk add --no-cache \
+    build-base \
+    cmake \
+    g++ \
+    clang \
+    llvm \
+    compiler-rt \
+    gdb \
+    lldb \
+    cppcheck \
+    clang-extra-tools
+
+# Create a non-privileged user that the app will run under.
+# See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
+ARG UID=10001
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid "${UID}" \
+    basicuser
+
+# Set permissions for /usr/src/app
+RUN mkdir -p /usr/src/app && mkdir /usr/src/app/cppcheck && chown -R basicuser:basicuser /usr/src/app
+
+USER basicuser
+WORKDIR /usr/src/app
