@@ -3,6 +3,7 @@ name: C++ CI
 on:
   pull_request:
     branches: [ "main" ]
+    paths: [ "**.cpp", "**.h", "Makefile" ]
 
 jobs:
   build:
