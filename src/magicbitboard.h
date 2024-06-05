@@ -2,7 +2,6 @@
 
 #include "bitboard.h"
 #include <vector>
-#include <algorithm>
 
 namespace magic_bitboards
 {
