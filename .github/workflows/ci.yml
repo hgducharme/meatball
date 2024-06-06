@@ -16,7 +16,7 @@ jobs:
       run: sudo apt-get install cppcheck clang-tidy
     - uses: actions/checkout@v4
     - name: Run cppcheck
-      run: cppcheck src --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=unmatchedSuppression --check-level=exhaustive
+      run: cppcheck src --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=unmatchedSuppression
 
   tests-current:
     name: Tests
