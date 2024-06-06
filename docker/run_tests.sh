@@ -1,6 +1,5 @@
 #!/bin/sh -l
 
-# TODO: have errors fail the github pipeline
 # TODO: can not mkdir -p ./build while inside Docker container. What's up with permissions?
 
 CURRENT_DIR=$(dirname $0)

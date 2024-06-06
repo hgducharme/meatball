@@ -1,7 +1,5 @@
 #!/bin/sh -l
 
-# TODO: have errors fail the github pipeline
-
 CURRENT_DIR=$(dirname $0)
 PARENT_DIR=$(dirname $(dirname "$0"))
 
