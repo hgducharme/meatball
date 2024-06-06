@@ -22,6 +22,9 @@ Checks: "-*,
 WarningsAsErrors: ""
 HeaderFileExtensions:         ['', 'h','hh','hpp','hxx']
 ImplementationFileExtensions: ['c','cc','cpp','cxx']
+
+# This SO answer is really helpful for understanding HeaderFilterRegex
+# https://stackoverflow.com/a/76996700/3976494
 HeaderFilterRegex: '.*'
 FormatStyle:     none
 UseColor:        true
