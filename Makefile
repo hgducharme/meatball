@@ -88,9 +88,11 @@ gcov_files = $(shell find $(BUILD_DIR) -name "*.gcno")
 # -------------------------------------- #
 # Targets
 # -------------------------------------- #
-.PHONY: all clean $(BIN_DIR) $(BUILD_DIR) $(COVERAGE_DIR)
+.PHONY: all clean $(BIN_DIR) $(BUILD_DIR) $(COVERAGE_DIR) .DEFAULT_GOAL
 
-all: $(appname) unit_tests
+all: $(appname) tests
+
+.DEFAULT_GOAL := $(appname)
 
 $(appname): $(EXECUTABLE)
 
