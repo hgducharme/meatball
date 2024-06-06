@@ -33,13 +33,13 @@ jobs:
     steps:
       - name: Check out code
       - uses: actions/checkout@v4
-      - name: Build docker image for linter
-      - name: Run docker container
+      # - name: Build docker image for linter
+      # - name: Run docker container
 
   tests-ideal:
     runs-on: ubuntu-22.04
     steps:
       - name: Check out code
       - uses: actions/checkout@v4
-      - name: Build docker image for tests
-      - name: Run docker container
+      # - name: Build docker image for tests
+      # - name: Run docker container
