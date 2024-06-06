@@ -33,15 +33,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build docker image
-      run docker build -t meatball/linter:0.1 -f ./docker/Dockerfile.linter .
+      run: docker build -t meatball/linter:0.1 -f ./docker/Dockerfile.linter .
       - name: Run docker container
-      docker run --rm -t --name=meatball-linter --mount type=bind,source=.,target=/usr/src/app meatball/linter:0.1
+      run: docker run --rm -t --name=meatball-linter --mount type=bind,source=.,target=/usr/src/app meatball/linter:0.1
 
   tests-ideal:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: Build docker image
-      run docker build -t meatball/tests:0.1 -f ./docker/Dockerfile.tests .
+      run: docker build -t meatball/tests:0.1 -f ./docker/Dockerfile.tests .
       - name: Run docker container
-      docker run --rm -t --name=meatball-tests --mount type=bind,source=.,target=/usr/src/app meatball/tests:0.1
+      run: docker run --rm -t --name=meatball-tests --mount type=bind,source=.,target=/usr/src/app meatball/tests:0.1
