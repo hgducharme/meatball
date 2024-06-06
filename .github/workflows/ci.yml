@@ -30,11 +30,9 @@ jobs:
       
   linter-ideal:
     runs:
-      - uses: actions/checkout@v4
       using: 'docker'
       image: 'Dockerfile.linter'
 
     tests-ideal:
-      - uses: actions/checkout@v4
       using: 'docker'
       image: 'Dockerfile.tests'
