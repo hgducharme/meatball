@@ -1,4 +1,4 @@
-name: C++ CI
+name: C++ CI Pipeline
 
 on:
   push:
@@ -8,15 +8,18 @@ on:
     paths: [ "**.cpp", "**.h", "Makefile" ]
 
 jobs:
-  code-analyzer:
+  linter-current:
+    name: Linter
     runs-on: ubuntu-22.04
     steps:
-    - name: Install analyzer
-      run: sudo apt-get install cppcheck
+    - name: Install linters
+      run: sudo apt-get install cppcheck clang-tidy
     - uses: actions/checkout@v4
     - name: Run cppcheck
-      run: cppcheck ./src ./tests/
-  tests:
+      run: cppcheck src --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=unmatchedSuppression --check-level=exhaustive
+
+  tests-current:
+    name: Tests
     runs-on: ubuntu-22.04
     steps:
     - name: Install gtest from source
@@ -24,3 +27,17 @@ jobs:
     - uses: actions/checkout@v4
     - name: Run all unit and integration tests
       run: make tests
+      
+  linter-ideal:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run linter
+        run: ./docker/run_linter.sh
+
+  tests-ideal:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: ./docker/run_tests.sh
