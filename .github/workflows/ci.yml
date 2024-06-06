@@ -33,6 +33,7 @@ jobs:
       using: 'docker'
       image: 'Dockerfile.linter'
 
-    tests-ideal:
+  tests-ideal:
+    runs:
       using: 'docker'
       image: 'Dockerfile.tests'
