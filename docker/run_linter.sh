@@ -1,4 +1,5 @@
 #!/bin/sh -l
+set -e
 
 CURRENT_DIR=$(dirname $0)
 PARENT_DIR=$(dirname $(dirname "$0"))

@@ -1,6 +1,5 @@
 #!/bin/sh -l
-
-# TODO: can not mkdir -p ./build while inside Docker container. What's up with permissions?
+set -e
 
 CURRENT_DIR=$(dirname $0)
 PARENT_DIR=$(dirname $(dirname "$0"))
