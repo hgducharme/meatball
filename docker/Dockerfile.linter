@@ -13,8 +13,25 @@ FROM alpine:3.20 as base
 
 RUN apk update \
     && apk add --no-cache clang-extra-tools \
-    && clang-tidy --version | grep "LLVM version"
+    && clang-tidy --version | grep "LLVM version" \
+    cppcheck
 
-WORKDIR /app
+# Create a non-privileged user that the app will run under.
+# See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
+ARG UID=10001
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid "${UID}" \
+    basicuser
 
-ENTRYPOINT ["/app/docker/linter_entrypoint.sh"]
+# Set permissions for /usr/src/app
+RUN mkdir -p /usr/src/app && chown -R basicuser:basicuser /usr/src/app
+
+USER basicuser
+WORKDIR /usr/src/app
+
+ENTRYPOINT ["/usr/src/app/docker/entrypoints/linter_entrypoint.sh"]
