@@ -2,6 +2,7 @@
 set -e
 
 IMAGE_NAME=tests
+
 CURRENT_DIR=$(dirname $0)
 PARENT_DIR=$(dirname $(dirname "$0"))
 

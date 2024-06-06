@@ -1,0 +1,28 @@
+---
+# The clang-tidy documentation is super helpful
+# see: https://clang.llvm.org/extra/clang-tidy/
+# Make sure you're reading the documentation for the right clang-tidy version!
+
+# https://clang.llvm.org/extra/clang-tidy/checks/list.html
+Checks: "-*,
+         clang-analyzer*,
+         clang-diagnostic-*,
+         cppcoreguidelines-*,
+         bugprone*,
+         modernize*,
+         -modernize-use-trailing-return-type,
+         performance*,
+         readability*,
+         misc*,
+         hicpp*
+"
+
+# See the list of config file options at the bottom of clang-tidy --help, under the section 'Configuration files'
+# https://clang.llvm.org/extra/clang-tidy/#id2
+WarningsAsErrors: ""
+HeaderFileExtensions:         ['', 'h','hh','hpp','hxx']
+ImplementationFileExtensions: ['c','cc','cpp','cxx']
+HeaderFilterRegex: '.*'
+FormatStyle:     none
+UseColor:        true
+SystemHeaders:   false

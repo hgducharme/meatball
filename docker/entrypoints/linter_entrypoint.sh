@@ -8,7 +8,7 @@ echo ""
 echo "cppcheck output"
 echo ""
 echo "**************************************************************************************************************"
-cppcheck src --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=unmatchedSuppression --check-level=exhaustive
+cppcheck src --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=unmatchedSuppression
 
 echo "**************************************************************************************************************"
 echo ""
@@ -16,8 +16,9 @@ echo "clang-tidy output"
 echo ""
 echo "**************************************************************************************************************"
 
-# from chatgpt:
-# find . -name '*.cpp' -o -name '*.h' | xargs clang-tidy
-
-export CPP_SRC_FILES=$(find /usr/src/app/src -name "*.*" | grep -E "(\.cpp$|\.h$|$)")
-if [ -n "$CPP_SRC_FILES" ]; then clang-tidy --header-filter=*.h -checks='cppcoreguidelines-*,performance-*,readibility-*,modernize-*,misc-*,clang-analyzer-*,-modernize-use-trailing-return-type' $CPP_SRC_FILES; echo $?; fi;
+export CPP_SRC_FILES=$(find ./src/ -name *.cpp)
+if [ -n "$CPP_SRC_FILES" ]; then
+clang-tidy --config-file=.clang-tidy --verify-config
+clang-tidy --config-file=.clang-tidy $CPP_SRC_FILES --
+echo $?;
+fi
