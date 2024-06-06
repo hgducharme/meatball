@@ -1,4 +1,6 @@
 #!/bin/sh -l
+set -e
 
-make tests || exit
-./bin/tests || exit
+mkdir -p ./build/.src/
+make tests
+./bin/tests
