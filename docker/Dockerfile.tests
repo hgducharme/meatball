@@ -40,7 +40,7 @@ RUN adduser \
 # Set permissions for /usr/src/app
 RUN mkdir -p /usr/src/app && chown -R basicuser:basicuser /usr/src/app
 
-USER basicuser
+# USER basicuser
 WORKDIR /usr/src/app
 
 ENTRYPOINT ["./docker/entrypoints/tests_entrypoint.sh"]
