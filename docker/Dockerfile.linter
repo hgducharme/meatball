@@ -1,38 +1,28 @@
 FROM alpine:3.20 as base
 
-# From: https://github.com/cpp-linter/clang-tools-docker/blob/master/Dockerfile.alpine
-# SHELL ["/bin/ash", "-o", "pipefail", "-c"]
-# RUN apk update \
-#     && apk add --no-cache clang-extra-tools \
-#     && clang-format --version | grep -E "clang-format version" \
-#     && clang-tidy --version | grep "LLVM version"
-
-# WORKDIR /src
-
-# CMD [""]
-
 RUN apk update \
     && apk add --no-cache \
     clang-extra-tools \
     cppcheck \
     && clang-tidy --version | grep "LLVM version"
 
-# Create a non-privileged user that the app will run under.
-# See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
-ARG UID=10001
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    basicuser
+## NOTE: Running as a non-root user will not work in Github Actions, so commenting this out...
+## see: https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions
+## Create a non-privileged user that the app will run under.
+## See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
+# ARG UID=10001
+# RUN adduser \
+#     --disabled-password \
+#     --gecos "" \
+#     --home "/nonexistent" \
+#     --shell "/sbin/nologin" \
+#     --no-create-home \
+#     --uid "${UID}" \
+#     basicuser
+# # Set permissions for /usr/src/app
+# RUN mkdir -p /usr/src/app && chown -R basicuser:basicuser /usr/src/app
+# USER basicuser
 
-# Set permissions for /usr/src/app
-RUN mkdir -p /usr/src/app && chown -R basicuser:basicuser /usr/src/app
-
-USER basicuser
 WORKDIR /usr/src/app
 
 ENTRYPOINT ["./docker/entrypoints/linter_entrypoint.sh"]

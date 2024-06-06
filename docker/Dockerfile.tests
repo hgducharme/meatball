@@ -25,22 +25,23 @@ RUN cd /tmp && \
     rm -rf googletest-1.13.0 && \
     rm -rf v1.13.0.tar.g
 
-# Create a non-privileged user that the app will run under.
-# See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
-ARG UID=10001
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    basicuser
-
-# Set permissions for /usr/src/app
-RUN mkdir -p /usr/src/app && chown -R basicuser:basicuser /usr/src/app
-
+## NOTE: Running as a non-root user will not work in Github Actions, so commenting this out...
+## see: https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions
+## Create a non-privileged user that the app will run under.
+## See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
+# ARG UID=10001
+# RUN adduser \
+#     --disabled-password \
+#     --gecos "" \
+#     --home "/nonexistent" \
+#     --shell "/sbin/nologin" \
+#     --no-create-home \
+#     --uid "${UID}" \
+#     basicuser
+# # Set permissions for /usr/src/app
+# RUN mkdir -p /usr/src/app && chown -R basicuser:basicuser /usr/src/app
 # USER basicuser
+
 WORKDIR /usr/src/app
 
 ENTRYPOINT ["./docker/entrypoints/tests_entrypoint.sh"]
