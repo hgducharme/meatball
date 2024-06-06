@@ -1,5 +1,4 @@
 #!/bin/sh -l
 
-cd /usr/src/app/
-make tests
-./bin/tests
+make tests || exit
+./bin/tests || exit
