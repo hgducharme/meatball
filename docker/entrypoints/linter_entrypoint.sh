@@ -20,4 +20,4 @@ echo "**************************************************************************
 # find . -name '*.cpp' -o -name '*.h' | xargs clang-tidy
 
 export CPP_SRC_FILES=$(find /usr/src/app/src -name "*.*" | grep -E "(\.cpp$|\.h$|$)")
-if [ -n "$CPP_SRC_FILES" ]; then clang-tidy -checks='cppcoreguidelines-*,performance-*,readibility-*,modernize-*,misc-*,clang-analyzer-*,-modernize-use-trailing-return-type' --header-filter=*.h $CPP_SRC_FILES; echo $?; fi;
+if [ -n "$CPP_SRC_FILES" ]; then clang-tidy --header-filter=*.h -checks='cppcoreguidelines-*,performance-*,readibility-*,modernize-*,misc-*,clang-analyzer-*,-modernize-use-trailing-return-type' $CPP_SRC_FILES; echo $?; fi;
