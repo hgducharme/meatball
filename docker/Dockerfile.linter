@@ -35,4 +35,4 @@ RUN mkdir -p /usr/src/app && chown -R basicuser:basicuser /usr/src/app
 USER basicuser
 WORKDIR /usr/src/app
 
-ENTRYPOINT ["/usr/src/app/docker/entrypoints/linter_entrypoint.sh"]
+ENTRYPOINT ["./docker/entrypoints/linter_entrypoint.sh"]
