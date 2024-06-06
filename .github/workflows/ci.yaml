@@ -1,0 +1,40 @@
+name: C++ CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    paths: [ "**.cpp", "**.h", "Makefile" ]
+
+jobs:
+  linter-current:
+    name: Linter
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Install linters
+      run: sudo apt-get install cppcheck clang-tidy
+    - uses: actions/checkout@v4
+    - name: Run cppcheck
+      run: cppcheck src --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=unmatchedSuppression --check-level=exhaustive
+    - name: Run clang-tidy
+      run: clang-tidy
+
+  tests-current:
+    name: Tests
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Install gtest from source
+      run: sudo apt-get install libgtest-dev cmake && cd /usr/src/gtest && sudo cmake CMakeLists.txt && sudo make && sudo cp ./lib/libgtest*.a /usr/lib && sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a && sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
+    - uses: actions/checkout@v4
+    - name: Run all unit and integration tests
+      run: make tests
+      
+  linter-ideal:
+    runs:
+      using: 'docker'
+      image: 'Dockerfile.linter'
+
+    tests-ideal:
+      using: 'docker'
+      image: 'Dockerfile.tests'

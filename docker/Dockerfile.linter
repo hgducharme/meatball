@@ -1,0 +1,20 @@
+FROM alpine:3.20 as base
+
+# From: https://github.com/cpp-linter/clang-tools-docker/blob/master/Dockerfile.alpine
+# SHELL ["/bin/ash", "-o", "pipefail", "-c"]
+# RUN apk update \
+#     && apk add --no-cache clang-extra-tools \
+#     && clang-format --version | grep -E "clang-format version" \
+#     && clang-tidy --version | grep "LLVM version"
+
+# WORKDIR /src
+
+# CMD [""]
+
+RUN apk update \
+    && apk add --no-cache clang-extra-tools \
+    && clang-tidy --version | grep "LLVM version"
+
+WORKDIR /app
+
+ENTRYPOINT ["/app/docker/linter_entrypoint.sh"]
