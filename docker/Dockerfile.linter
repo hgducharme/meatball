@@ -12,9 +12,10 @@ FROM alpine:3.20 as base
 # CMD [""]
 
 RUN apk update \
-    && apk add --no-cache clang-extra-tools \
-    && clang-tidy --version | grep "LLVM version" \
-    cppcheck
+    && apk add --no-cache \
+    clang-extra-tools \
+    cppcheck \
+    && clang-tidy --version | grep "LLVM version"
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
