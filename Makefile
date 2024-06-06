@@ -109,7 +109,6 @@ tests: $(objectfiles_without_main) $(test_objectfiles) | $(BIN_DIR)
 	@echo "Building: $@"
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(GOOGLETEST) --output $(TEST_EXECUTABLE)
-	./$(TEST_EXECUTABLE)
 
 # Build the unit tests executable by linking source objects (without main.o) and unit test objects
 unit_tests: $(objectfiles_without_main) $(unit_test_objectfiles) $(test_utility_objectfiles) | $(BIN_DIR)
@@ -117,7 +116,6 @@ unit_tests: $(objectfiles_without_main) $(unit_test_objectfiles) $(test_utility_
 	@echo "Building: $@"
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(GOOGLETEST) --output $(UNIT_TEST_EXECUTABLE)
-	./$(UNIT_TEST_EXECUTABLE)
 
 # Build the integration tests executable by linking source objects (without main.o) and integration test objects
 integration_tests: $(objectfiles_without_main) $(integration_test_objectfiles) $(test_utility_objectfiles) | $(BIN_DIR)
@@ -125,7 +123,6 @@ integration_tests: $(objectfiles_without_main) $(integration_test_objectfiles) $
 	@echo "Building: $@"
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(GOOGLETEST) --output $(INTEGRATION_TEST_EXECUTABLE)
-	./$(INTEGRATION_TEST_EXECUTABLE)
 
 # Compile .cpp into .o
 $(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
