@@ -14,8 +14,8 @@ echo "clang-tidy output"
 echo ""
 echo "**************************************************************************************************************"
 
-export CPP_SRC_FILES=$(find /usr/src/app/src -name "*.*" | grep -E "(\.cpp$|\.h$|$)")
-if [ -n "$CPP_SRC_FILES" ]; then clang-tidy -checks='cppcoreguidelines-*,performance-*,readibility-*,modernize-*,misc-*,clang-analyzer-*,-modernize-use-trailing-return-type' --header-filter=*.h --export-fixes=clang-tidy-fixes $CPP_SRC_FILES; echo $?; fi;
-
-
+# from chatgpt:
 # find . -name '*.cpp' -o -name '*.h' | xargs clang-tidy
+
+export CPP_SRC_FILES=$(find /usr/src/app/src -name "*.*" | grep -E "(\.cpp$|\.h$|$)")
+if [ -n "$CPP_SRC_FILES" ]; then clang-tidy -checks='cppcoreguidelines-*,performance-*,readibility-*,modernize-*,misc-*,clang-analyzer-*,-modernize-use-trailing-return-type' --header-filter=*.h $CPP_SRC_FILES; echo $?; fi;
