@@ -1,5 +1,4 @@
 #!/bin/sh -l
-set -e
 
 echo "Running linter_entrypoint.sh..."
 
@@ -8,7 +7,7 @@ echo ""
 echo "cppcheck output"
 echo ""
 echo "**************************************************************************************************************"
-cppcheck src --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=unmatchedSuppression || exit
+cppcheck src --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=unmatchedSuppression --std=c++17 --error-exitcode=1 || exit
 
 echo "**************************************************************************************************************"
 echo ""
