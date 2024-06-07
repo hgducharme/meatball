@@ -2,7 +2,7 @@
 
 #include "../src/types.h"
 #include "../src/constants.h"
-#include "../src/movegenerator.h"
+#include "../src/move_generation.h"
 #include "../src/utils.h"
 
 #include <iostream>
@@ -81,7 +81,6 @@ std::string moveToString(const Move &m)
 
 PerftResults __perft(Chessboard gameState, const uint16_t depth, const uint16_t initialDepth, const bool showDivideOutput, MoveVector & moveHistory)
 {
-   LegalMoveGenerator moveGenerator;
    PerftResults results;
 
    if (depth == 0)
@@ -90,7 +89,7 @@ PerftResults __perft(Chessboard gameState, const uint16_t depth, const uint16_t 
       return results;
    }
 
-   MoveVector moves = moveGenerator.generateLegalMoves(gameState);
+   MoveVector moves = move_generation::generateLegalMoves(gameState);
    for (const Move & move : moves)
    {
       Chessboard originalState = gameState;
