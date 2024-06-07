@@ -150,7 +150,7 @@ Bitboard getLeaperPieceAttacks(const LeaperPiece leaperPiece, const Square squar
 Bitboard getSliderPieceAttacks(const SliderPiece sliderPiece, const Square square, const Bitboard & boardState)
 {
     magic_bitboards::HashingParameters hashingParameters;
-    Bitboard * attackDatabase;
+    const Bitboard * attackDatabase;
 
     switch (sliderPiece)
     {

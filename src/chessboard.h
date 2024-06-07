@@ -37,7 +37,7 @@ class Chessboard {
         static int parseMoveNumber(const std::string & moveNumberFEN);
 
         Chessboard();
-        Chessboard(const std::string & fen);
+        explicit Chessboard(const std::string & fen);
         const Bitboard getOccupiedSquares() const;
         const Bitboard & getBitboard(const PieceType piece) const;
         const Bitboard & getBitboard(const Color color) const;
