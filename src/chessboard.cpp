@@ -168,7 +168,6 @@ const GameState Chessboard::parsePiecePositions(const std::string & piecePositio
             default:
             {
                 throw exceptions::fen::InvalidFEN("Unable to parse piece positions. Received unknwon character: '" + utils::charToString(c) + "'");
-                break;
             }
         }
         squarePosition++;
@@ -202,7 +201,6 @@ Color Chessboard::parseActivePlayer(const std::string & colorFEN)
             default:
             {
                 throw exceptions::fen::InvalidFEN("Unable to parse active player. Received unknown character: '" + utils::charToString(c) + "'");
-                break;
             }
         }
     }
@@ -246,7 +244,6 @@ const std::pair<CastleRights, CastleRights> Chessboard::parseCastleRights(const 
             default:
             {
                 throw exceptions::fen::InvalidFEN("Unable to parse castle rights. Received unknown character: '" + utils::charToString(c) + "'");
-                break;
             }
         }
     }
@@ -333,12 +330,10 @@ Square Chessboard::parseEnPassantSquare(const std::string & enPassantSquareFEN)
             case '-':
             {
                 return Square::NO_SQUARE;
-                break;
             }
             default:
             {
                 throw exceptions::fen::InvalidFEN("Unable to parse en passant square. Received unknown character: '" + utils::charToString(c) + "'");
-                break;
             }
         }
     }
@@ -419,6 +414,9 @@ Chessboard::Chessboard(const std::string & fen)
     // Initialize castle rights
     castleRights[Color::WHITE] = parsedState.whiteCastleRights;
     castleRights[Color::BLACK] = parsedState.blackCastleRights;
+    
+    previousCastleRightsState[Color::WHITE] = parsedState.whiteCastleRights;
+    previousCastleRightsState[Color::BLACK] = parsedState.blackCastleRights;
 
     activePlayer_ = parsedState.activePlayer;
     nonActivePlayer_ = Chessboard::getOpponentColor(activePlayer_);

@@ -231,7 +231,7 @@ Bitboard LegalMoveGenerator::getPawnSinglePush(const Color activePlayer, const S
 {
     Bitboard singlePush;
 
-    singlePush |= utils::shiftSquareByDirection(startingSquare, direction);
+    singlePush |= utils::getSquareInDirectionAsBitboard(startingSquare, direction);
 
     // For a white pawn, make sure it's not pushing from rank 8 back to rank 1
     // For a black pawn, make sure it's not pushing from rank 1 to rank 8
@@ -253,14 +253,14 @@ Bitboard LegalMoveGenerator::getPawnDoublePush(const Color activePlayer, const S
 {
     Bitboard doublePush;
 
-    const Bitboard oneSquareForward = utils::shiftSquareByDirection(startingSquare, 1 * direction);
-    const Bitboard twoSquaresForward = utils::shiftSquareByDirection(startingSquare, 2 * direction);
+    const Bitboard oneSquareForward = utils::getSquareInDirectionAsBitboard(startingSquare, 1 * direction);
+    const Bitboard twoSquaresForward = utils::getSquareInDirectionAsBitboard(startingSquare, 2 * direction);
     const bool squareInFrontIsNotOccupied = (oneSquareForward & occupiedSquares).noBitsSet();
     const bool twoSquaresInFrontIsNotOccupied = (twoSquaresForward & occupiedSquares).noBitsSet();
     const bool squaresInFrontAreNotOccupied = (squareInFrontIsNotOccupied && twoSquaresInFrontIsNotOccupied);
     if (squaresInFrontAreNotOccupied && pawnHasNotMoved(activePlayer, startingSquare))
     {
-        doublePush |= utils::shiftSquareByDirection(startingSquare, 2 * direction);
+        doublePush |= utils::getSquareInDirectionAsBitboard(startingSquare, 2 * direction);
     }
 
     return doublePush;
@@ -399,10 +399,7 @@ Bitboard LegalMoveGenerator::getCastles(const Chessboard & gameState) const
 
             return kingSideCastle | queenSideCastle;
         }
-        case CastleRights::NUMBER_OF_CASTLE_STATES:
-        {
-            throw exceptions::move_generation::InvalidSwitchCase("Not a valid switch case. Received 'NUMBER_OF_CASTLE_STATES'.");
-        }
+        default: { throw std::invalid_argument("Received invalid CastleRights arguments"); }
     }
 }
 

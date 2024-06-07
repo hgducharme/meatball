@@ -14,14 +14,9 @@
 namespace utils
 {
 
-Bitboard shiftSquareByDirection(const Square square, const int numberOfBits)
+Bitboard getSquareInDirectionAsBitboard(const Square square, const int numberOfBits)
 {
-   Bitboard squareAsBitboard(square);
-   return shiftSquareByDirection(squareAsBitboard, numberOfBits);
-}
-
-Bitboard shiftSquareByDirection(const Bitboard & oldPosition, const int numberOfBits)
-{
+   Bitboard oldPosition(square);
    Bitboard newPosition;
 
    if (numberOfBits > 0)
@@ -48,37 +43,54 @@ int calculateDistanceToEdgeOfBoard(Square square, Direction direction)
     switch (direction)
     {
         case NORTH_EAST:
+        {
             verticalDistanceToEdge = Rank::RANK_8 - currentRank;
             horizontalDistanceToEdge = File::FILE_H - Chessboard::squareToFile(square);
             distance = std::min(horizontalDistanceToEdge, verticalDistanceToEdge);
             break;
+        }
         case NORTH_WEST:
+        {
             verticalDistanceToEdge = Rank::RANK_8 - currentRank;
             horizontalDistanceToEdge = currentFile;
             distance = std::min(horizontalDistanceToEdge, verticalDistanceToEdge);
             break;
+        }
         case SOUTH_EAST:
+        {
             verticalDistanceToEdge = currentRank;
             horizontalDistanceToEdge = File::FILE_H - currentFile;
             distance = std::min(horizontalDistanceToEdge, verticalDistanceToEdge);
             break;
+        }
         case SOUTH_WEST:
+        {
             verticalDistanceToEdge = currentRank;
             horizontalDistanceToEdge = currentFile;
             distance = std::min(horizontalDistanceToEdge, verticalDistanceToEdge);
             break;
+        }
         case NORTH:
+        {
             distance = Rank::RANK_8 - currentRank;
             break;
+        }
         case SOUTH:
+        {
             distance = currentRank;
             break;
+        }
         case EAST:
+        {
             distance = File::FILE_H - currentFile;
             break;
+        }
         case WEST:
+        {
             distance = currentFile;
             break;
+        }
+        default: { throw std::invalid_argument("Received invalid Direction argument"); }
     }
 
     return distance;

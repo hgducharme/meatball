@@ -27,13 +27,13 @@ class Move
     private:
         /* An integer that is packed with all the information about the move. */
         uint32_t _encoded = 0;
-        uint8_t _flags = 0;
         std::optional<CapturedPiece> _capturedPiece;
         std::optional<PieceType> _promotionPiece;
         Color _color;
         PieceType _pieceType;
         Square _startSquare;
         Square _endSquare;
+        uint8_t _flags = 0;
 
     public:
         /* Flags to indicate what type of move this is. For en passant captures, only the en passant flag should be used, NOT the capture flag. */

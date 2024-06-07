@@ -14,6 +14,7 @@ namespace magic_bitboards
 
 namespace
 {
+void initializeHashingParameters();
 
     // The number of set bits in the bishop blocker mask for each square
     static inline constexpr int NUMBER_OF_SET_BITS_IN_BISHOP_BLOCKER_MASK[Square::NUMBER_OF_SQUARES] = {
@@ -43,21 +44,14 @@ namespace
 
     void initializeHashingParameters()
     {
-        for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
-        {
-            HashingParameters bishopEntry;
-            HashingParameters rookEntry;
-
-            BISHOP_HASHING_PARAMETERS_LOOKUP[square] = bishopEntry;
-            ROOK_HASHING_PARAMETERS_LOOKUP[square] = rookEntry;
-        }
+        memset(&BISHOP_HASHING_PARAMETERS_LOOKUP, 0, Square::NUMBER_OF_SQUARES * sizeof(HashingParameters));
+        memset(&ROOK_HASHING_PARAMETERS_LOOKUP, 0, Square::NUMBER_OF_SQUARES * sizeof(HashingParameters));
     }
 
     template <uint8_t size>
-    Bitboard calculateBlockerMask(const Bitboard & position, const Direction (&sliderPieceDirections)[size])
+    Bitboard calculateBlockerMask(const Square currentSquare, const Direction (&sliderPieceDirections)[size])
     {
         Bitboard potentialBlockerSquares;
-        Square currentSquare = static_cast<Square>(position.findIndexLSB());
 
         for (const Direction direction : sliderPieceDirections)
         {
@@ -65,7 +59,7 @@ namespace
 
             for (int i = 1; i < distanceToEdge; i++)
             {
-                potentialBlockerSquares |= utils::shiftSquareByDirection(position, i * direction);
+                potentialBlockerSquares |= utils::getSquareInDirectionAsBitboard(currentSquare, i * direction);
             }
         }
 
@@ -74,17 +68,17 @@ namespace
 
     void generateBlockerMasks()
     {
-        for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
+        for (int i = 0; i < Square::NUMBER_OF_SQUARES; i++)
         {
-            Bitboard squareBitboard(square);
+            Square square = static_cast<Square>(i);
 
             // Calculate the blocker mask for each piece on this square
-            BISHOP_HASHING_PARAMETERS_LOOKUP[square].blockerMask = calculateBlockerMask(squareBitboard, constants::BISHOP_DIRECTIONS);
-            ROOK_HASHING_PARAMETERS_LOOKUP[square].blockerMask = calculateBlockerMask(squareBitboard, constants::ROOK_DIRECTIONS);
+            BISHOP_HASHING_PARAMETERS_LOOKUP[i].blockerMask = calculateBlockerMask(square, constants::BISHOP_DIRECTIONS);
+            ROOK_HASHING_PARAMETERS_LOOKUP[i].blockerMask = calculateBlockerMask(square, constants::ROOK_DIRECTIONS);
 
             // Store the shift amount to be used in the hash function
-            BISHOP_HASHING_PARAMETERS_LOOKUP[square].shiftAmount = BISHOP_HASHING_PARAMETERS_LOOKUP[square].blockerMask.numberOfSetBits();
-            ROOK_HASHING_PARAMETERS_LOOKUP[square].shiftAmount = ROOK_HASHING_PARAMETERS_LOOKUP[square].blockerMask.numberOfSetBits();
+            BISHOP_HASHING_PARAMETERS_LOOKUP[i].shiftAmount = BISHOP_HASHING_PARAMETERS_LOOKUP[i].blockerMask.numberOfSetBits();
+            ROOK_HASHING_PARAMETERS_LOOKUP[i].shiftAmount = ROOK_HASHING_PARAMETERS_LOOKUP[i].blockerMask.numberOfSetBits();
         }
     }
 
@@ -127,18 +121,16 @@ namespace
     }
 
     template <uint8_t size>
-    Bitboard calculateAttacksFromSquare(const Square & square, const Direction (&attackDirections)[size], const Bitboard & blockerVariation)
+    Bitboard calculateAttacksFromSquare(const Square square, const Direction (&attackDirections)[size], const Bitboard & blockerVariation)
     {
         Bitboard attackBoard;
-        Bitboard squareBitboard(square);
-
         for (Direction direction : attackDirections)
         {
             int distanceToEdge = utils::calculateDistanceToEdgeOfBoard(square, direction);
 
             for (int i = 1; i <= distanceToEdge; i++)
             {
-                Bitboard targetSquare = utils::shiftSquareByDirection(squareBitboard, i * direction);
+                Bitboard targetSquare = utils::getSquareInDirectionAsBitboard(square, i * direction);
                 attackBoard |= targetSquare;
 
                 // The piece won't be able to move beyond the target square if it is occupied
