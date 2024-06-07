@@ -23,8 +23,6 @@ This code is written with readability in mind and is not meant to be fully optim
 
 - C++17
 
-This project was built using C++17, so make sure you have at least C++17 installed on your system.
-
 Clone the directory and build the executable
 
 ```bash
@@ -33,7 +31,9 @@ cd meatball/
 make meatball
 ```
 
-If successful, you should see the executable `/bin/meatball`
+If successful, you should see the executable `/bin/meatball`. 
+
+Run `make help` for more information about what targets can be ran.
 
 ## Tests
 
