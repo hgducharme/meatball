@@ -21,7 +21,7 @@ This code is written with readability in mind and is not meant to be fully optim
 
 ### Dependencies
 
-- C++17
+- C++17 (minimum)
 
 Clone the directory and build the executable
 
@@ -37,14 +37,9 @@ Run `make help` for more information about what targets can be ran.
 
 ## Tests
 
-### Dependencies
-
-- [googletest 1.13.0](https://github.com/google/googletest/releases/tag/v1.13.0)
-- cmake for building googletest
-
 ### Running tests using Docker
 
-1. Make sure the docker daemone is already running (see: [starting docker daemon](https://docs.docker.com/config/daemon/start/))
+1. Make sure the docker daemon is already running (see: [starting docker daemon](https://docs.docker.com/config/daemon/start/))
 2. Run the test suite
 
 ```bash
@@ -53,6 +48,11 @@ make docker-tests
 ```
 
 ### Running tests locally
+
+#### Dependencies
+
+- [googletest 1.13.0](https://github.com/google/googletest/releases/tag/v1.13.0)
+- cmake for building googletest
 
 To install `googletest-1.13.0`:
 
@@ -124,36 +124,24 @@ It can be difficult to know where to start debugging the move generation when a 
 
 ## Docker Support
 
-If you have docker installed then you can do any of the following things within a docker container:
+If you have docker installed then you can do any of the following things within a docker container.
 
-1. Build the source code
-2. Run a linter
-3. Run the test suite
+NOTE: The docker daemon must be already running
 
-Steps to use docker:
-
-1. Ensure the docker daemon is running and go the the project root
-
-  ```bash
-  cd /path/to/meatball
-  ```
-
-2. Build the source code:
-
+1. Build the source code (`BUILD_FLAGS` is optional)
+  
   ```bash
   make docker-build BUILD_FLAGS="CXX=g++ DEBUG_LEVEL=0 OPTIMIZATION_LEVEL=3"
   ```
 
-3. Run the linter
+3. Run a linter
 
   ```bash
-  cd /path/to/meatball/
   make docker-linter
   ```
 
-4. Run the test suite
-
+5. Run the test suite
+  
   ```bash
-  cd /path/to/meatball/
   make docker-tests
   ```
