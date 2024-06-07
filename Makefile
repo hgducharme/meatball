@@ -28,9 +28,15 @@ CXX := clang++
 
 # Compiler flags
 CPP := 17
-DEBUG_LEVEL := 0
-OPTIMIZATION_LEVEL := 1
+
+# Debug compiler options
+DEBUG_LEVEL := 2
+OPTIMIZATION_LEVEL := g
 COVERAGE := --coverage
+
+# Better compiler options for making a release executable
+# DEBUG_LEVEL := 0
+# OPTIMIZATION_LEVEL := 3
 
 CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -fPIC -std=c++$(CPP) -O$(OPTIMIZATION_LEVEL) -g$(DEBUG_LEVEL) $(COVERAGE)
 
@@ -98,9 +104,9 @@ gcov_files = $(shell find $(BUILD_DIR) -name "*.gcno")
 ##
 ## Compilation options:
 ##   CXX=<g++/clang++>       The compiler to use (default: clang++)
-##   CPP=<integer>           The C++ standard to use during compilation (default: 17)
-##   DEBUG_LEVEL=<0-3>       Specify how much debugging information to produce (default: 0)
-##   OPTIMIZATION_LEVEL=<>   The amount of optimization to use. See the compiler documentation for available options (default: 1)
+##   CPP=<int>           The C++ standard to use during compilation (default: 17)
+##   DEBUG_LEVEL=<0-3>       Specify how much debugging information to produce (default: 2)
+##   OPTIMIZATION_LEVEL=<char>   The amount of optimization to use. See the compiler documentation for available options (default: g)
 
 ##
 ## Executables
