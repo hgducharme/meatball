@@ -8,18 +8,27 @@ on:
     paths: [ "**.cpp", "**.h", "Makefile" ]
 
 jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run linter
+        run: make docker-build
+
   linter:
     name: Linter
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: Run linter
-        run: ./docker/run_linter.sh
+        run: make docker-linter
 
   tests:
     name: Tests
+    needs: Build # Only run the tests if we know the build is successful
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: Run tests
-        run: ./docker/run_tests.sh
+        run: make docker-tests
