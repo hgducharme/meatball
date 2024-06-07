@@ -16,19 +16,18 @@ namespace utils
 
 Bitboard getSquareInDirectionAsBitboard(const Square square, const int numberOfBits)
 {
-   Bitboard oldPosition(square);
-   Bitboard newPosition;
+   Bitboard position(square);
 
    if (numberOfBits > 0)
    {
-      newPosition = oldPosition << numberOfBits;
+      position = position << numberOfBits;
    }
    else
    {
-      newPosition = oldPosition >> std::abs(numberOfBits);
+      position = position >> std::abs(numberOfBits);
    }
 
-   return newPosition;
+   return position;
 }
 
 int calculateDistanceToEdgeOfBoard(Square square, Direction direction)

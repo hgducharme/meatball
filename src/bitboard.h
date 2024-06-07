@@ -41,14 +41,14 @@ inline bool operator == (const Bitboard & lhs, const u64 rhs) { return lhs.toU64
 inline bool operator == (const Bitboard & lhs, const Bitboard & rhs) { return lhs.toU64() == rhs.toU64(); }
 inline bool operator!=(const Bitboard & lhs, const Bitboard & rhs) { return !(lhs == rhs); }
 
-/* Bitwise operator overloading */
-inline Bitboard operator << (const Bitboard & lhs, const unsigned int rhs) { return lhs.toU64() << rhs; }
-inline Bitboard operator >> (const Bitboard & lhs, const unsigned int rhs) { return lhs.toU64() >> rhs; }
+/* Bitwise arithmetic operator overloading */
+inline Bitboard operator << (const Bitboard & lhs, const unsigned int rhs) { return (lhs.toU64() << rhs); }
+inline Bitboard operator >> (const Bitboard & lhs, const unsigned int rhs) { return (lhs.toU64() >> rhs); }
 inline Bitboard operator & (const Bitboard & a, const Bitboard & b) { return Bitboard(a.toU64() & b.toU64()); }
 inline Bitboard operator | (const Bitboard & a, const Bitboard & b) { return Bitboard(a.toU64() | b.toU64()); }
-inline Bitboard operator ~ (const Bitboard & a) { return Bitboard( ~(a.toU64()) ); }
 inline Bitboard & operator &= (Bitboard & lhs, const Bitboard & rhs) { lhs.setBoard(lhs.toU64() & rhs.toU64()); return lhs; }
 inline Bitboard & operator |= (Bitboard & lhs, const Bitboard & rhs) { lhs.setBoard(lhs.toU64() | rhs.toU64()); return lhs; }
+inline Bitboard operator ~ (const Bitboard & a) { return Bitboard( ~(a.toU64()) ); }
 
 /* Arithmetic operator overloading */
 inline u64 operator * (const Bitboard & lhs, const u64 rhs) { return lhs.toU64() * rhs; }

@@ -370,7 +370,7 @@ TEST_F(BitboardTest, findIndexLSB_findsIndexOfLeastSignificantBit)
 
    int indexOfFirstBlackPawn = blackPawns.findIndexLSB();
 
-   ASSERT_EQ(indexOfFirstBlackPawn, Square::a7);
+   ASSERT_EQ(indexOfFirstBlackPawn, static_cast<int>(Square::a7));
 }
 
 TEST_F(BitboardTest, findIndexLSB_doesNotModifyTheOriginalValue)
@@ -397,7 +397,7 @@ TEST_F(BitboardTest, findMSBIndex_findsIndexOfMostSignificantBit)
 
    int indexOfLastBlackPawn = blackPawns.findIndexMSB();
 
-   ASSERT_EQ(indexOfLastBlackPawn, Square::h7);
+   ASSERT_EQ(indexOfLastBlackPawn, static_cast<int>(Square::h7));
 }
 
 TEST_F(BitboardTest, findIndexMSB_doesNotModifyTheOriginalValue)
@@ -463,7 +463,7 @@ TEST_F(BitboardTest, getNeighbor)
    EXPECT_EQ(d5.getNeighbor(SOUTH_EAST), e4_EXPECTED);
 }
 
-TEST_F(BitboardTest, bitboardCanBeMultipliedWith64BitIntegers)
+TEST_F(BitboardTest, bitwiseMultiplicationOperator_bitboardCanBeMultipliedWith64BitIntegers)
 {
    const u64 universe = 0xFFFFFFFFFFFFFFFF;
    const u64 one = 1;
@@ -515,6 +515,24 @@ TEST_F(BitboardTest, boolConversion)
 
    const Bitboard allBitsSet(constants::UNIVERSE);
    EXPECT_TRUE(allBitsSet);
+}
+
+TEST_F(BitboardTest, bitwiseNotOperator_returnsNewBitboardWithCorrectResult)
+{
+   Bitboard emptyBoard(constants::EMPTY_BOARD);
+   ASSERT_EQ((~emptyBoard).toU64(), ~constants::EMPTY_BOARD);
+}
+
+TEST_F(BitboardTest, bitwiseLeftShiftOperator_returnsNewBitboardWithCorrectResult)
+{
+   Bitboard bitboard(constants::ONE);
+   ASSERT_EQ((bitboard << 1).toU64(), (constants::ONE << 1));
+}
+
+TEST_F(BitboardTest, bitwiseRightShiftOperator_returnsNewBitboardWithCorrectResult)
+{
+   Bitboard bitboard(constants::UNIVERSE);
+   ASSERT_EQ((bitboard >> 1).toU64(), (constants::UNIVERSE >> 1));
 }
 
 }  // namespace
