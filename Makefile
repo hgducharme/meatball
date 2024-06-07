@@ -26,9 +26,12 @@ INTEGRATION_TEST_EXECUTABLE = $(BIN_DIR)/integration_tests
 CXX := clang++
 
 # Compiler flags
-DEBUG = -g
-COVERAGE := -O0 -fPIC --coverage # (--coverage is a synonym for: -fprofile-arcs -ftest-coverage)
-CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -std=c++17 $(DEBUG) $(COVERAGE)
+CPP := 17
+DEBUG_LEVEL := 0
+OPTIMIZATION_LEVEL := 1
+COVERAGE := --coverage
+
+CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -fPIC -std=c++$(CPP) -O$(OPTIMIZATION_LEVEL) -g$(DEBUG_LEVEL) $(COVERAGE)
 
 # C PreProcessor flags, generally used for path management, dependency file generation, and dumping preprocessor state
 # Include source subdirectories and generate dependency files during compilation
@@ -36,6 +39,7 @@ source_subdirectories := $(shell find $(SOURCE_DIR) -type d)
 include_source_subdirectories := $(addprefix --include-directory=, $(source_subdirectories))
 CPPFLAGS := $(include_source_subdirectories) --write-user-dependencies -MP
 
+# Compilation command
 COMPILE.cpp := $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) --compile
 
 # -------------------------------------- #
