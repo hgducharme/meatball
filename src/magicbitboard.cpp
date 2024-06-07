@@ -14,6 +14,7 @@ namespace magic_bitboards
 
 namespace
 {
+void initializeHashingParameters();
 
     // The number of set bits in the bishop blocker mask for each square
     static inline constexpr int NUMBER_OF_SET_BITS_IN_BISHOP_BLOCKER_MASK[Square::NUMBER_OF_SQUARES] = {
@@ -43,14 +44,8 @@ namespace
 
     void initializeHashingParameters()
     {
-        for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
-        {
-            HashingParameters bishopEntry;
-            HashingParameters rookEntry;
-
-            BISHOP_HASHING_PARAMETERS_LOOKUP[square] = bishopEntry;
-            ROOK_HASHING_PARAMETERS_LOOKUP[square] = rookEntry;
-        }
+        memset(&BISHOP_HASHING_PARAMETERS_LOOKUP, 0, Square::NUMBER_OF_SQUARES * sizeof(HashingParameters));
+        memset(&ROOK_HASHING_PARAMETERS_LOOKUP, 0, Square::NUMBER_OF_SQUARES * sizeof(HashingParameters));
     }
 
     template <uint8_t size>
