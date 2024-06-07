@@ -64,16 +64,18 @@ make tests
 ./bin/tests
 ```
 
-To build (and run) only the unit tests:
+To build and run only the unit tests:
 
 ```bash
 make unit_tests
+./bin/unit_tests
 ```
 
 To build (and run) only the inegration tests:
 
 ```bash
 make integration_tests
+./bin/integration_tests
 ```
 
 ### Test coverage
@@ -100,3 +102,22 @@ It can be difficult to know where to start debugging the move generation when a 
 3. Run the commands in the shell: `position startpos` and then `go perft [depth]`. You should see the number of nodes that fall under each top level move. You can recurse down the tree to get more and more precise results.
 4. In `test_movegenerator.cpp`, make sure the `showDivideOutput` argument in the `perft()` calls are set to `true`. This will print the divide output to the console.
 5. Compare the results.
+
+## Docker Support
+
+If you have docker installed then you can run the code through a linter and test suite.
+
+1. Ensure the docker daemon is running
+2. Run the linter
+
+```bash
+cd /path/to/meatball/
+./docker/run_linter.sh
+```
+
+3. Run the test suite
+
+```bash
+cd /path/to/meatball/
+./docker/run_tests.sh
+```

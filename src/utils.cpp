@@ -2,6 +2,7 @@
 
 #include "constants.h"
 #include "chessboard.h"
+#include "types.h"
 
 #include <cmath>     // std::abs
 #include <algorithm> // std::math

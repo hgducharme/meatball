@@ -1,0 +1,25 @@
+name: C++ CI Pipeline using Docker
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    paths: [ "**.cpp", "**.h", "Makefile" ]
+
+jobs:
+  linter:
+    name: Linter
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run linter
+        run: ./docker/run_linter.sh
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: ./docker/run_tests.sh
