@@ -7,7 +7,7 @@ echo ""
 echo "cppcheck output"
 echo ""
 echo "**************************************************************************************************************"
-cppcheck src --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=unmatchedSuppression --std=c++17 --error-exitcode=1 || exit
+cppcheck src --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=unmatchedSuppression --std=c++17 --check-level=exhaustive --error-exitcode=1 || exit
 
 echo "**************************************************************************************************************"
 echo ""
