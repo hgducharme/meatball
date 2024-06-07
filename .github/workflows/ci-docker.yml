@@ -18,6 +18,7 @@ jobs:
 
   linter:
     name: Linter
+    needs: Build # Only run the linter if we know the build is successful
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
