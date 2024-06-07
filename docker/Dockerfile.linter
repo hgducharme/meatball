@@ -21,6 +21,7 @@ COPY ../ /usr/src/app
 WORKDIR /usr/src/app
 
 # Use bear to generate the compile_commands.json file
+RUN make clean
 RUN bear -- make meatball
 RUN mv compile_commands.json ./build/
 
