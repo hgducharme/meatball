@@ -29,8 +29,6 @@ namespace
     static inline void initializeAttacksForLeaperPieces();
     static inline Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitboard);
     static inline Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard);
-    static inline Bitboard calculateBishopAttacksFromSquareClassical(const Bitboard & bitboard);
-    static inline Bitboard calculateRookAttacksFromSquareClassical(const Bitboard & bitboard);
     static inline Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard);
     static inline void initializeAttacksForSliderPieces();
 
