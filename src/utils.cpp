@@ -16,12 +16,7 @@ namespace utils
 
 Bitboard getSquareInDirectionAsBitboard(const Square square, const int numberOfBits)
 {
-   Bitboard squareAsBitboard(square);
-   return getSquareInDirectionAsBitboard(squareAsBitboard, numberOfBits);
-}
-
-Bitboard getSquareInDirectionAsBitboard(const Bitboard & oldPosition, const int numberOfBits)
-{
+   Bitboard oldPosition(square);
    Bitboard newPosition;
 
    if (numberOfBits > 0)
