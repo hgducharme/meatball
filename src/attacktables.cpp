@@ -49,7 +49,7 @@ Bitboard getAttacks(const Color color, const PieceType pieceType, const Square s
         case PieceType::QUEEN:
             return getSliderPieceAttacks((SliderPiece)pieceType, square, occupiedSquares);
         default:
-            std::__throw_invalid_argument("pieceType must be one of the following piece types: 'pawn', 'knight', 'bishop', 'rook', 'queen', or 'king'.");
+            std::__throw_invalid_argument("pieceType must be one of the following piece types: 'pawn', 'knight', 'bishop', 'rook', 'queen', or 'king'");
         }
 }
 
@@ -57,12 +57,10 @@ Bitboard getLeaperPieceAttacks(const LeaperPiece leaperPiece, const Square squar
 {
     switch (leaperPiece)
     {
-        case LeaperPiece::PAWN:
-            return PAWN_ATTACKS[color][square];
-        case LeaperPiece::KNIGHT:
-            return KNIGHT_ATTACKS[square];
-        case LeaperPiece::KING:
-            return KING_ATTACKS[square];
+        case LeaperPiece::PAWN: { return PAWN_ATTACKS[color][square]; }
+        case LeaperPiece::KNIGHT: { return KNIGHT_ATTACKS[square]; }
+        case LeaperPiece::KING: { return KING_ATTACKS[square]; }
+        default: { throw std::invalid_argument("Received invalid LeaperPiece option"); }
     }
 }
 
@@ -74,17 +72,24 @@ Bitboard getSliderPieceAttacks(const SliderPiece sliderPiece, const Square squar
     switch (sliderPiece)
     {
         case SliderPiece::BISHOP:
+        {
             hashingParameters = magic_bitboards::BISHOP_HASHING_PARAMETERS_LOOKUP[square];
             attackDatabase = BISHOP_ATTACKS[square];
             break;
+        }
         case SliderPiece::ROOK:
+        {
             hashingParameters = magic_bitboards::ROOK_HASHING_PARAMETERS_LOOKUP[square];
             attackDatabase = ROOK_ATTACKS[square];
             break;
+        }
         case SliderPiece::QUEEN:
+        {
             Bitboard bishopAttacks = getSliderPieceAttacks(SliderPiece::BISHOP, square, boardState);
             Bitboard rookAttacks = getSliderPieceAttacks(SliderPiece::ROOK, square, boardState);
             return bishopAttacks | rookAttacks;
+        }
+        default: { throw std::invalid_argument("Received invalid SliderPiece option"); }
     }
 
     const Bitboard blockers = boardState & hashingParameters.blockerMask;

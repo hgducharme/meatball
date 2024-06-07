@@ -41,13 +41,4 @@ namespace exceptions
       };
 
    } // end fen namespace
-
-   namespace move_generation
-   {
-      class InvalidSwitchCase : public std::runtime_error
-      {
-         public:
-            explicit InvalidSwitchCase(const std::string & message) : std::runtime_error(message) {};
-      };
-   } // end namespace move_generation
 }

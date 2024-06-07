@@ -399,10 +399,7 @@ Bitboard LegalMoveGenerator::getCastles(const Chessboard & gameState) const
 
             return kingSideCastle | queenSideCastle;
         }
-        case CastleRights::NUMBER_OF_CASTLE_STATES:
-        {
-            throw exceptions::move_generation::InvalidSwitchCase("Not a valid switch case. Received 'NUMBER_OF_CASTLE_STATES'.");
-        }
+        default: { throw std::invalid_argument("Received invalid CastleRights arguments"); }
     }
 }
 
