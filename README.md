@@ -21,7 +21,7 @@ This code is written with readability in mind and is not meant to be fully optim
 
 ### Dependencies
 
-- C++17
+- C++17 (minimum)
 
 Clone the directory and build the executable
 
@@ -37,14 +37,9 @@ Run `make help` for more information about what targets can be ran.
 
 ## Tests
 
-### Dependencies
-
-- [googletest 1.13.0](https://github.com/google/googletest/releases/tag/v1.13.0)
-- cmake for building googletest
-
 ### Running tests using Docker
 
-1. Make sure the docker daemone is already running (see: [starting docker daemon](https://docs.docker.com/config/daemon/start/))
+1. Make sure the docker daemon is already running (see: [starting docker daemon](https://docs.docker.com/config/daemon/start/))
 2. Run the test suite
 
 ```bash
@@ -53,6 +48,11 @@ make docker-tests
 ```
 
 ### Running tests locally
+
+#### Dependencies
+
+- [googletest 1.13.0](https://github.com/google/googletest/releases/tag/v1.13.0)
+- cmake for building googletest
 
 To install `googletest-1.13.0`:
 
