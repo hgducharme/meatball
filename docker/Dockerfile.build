@@ -1,0 +1,33 @@
+FROM alpine:3.20 as base
+
+RUN apk update && \
+    apk add --no-cache \
+    build-base \
+    cmake \
+    g++ \
+    clang \
+    llvm \
+    compiler-rt \
+    gdb \
+    lldb
+
+# NOTE: Running as a non-root user will not work in Github Actions, so commenting this out...
+# see: https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions
+# Create a non-privileged user that the app will run under.
+# See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
+# ARG UID=10001
+# RUN adduser \
+#     --disabled-password \
+#     --gecos "" \
+#     --home "/nonexistent" \
+#     --shell "/sbin/nologin" \
+#     --no-create-home \
+#     --uid "${UID}" \
+#     basicuser
+# # Set permissions for /usr/src/app
+# RUN mkdir -p /usr/src/app && chown -R basicuser:basicuser /usr/src/app
+# USER basicuser
+
+WORKDIR /usr/src/app
+
+ENTRYPOINT ["./docker/entrypoints/build_entrypoint.sh"]
