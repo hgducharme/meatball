@@ -29,8 +29,8 @@ namespace
 
         // If we perform a move and end up on the opposite side of the board, that is an off-board move and we need to exclude that move
         Bitboard potentialPawnAttacks;
-        potentialPawnAttacks |= utils::shiftSquareByDirection(bitboard, eastDirection) & constants::bit_masks::EXCLUDE_FILE_A;
-        potentialPawnAttacks |= utils::shiftSquareByDirection(bitboard, westDirection) & constants::bit_masks::EXCLUDE_FILE_H;
+        potentialPawnAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, eastDirection) & constants::bit_masks::EXCLUDE_FILE_A;
+        potentialPawnAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, westDirection) & constants::bit_masks::EXCLUDE_FILE_H;
 
         return potentialPawnAttacks;
     }
@@ -40,14 +40,14 @@ namespace
         Bitboard potentialKnightAttacks;
 
         // If we perform a move and end up on the opposite side of the board, that is an off-board move and we need to exclude that move
-        potentialKnightAttacks |= utils::shiftSquareByDirection(bitboard, 2 * NORTH + EAST) & constants::bit_masks::EXCLUDE_FILE_A;    
-        potentialKnightAttacks |= utils::shiftSquareByDirection(bitboard, 2 * SOUTH + EAST) & constants::bit_masks::EXCLUDE_FILE_A;
-        potentialKnightAttacks |= utils::shiftSquareByDirection(bitboard, 2 * NORTH + WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-        potentialKnightAttacks |= utils::shiftSquareByDirection(bitboard, 2 * SOUTH + WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-        potentialKnightAttacks |= utils::shiftSquareByDirection(bitboard, NORTH + 2 * EAST) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
-        potentialKnightAttacks |= utils::shiftSquareByDirection(bitboard, SOUTH + 2 * EAST) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
-        potentialKnightAttacks |= utils::shiftSquareByDirection(bitboard, NORTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
-        potentialKnightAttacks |= utils::shiftSquareByDirection(bitboard, SOUTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, 2 * NORTH + EAST) & constants::bit_masks::EXCLUDE_FILE_A;    
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, 2 * SOUTH + EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, 2 * NORTH + WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, 2 * SOUTH + WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, NORTH + 2 * EAST) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, SOUTH + 2 * EAST) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, NORTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, SOUTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
 
         return potentialKnightAttacks;
     }
@@ -57,14 +57,14 @@ namespace
         Bitboard legalKingAttacks;
 
         // If we perform a move and end up on the opposite side of the board, that is an off-board move and we need to exclude that move
-        legalKingAttacks |= utils::shiftSquareByDirection(bitboard, NORTH);
-        legalKingAttacks |= utils::shiftSquareByDirection(bitboard, SOUTH);
-        legalKingAttacks |= utils::shiftSquareByDirection(bitboard, EAST) & constants::bit_masks::EXCLUDE_FILE_A;
-        legalKingAttacks |= utils::shiftSquareByDirection(bitboard, WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-        legalKingAttacks |= utils::shiftSquareByDirection(bitboard, NORTH_WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-        legalKingAttacks |= utils::shiftSquareByDirection(bitboard, SOUTH_WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-        legalKingAttacks |= utils::shiftSquareByDirection(bitboard, NORTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
-        legalKingAttacks |= utils::shiftSquareByDirection(bitboard, SOUTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, NORTH);
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, SOUTH);
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, NORTH_WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, SOUTH_WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, NORTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, SOUTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
 
         return legalKingAttacks;
     }

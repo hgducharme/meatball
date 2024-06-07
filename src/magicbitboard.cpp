@@ -60,7 +60,7 @@ void initializeHashingParameters();
 
             for (int i = 1; i < distanceToEdge; i++)
             {
-                potentialBlockerSquares |= utils::shiftSquareByDirection(position, i * direction);
+                potentialBlockerSquares |= utils::getSquareInDirectionAsBitboard(position, i * direction);
             }
         }
 
@@ -133,7 +133,7 @@ void initializeHashingParameters();
 
             for (int i = 1; i <= distanceToEdge; i++)
             {
-                Bitboard targetSquare = utils::shiftSquareByDirection(squareBitboard, i * direction);
+                Bitboard targetSquare = utils::getSquareInDirectionAsBitboard(squareBitboard, i * direction);
                 attackBoard |= targetSquare;
 
                 // The piece won't be able to move beyond the target square if it is occupied

@@ -12,9 +12,15 @@
          }
       },
       {
-         "label": "Linter",
+         "label": "Linter in Docker",
          "type": "shell",
          "command": "make docker-linter",
+         "problemMatcher": []
+      },
+      {
+         "label": "Tests in Docker",
+         "type": "shell",
+         "command": "make docker-tests",
          "problemMatcher": []
       }
    ]

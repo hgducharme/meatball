@@ -6,9 +6,9 @@
 namespace utils
 {
 
-Bitboard shiftSquareByDirection(const Square square, const int numberOfBits);
+Bitboard getSquareInDirectionAsBitboard(const Square square, const int numberOfBits);
 
-Bitboard shiftSquareByDirection(const Bitboard & oldPosition, const int numberOfBits);
+Bitboard getSquareInDirectionAsBitboard(const Bitboard & oldPosition, const int numberOfBits);
 
 int calculateDistanceToEdgeOfBoard(const Square square, const Direction direction);
 

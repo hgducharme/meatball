@@ -14,13 +14,13 @@
 namespace utils
 {
 
-Bitboard shiftSquareByDirection(const Square square, const int numberOfBits)
+Bitboard getSquareInDirectionAsBitboard(const Square square, const int numberOfBits)
 {
    Bitboard squareAsBitboard(square);
-   return shiftSquareByDirection(squareAsBitboard, numberOfBits);
+   return getSquareInDirectionAsBitboard(squareAsBitboard, numberOfBits);
 }
 
-Bitboard shiftSquareByDirection(const Bitboard & oldPosition, const int numberOfBits)
+Bitboard getSquareInDirectionAsBitboard(const Bitboard & oldPosition, const int numberOfBits)
 {
    Bitboard newPosition;
 
