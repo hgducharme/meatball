@@ -1,4 +1,4 @@
-name: C++ CI Pipeline
+name: C++ CI Pipeline using Github VMs
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
     paths: [ "**.cpp", "**.h", "Makefile" ]
 
 jobs:
-  linter-current:
+  linter:
     name: Linter
     runs-on: ubuntu-22.04
     steps:
@@ -16,28 +16,16 @@ jobs:
       run: sudo apt-get install cppcheck clang-tidy
     - uses: actions/checkout@v4
     - name: Run cppcheck
-      run: cppcheck src --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=unmatchedSuppression
+      run: cppcheck src --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=unmatchedSuppression --std=c++17 --error-exitcode=1
 
-  tests-current:
+  tests:
     name: Tests
     runs-on: ubuntu-22.04
     steps:
     - name: Install gtest from source
       run: sudo apt-get install libgtest-dev cmake && cd /usr/src/gtest && sudo cmake CMakeLists.txt && sudo make && sudo cp ./lib/libgtest*.a /usr/lib && sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a && sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
     - uses: actions/checkout@v4
-    - name: Run all unit and integration tests
+    - name: Build the test executable
       run: make tests
-      
-  linter-ideal:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run linter
-        run: ./docker/run_linter.sh
-
-  tests-ideal:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run tests
-        run: ./docker/run_tests.sh
+    - name: Run the tests
+      run: ./bin/tests
