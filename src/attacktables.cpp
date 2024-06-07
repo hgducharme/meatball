@@ -9,10 +9,10 @@ namespace attack_tables
 namespace
 {
 
-    Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitboard)
+    Bitboard calculatePawnAttacksFromSquare(const Color color, const Square square)
     {
         // A pawn only has valid attacks if it exists on ranks 2 through 7
-        Rank rank = Chessboard::squareToRank(bitboard.findIndexLSB());
+        Rank rank = Chessboard::squareToRank(square);
         if (rank == RANK_1 || rank == RANK_8)
         {
             return constants::EMPTY_BOARD;
@@ -29,56 +29,56 @@ namespace
 
         // If we perform a move and end up on the opposite side of the board, that is an off-board move and we need to exclude that move
         Bitboard potentialPawnAttacks;
-        potentialPawnAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, eastDirection) & constants::bit_masks::EXCLUDE_FILE_A;
-        potentialPawnAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, westDirection) & constants::bit_masks::EXCLUDE_FILE_H;
+        potentialPawnAttacks |= utils::getSquareInDirectionAsBitboard(square, eastDirection) & constants::bit_masks::EXCLUDE_FILE_A;
+        potentialPawnAttacks |= utils::getSquareInDirectionAsBitboard(square, westDirection) & constants::bit_masks::EXCLUDE_FILE_H;
 
         return potentialPawnAttacks;
     }
 
-    Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard)
+    Bitboard calculateKnightAttacksFromSquare(const Square square)
     {
         Bitboard potentialKnightAttacks;
 
         // If we perform a move and end up on the opposite side of the board, that is an off-board move and we need to exclude that move
-        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, 2 * NORTH + EAST) & constants::bit_masks::EXCLUDE_FILE_A;    
-        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, 2 * SOUTH + EAST) & constants::bit_masks::EXCLUDE_FILE_A;
-        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, 2 * NORTH + WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, 2 * SOUTH + WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, NORTH + 2 * EAST) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
-        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, SOUTH + 2 * EAST) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
-        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, NORTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
-        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, SOUTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(square, 2 * NORTH + EAST) & constants::bit_masks::EXCLUDE_FILE_A;    
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(square, 2 * SOUTH + EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(square, 2 * NORTH + WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(square, 2 * SOUTH + WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(square, NORTH + 2 * EAST) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(square, SOUTH + 2 * EAST) & constants::bit_masks::EXCLUDE_FILES_A_AND_B;
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(square, NORTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
+        potentialKnightAttacks |= utils::getSquareInDirectionAsBitboard(square, SOUTH + 2 * WEST) & constants::bit_masks::EXCLUDE_FILES_H_AND_G;
 
         return potentialKnightAttacks;
     }
 
-    Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard)
+    Bitboard calculateKingAttacksFromSquare(const Square square)
     {
         Bitboard legalKingAttacks;
 
         // If we perform a move and end up on the opposite side of the board, that is an off-board move and we need to exclude that move
-        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, NORTH);
-        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, SOUTH);
-        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, EAST) & constants::bit_masks::EXCLUDE_FILE_A;
-        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, NORTH_WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, SOUTH_WEST) & constants::bit_masks::EXCLUDE_FILE_H;
-        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, NORTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
-        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(bitboard, SOUTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(square, NORTH);
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(square, SOUTH);
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(square, EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(square, WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(square, NORTH_WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(square, SOUTH_WEST) & constants::bit_masks::EXCLUDE_FILE_H;
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(square, NORTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
+        legalKingAttacks |= utils::getSquareInDirectionAsBitboard(square, SOUTH_EAST) & constants::bit_masks::EXCLUDE_FILE_A;
 
         return legalKingAttacks;
     }
 
     void initializeAttacksForLeaperPieces()
     {
-        for (int square = 0; square < Square::NUMBER_OF_SQUARES; square++)
+        for (int i = 0; i < Square::NUMBER_OF_SQUARES; i++)
         {
-            Bitboard squareBitboard(square);
+            Square square = static_cast<Square>(i);
 
-            PAWN_ATTACKS[Color::WHITE][square] = calculatePawnAttacksFromSquare(Color::WHITE, squareBitboard);
-            PAWN_ATTACKS[Color::BLACK][square] = calculatePawnAttacksFromSquare(Color::BLACK, squareBitboard);
-            KNIGHT_ATTACKS[square] = calculateKnightAttacksFromSquare(squareBitboard);
-            KING_ATTACKS[square] = calculateKingAttacksFromSquare(squareBitboard);
+            PAWN_ATTACKS[Color::WHITE][i] = calculatePawnAttacksFromSquare(Color::WHITE, square);
+            PAWN_ATTACKS[Color::BLACK][i] = calculatePawnAttacksFromSquare(Color::BLACK, square);
+            KNIGHT_ATTACKS[i] = calculateKnightAttacksFromSquare(square);
+            KING_ATTACKS[i] = calculateKingAttacksFromSquare(square);
         }
     }
 
