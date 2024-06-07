@@ -23,15 +23,4 @@ namespace attack_tables
     Bitboard getLeaperPieceAttacks(const LeaperPiece leaperPiece, const Square square, const Color color);
     Bitboard getSliderPieceAttacks(const SliderPiece sliderPiece, const Square square, const Bitboard & boardState);
 
-namespace
-{
-
-    static inline void initializeAttacksForLeaperPieces();
-    static inline Bitboard calculatePawnAttacksFromSquare(const Color color, const Bitboard & bitboard);
-    static inline Bitboard calculateKnightAttacksFromSquare(const Bitboard & bitboard);
-    static inline Bitboard calculateKingAttacksFromSquare(const Bitboard & bitboard);
-    static inline void initializeAttacksForSliderPieces();
-
-} // anonymous namespace
-
 } // attack_tables namespace
