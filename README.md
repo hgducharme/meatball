@@ -105,19 +105,36 @@ It can be difficult to know where to start debugging the move generation when a 
 
 ## Docker Support
 
-If you have docker installed then you can run the code through a linter and test suite.
+If you have docker installed then you can do any of the following things within a docker container:
 
-1. Ensure the docker daemon is running
-2. Run the linter
-
-```bash
-cd /path/to/meatball/
-./docker/run_linter.sh
-```
-
+1. Build the source code
+2. Run a linter
 3. Run the test suite
 
-```bash
-cd /path/to/meatball/
-./docker/run_tests.sh
-```
+Steps to use docker:
+
+1. Ensure the docker daemon is running and go the the project root
+
+  ```bash
+  cd /path/to/meatball
+  ```
+
+2. Build the source code:
+
+  ```bash
+  make docker-build BUILD_FLAGS="CXX=g++ DEBUG_LEVEL=0 OPTIMIZATION_LEVEL=3"
+  ```
+
+3. Run the linter
+
+  ```bash
+  cd /path/to/meatball/
+  make docker-linter
+  ```
+
+4. Run the test suite
+
+  ```bash
+  cd /path/to/meatball/
+  make docker-tests
+  ```
