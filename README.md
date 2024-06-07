@@ -143,5 +143,5 @@ NOTE: The docker daemon must be already running
 5. Run the test suite
   
   ```bash
-  make docker-linter
+  make docker-tests
   ```
