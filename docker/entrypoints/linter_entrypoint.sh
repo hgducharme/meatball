@@ -15,8 +15,8 @@ echo "clang-tidy output"
 echo ""
 echo "**************************************************************************************************************"
 
-export CPP_SRC_FILES=$(find ./src/ -name *.cpp)
-if [ -n "$CPP_SRC_FILES" ]; then
+export CPP_SOURCE_FILES=$(find ./src/ -name *.cpp)
+if [ -n "$CPP_SOURCE_FILES" ]; then
 clang-tidy --config-file=.clang-tidy --verify-config || exit
-clang-tidy --config-file=.clang-tidy $CPP_SRC_FILES -- || exit
+clang-tidy --config-file=.clang-tidy -p './build' $CPP_SOURCE_FILES || exit
 fi

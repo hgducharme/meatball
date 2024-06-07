@@ -1,28 +1,28 @@
-FROM alpine:3.20 as base
+FROM alpine:3.20 as lint-img
 
+# Install the required dependencies
 RUN apk update \
     && apk add --no-cache \
+    build-base \
+    # compilation dependencies
+    clang \
+    llvm \
+    # compiler-rt includes the 'libclang_rt.profile-x86_64.a' file needed for the linker
+    compiler-rt \
+    # for generating compile_commands.json to be used with clang-tidy
+    bear \
+    # clang-tidy linter is in clang-extra-tools
     clang-extra-tools \
-    cppcheck \
-    && clang-tidy --version | grep "LLVM version"
+    cppcheck
 
-## NOTE: Running as a non-root user will not work in Github Actions, so commenting this out...
-## see: https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions
-## Create a non-privileged user that the app will run under.
-## See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
-# ARG UID=10001
-# RUN adduser \
-#     --disabled-password \
-#     --gecos "" \
-#     --home "/nonexistent" \
-#     --shell "/sbin/nologin" \
-#     --no-create-home \
-#     --uid "${UID}" \
-#     basicuser
-# # Set permissions for /usr/src/app
-# RUN mkdir -p /usr/src/app && chown -R basicuser:basicuser /usr/src/app
-# USER basicuser
+# Copy the project directory
+COPY ../ /usr/src/app
 
 WORKDIR /usr/src/app
 
+# Use bear to generate the compile_commands.json file
+RUN bear -- make meatball
+RUN mv compile_commands.json ./build/
+
+# Execute the script that does the linting
 ENTRYPOINT ["./docker/entrypoints/linter_entrypoint.sh"]
