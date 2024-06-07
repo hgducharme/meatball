@@ -13,6 +13,7 @@ BUILD_DIR := $(PROJECT_DIR)/build
 BIN_DIR := $(PROJECT_DIR)/bin
 COVERAGE_DIR := $(PROJECT_DIR)/test_coverage
 TEST_UTILS_DIR := $(TEST_DIR)/utils
+DOCKER_DIR := $(PROJECT_DIR)/docker
 
 EXECUTABLE = $(BIN_DIR)/$(appname)
 TEST_EXECUTABLE = $(BIN_DIR)/tests
@@ -26,9 +27,18 @@ INTEGRATION_TEST_EXECUTABLE = $(BIN_DIR)/integration_tests
 CXX := clang++
 
 # Compiler flags
-DEBUG = -g
-COVERAGE := -O0 -fPIC --coverage # (--coverage is a synonym for: -fprofile-arcs -ftest-coverage)
-CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -std=c++17 $(DEBUG) $(COVERAGE)
+CPP := 17
+
+# Debug compiler options
+DEBUG_LEVEL := 2
+OPTIMIZATION_LEVEL := g
+COVERAGE := --coverage
+
+# Better compiler options for making a release executable
+# DEBUG_LEVEL := 0
+# OPTIMIZATION_LEVEL := 3
+
+CXXFLAGS := -Wall -Wextra -fdiagnostics-color=always -fPIC -std=c++$(CPP) -O$(OPTIMIZATION_LEVEL) -g$(DEBUG_LEVEL) $(COVERAGE)
 
 # C PreProcessor flags, generally used for path management, dependency file generation, and dumping preprocessor state
 # Include source subdirectories and generate dependency files during compilation
@@ -36,6 +46,7 @@ source_subdirectories := $(shell find $(SOURCE_DIR) -type d)
 include_source_subdirectories := $(addprefix --include-directory=, $(source_subdirectories))
 CPPFLAGS := $(include_source_subdirectories) --write-user-dependencies -MP
 
+# Compilation command
 COMPILE.cpp := $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) --compile
 
 # -------------------------------------- #
@@ -88,80 +99,157 @@ gcov_files = $(shell find $(BUILD_DIR) -name "*.gcno")
 # -------------------------------------- #
 # Targets
 # -------------------------------------- #
-.PHONY: all clean $(BIN_DIR) $(BUILD_DIR) $(COVERAGE_DIR) .DEFAULT_GOAL
+.DEFAULT_GOAL := help
 
-all: $(appname) tests
+##
+## Compilation options:
+##   CXX=<g++/clang++>       The compiler to use (default: clang++)
+##   CPP=<int>           The C++ standard to use during compilation (default: 17)
+##   DEBUG_LEVEL=<0-3>       Specify how much debugging information to produce (default: 2)
+##   OPTIMIZATION_LEVEL=<char>   The amount of optimization to use. See the compiler documentation for available options (default: g)
 
-.DEFAULT_GOAL := $(appname)
+##
+## Executables
+##
 
+# Build the main executable
+meatball: ## Build the chess engine executable
 $(appname): $(EXECUTABLE)
-
-# Build the source code executable
-$(EXECUTABLE): $(objectfiles) | $(BIN_DIR)
+$(EXECUTABLE): $(objectfiles) | $(BIN_DIR) clean-profiling
 	@echo
-	@echo "Building: $@"
+	@echo "Generating executable: $@"
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(LDLIBS) --output $@
 
 # Build the test executable by linking source objects (without main.o) and test objects
-tests: $(objectfiles_without_main) $(test_objectfiles) | $(BIN_DIR)
+tests: ## Build unit and integration tests into one executable
+tests: $(objectfiles_without_main) $(test_objectfiles) | $(BIN_DIR) clean-profiling
 	@echo
-	@echo "Building: $@"
+	@echo "Generating executable: $@"
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(GOOGLETEST) --output $(TEST_EXECUTABLE)
 
 # Build the unit tests executable by linking source objects (without main.o) and unit test objects
-unit_tests: $(objectfiles_without_main) $(unit_test_objectfiles) $(test_utility_objectfiles) | $(BIN_DIR)
+unit_tests: ## Build the unit tests executable
+unit_tests: $(objectfiles_without_main) $(unit_test_objectfiles) $(test_utility_objectfiles) | $(BIN_DIR) clean-profiling
 	@echo
-	@echo "Building: $@"
+	@echo "Generating executable: $@"
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(GOOGLETEST) --output $(UNIT_TEST_EXECUTABLE)
 
 # Build the integration tests executable by linking source objects (without main.o) and integration test objects
-integration_tests: $(objectfiles_without_main) $(integration_test_objectfiles) $(test_utility_objectfiles) | $(BIN_DIR)
+integration_tests: ## Build the integration tests executable
+integration_tests: $(objectfiles_without_main) $(integration_test_objectfiles) $(test_utility_objectfiles) | $(BIN_DIR) clean-profiling
 	@echo
-	@echo "Building: $@"
+	@echo "Generating executable: $@"
 	@echo "Linking file(s): $^"
 	$(LINK.cpp) $^ $(GOOGLETEST) --output $(INTEGRATION_TEST_EXECUTABLE)
+
+all: $(appname) tests ## Build the 'meatball' and 'tests' executables
 
 # Compile .cpp into .o
 $(objectfiles) $(test_objectfiles): $(BUILD_DIR)/%.o: %.cpp
 	@echo
 	@echo "Compiling: '$<'"
-	mkdir -p $(dir $@)
+	mkdir -p $(@D)
 	$(COMPILE.cpp) $< --output $@
+	@echo "Built '$<'"
 
-coverage: tests | $(COVERAGE_DIR)
+##
+## Builds
+##
+
+build: ## Build the source code
+build: $(objectfiles)
+
+coverage-report: ## Run the tests and build a coverage report
+coverage-report: tests | $(COVERAGE_DIR)
 	@echo
 	@echo "Generating test coverage data..."
+	$(TEST_EXECUTABLE)
 	gcov --color $(sourcefiles_without_main) -o=$(BUILD_DIR)/src
 	mv *.gcov $(COVERAGE_DIR)/gcov
 	gcovr --exclude-unreachable-branches --exclude-throw-branches --decisions --html-details $(COVERAGE_DIR)/html/coverage.html $(BUILD_DIR)/src
 
-# -------------------------------------- #
+#
 # Folder targets
-# -------------------------------------- #
-$(BIN_DIR):
-	mkdir -p $@
+#
 
-$(BUILD_DIR):
+.PHONY: $(BIN_DIR) $(COVERAGE_DIR)
+
+$(BIN_DIR):
+	@echo
 	mkdir -p $@
 
 $(COVERAGE_DIR):
+	@echo
 	mkdir -p $@/gcov
 	mkdir -p $@/html
 
-# -------------------------------------- #
-# Clean
-# -------------------------------------- #
-clean:
+##
+## Clean
+##
+
+.PHONY: clean clean-tests clean-coverage clean-profiling
+
+clean: ## Remove all build artifacts
+	@echo "Cleaning all build artifacts..."
 	$(RM) -r $(BIN_DIR) $(BUILD_DIR) $(COVERAGE_DIR)
+	@echo "Done cleaning!"
 
-clean-tests:
-	$(RM) -r $(TEST_EXECUTABLE) $(BUILD_DIR)/test
+clean-tests: ## Remove test build artifacts
+	@echo "Cleaning artifacts from building test files..."
+	$(RM) -r $(TEST_EXECUTABLE) $(UNIT_TEST_EXECUTABLE) $(INTEGRATION_TEST_EXECUTABLE) $(BUILD_DIR)/test
+	@echo "Done cleaning!"
 
-clean-coverage:
+clean-coverage: ## Remove coverage build artifacts
+	@echo "Cleaning artifacts from generating coverage report..."
 	$(RM) -r $(COVERAGE_DIR)
+	@echo "Done cleaning!"
+
+clean-profiling: ## Remove .gcda files generated by gcov containing coverage counters
+	@echo "Cleaning coverage counter files..."
+	if [ -d "$(BUILD_DIR)" ]; then find $(BUILD_DIR) -name '*.gcda' -delete; fi
+	@echo "Done cleaning!"
+
+
+##
+## Docker (NOTE: requires the docker daemon to already be running)
+##
+##
+
+.PHONY: docker-build docker-linter docker-tests docker-image-prune
+
+docker-build: ## Compile the source code in a docker container (e.g. make docker-build BUILD_FLAGS="CXX=g++ OPTIMIATION_LEVEL=3")
+	@echo "Running a build in a docker container..."
+	$(DOCKER_DIR)/run_build.sh $(BUILD_FLAGS)
+
+docker-linter: ## Run the linter analysis inside a docker container
+	@echo "Running a lint analysis in a docker container..."
+	$(DOCKER_DIR)/run_linter.sh
+
+docker-tests: ## Run the test suite inside a docker container
+	@echo "Running a the test suite in a docker container..."
+	$(DOCKER_DIR)/run_tests.sh
+
+docker-image-prune: ## Remove dangling images
+	@docker image prune
+
+##
+## Misc commands
+##
+
+.PHONY: help
+
+help: ## (Default) Show this help screen
+	@printf "\nUsage: make <target> [OPTIONS]\n"
+	@gawk -vG=$$(tput setaf 2) -vR=$$(tput sgr0) ' \
+	match($$0, "^(([^#:]*[^ :]) *:)?([^#]*)##([^#].+|)$$",a) { \
+		if (a[2] != "") { printf "    make %s%-18s%s %s\n", G, a[2], R, a[4]; next }\
+		if (a[3] == "") { print a[4]; next }\
+		printf "\n%-36s %s\n","",a[4]\
+	}' $(MAKEFILE_LIST)
+	@echo "" # blank line at the end
 
 # -------------------------------------- #
 # Dependencies

@@ -19,6 +19,10 @@ This code is written with readability in mind and is not meant to be fully optim
 
 ## Installation
 
+### Dependencies
+
+- C++17
+
 This project was built using C++17, so make sure you have at least C++17 installed on your system.
 
 Clone the directory and build the executable
@@ -33,7 +37,22 @@ If successful, you should see the executable `/bin/meatball`
 
 ## Tests
 
-To run the tests make sure you have [googletest 1.13.0](https://github.com/google/googletest/releases/tag/v1.13.0) and `cmake` installed on your system.
+### Dependencies
+
+- [googletest 1.13.0](https://github.com/google/googletest/releases/tag/v1.13.0)
+- cmake for building googletest
+
+### Running tests using Docker
+
+1. Make sure the docker daemone is already running (see: [starting docker daemon](https://docs.docker.com/config/daemon/start/))
+2. Run the test suite
+
+```bash
+cd /path/to/meatball/
+make docker-tests
+```
+
+### Running tests locally
 
 To install `googletest-1.13.0`:
 
@@ -80,7 +99,7 @@ make integration_tests
 
 ### Test coverage
 
-Make sure you have `gcov` and `gcovr` installed on your system:
+This only works locally. Make sure you have `gcov` and `gcovr` installed on your system:
 
 - `gcov` is included with `gcc` and `clang`
 - `gcovr` can be installed with `pip` and `brew`
@@ -105,19 +124,36 @@ It can be difficult to know where to start debugging the move generation when a 
 
 ## Docker Support
 
-If you have docker installed then you can run the code through a linter and test suite.
+If you have docker installed then you can do any of the following things within a docker container:
 
-1. Ensure the docker daemon is running
-2. Run the linter
-
-```bash
-cd /path/to/meatball/
-./docker/run_linter.sh
-```
-
+1. Build the source code
+2. Run a linter
 3. Run the test suite
 
-```bash
-cd /path/to/meatball/
-./docker/run_tests.sh
-```
+Steps to use docker:
+
+1. Ensure the docker daemon is running and go the the project root
+
+  ```bash
+  cd /path/to/meatball
+  ```
+
+2. Build the source code:
+
+  ```bash
+  make docker-build BUILD_FLAGS="CXX=g++ DEBUG_LEVEL=0 OPTIMIZATION_LEVEL=3"
+  ```
+
+3. Run the linter
+
+  ```bash
+  cd /path/to/meatball/
+  make docker-linter
+  ```
+
+4. Run the test suite
+
+  ```bash
+  cd /path/to/meatball/
+  make docker-tests
+  ```
