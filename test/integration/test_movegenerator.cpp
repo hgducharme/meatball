@@ -1,4 +1,4 @@
-#include "../src/movegenerator.h"
+#include "../src/move_generation.h"
 #include "../src/attacktables.h"
 #include "../src/types.h"
 #include "../utils/perft.h"
@@ -11,18 +11,18 @@ namespace meatball
    {
 
       // The fixture for testing the class.
-      class MoveGeneratorTest : public ::testing::Test
+      class MoveGenerationTest : public ::testing::Test
       {
       protected:
          // You can remove any or all of the following functions if their bodies would
          // be empty.
 
-         MoveGeneratorTest()
+         MoveGenerationTest()
          {
             // You can do set-up work for each test here.
          }
 
-         ~MoveGeneratorTest() override
+         ~MoveGenerationTest() override
          {
             // You can do clean-up work that doesn't throw exceptions here.
          }
@@ -58,7 +58,7 @@ namespace meatball
          // then add their definition just below the test fixture class.
       };
 
-      TEST_F(MoveGeneratorTest, perft_initialPositionDepth1)
+      TEST_F(MoveGenerationTest, perft_initialPositionDepth1)
       {
          Chessboard game;
          uint16_t depth = 1;
@@ -87,7 +87,7 @@ namespace meatball
          EXPECT_EQ(results.checkmates, EXPECTED_CHECKMATES);
       }
 
-      TEST_F(MoveGeneratorTest, perft_initialPositionDepth3)
+      TEST_F(MoveGenerationTest, perft_initialPositionDepth3)
       {
          Chessboard game;
          uint16_t depth = 3;
@@ -116,7 +116,7 @@ namespace meatball
          EXPECT_EQ(results.checkmates, EXPECTED_CHECKMATES);
       }
 
-      TEST_F(MoveGeneratorTest, perft_testPosition1)
+      TEST_F(MoveGenerationTest, perft_testPosition1)
       {
          Chessboard game("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8");
          uint16_t depth = 3;

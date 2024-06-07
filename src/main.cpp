@@ -4,7 +4,7 @@ int main ()
 {
   attack_tables::init();
 
-  // get all the moves = movegenerator.getAllMoves();
+  // get all the moves = move_generation::getLegalMoves();
 
   // evalute atll the moves = evaluate;
 
