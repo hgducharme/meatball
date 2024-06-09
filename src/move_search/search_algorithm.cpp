@@ -1,15 +1,6 @@
 #include "search_algorithm.h"
 #include "exceptions.h"
-
-Move MonteCarloTreeSearch::getBestMove(const Chessboard & gameState)
-{
-   // Node root = gameState;
-   // Node leaf = explore(root);
-   // expand
-   // simulate
-   // backpropogate
-
-}
+#include "move_search/mcts/mcts.h"
 
 std::unique_ptr<interfaces::SearchAlgorithm> createSearchAlgorithm(SearchAlgorithmImplementation implementation, interfaces::PositionEvaluator & evaluator, int searchDepth)
 {
