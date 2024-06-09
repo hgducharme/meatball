@@ -3,6 +3,11 @@
 
 Move MonteCarloTreeSearch::getBestMove(const Chessboard & gameState)
 {
+   // Node root = gameState;
+   // Node leaf = explore(root);
+   // expand
+   // simulate
+   // backpropogate
 
 }
 
