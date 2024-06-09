@@ -61,8 +61,8 @@ namespace meatball
       {
          Chessboard game;
          const int searchDepth = 1;
-         std::unique_ptr<interfaces::PositionEvaluator> neuralNetwork = move_search::createPositionEvaluator(PositionEvaluatorImplementation::NeuralNetwork);
-         std::unique_ptr<interfaces::SearchAlgorithm> monteCarloTreeSearch = move_search::createSearchAlgorithm(SearchAlgorithmImplementation::MonteCarloTreeSearch, (*neuralNetwork), searchDepth);
+         std::unique_ptr<interfaces::PositionEvaluator> neuralNetwork = createPositionEvaluator(PositionEvaluatorImplementation::NeuralNetwork);
+         std::unique_ptr<interfaces::SearchAlgorithm> monteCarloTreeSearch = createSearchAlgorithm(SearchAlgorithmImplementation::MonteCarloTreeSearch, (*neuralNetwork), searchDepth);
 
          Move bestMove = monteCarloTreeSearch->getBestMove(game);
 
