@@ -41,4 +41,10 @@ namespace exceptions
       };
 
    } // end fen namespace
+
+   class InvalidEnumOption : public std::runtime_error
+   {
+      public:
+         explicit InvalidEnumOption(const std::string & message) : std::runtime_error(message) {};
+   };
 }
