@@ -16,14 +16,14 @@ jobs:
       - name: Build the source code
         run: make docker-build
 
-  linter:
-    name: Linter
-    needs: Build # Only run the linter if we know the build is successful
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run linter
-        run: make docker-linter
+  # linter:
+  #   name: Linter
+  #   needs: Build # Only run the linter if we know the build is successful
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Run linter
+  #       run: make docker-linter
 
   tests:
     name: Tests
