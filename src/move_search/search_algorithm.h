@@ -2,7 +2,7 @@
 
 #include "move.h"
 #include "chessboard.h"
-#include "move_search/position_evaluator.h"
+#include "position_evaluation/position_evaluator.h"
 
 enum class SearchAlgorithmImplementation { MonteCarloTreeSearch };
 

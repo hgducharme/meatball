@@ -1,7 +1,7 @@
 #include "../src/chessboard.h"
 #include "../src/move.h"
 #include "../src/move_search/search_algorithm.h"
-#include "../src/move_search/position_evaluator.h"
+#include "../src/position_evaluation/position_evaluator.h"
 
 #include "gtest/gtest.h"
 
