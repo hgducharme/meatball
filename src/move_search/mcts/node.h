@@ -5,7 +5,8 @@
 #include <vector>
 
 struct Node {
+   Node() = default;
    Color currentPlayer;
-   bool endsGame;
+   bool endsGame = false;
    std::vector<Node> children;
 };

@@ -12,5 +12,5 @@ class MonteCarloTreeSearch : public interfaces::SearchAlgorithm
       ~MonteCarloTreeSearch() override {};
       Move getBestMove(const Chessboard & gameState) override;
    private:
-      Node selectChildNode(Node root);
+      Node selectChildNode(const Node & root);
 };

@@ -5,7 +5,6 @@ Move MonteCarloTreeSearch::getBestMove(const Chessboard & gameState)
    Node root;
    root.currentPlayer = gameState.getActivePlayer();
    
-   // while (timeRemaining)
    for (int i = 0; i < 2; i++)
    {
       Node leaf = selectChildNode(root);
@@ -18,10 +17,11 @@ Move MonteCarloTreeSearch::getBestMove(const Chessboard & gameState)
    // return bestMove(root);
 }
 
-Node MonteCarloTreeSearch::selectChildNode(Node root)
+Node MonteCarloTreeSearch::selectChildNode(const Node & root)
 {
    for (const Node & child : root.children)
    {
+      int i = 1;
       // int sumOfAllSiblingVisitCounts = sum(root.children, unless c == child);
       // int puct = child.currentPlayer * averageUtilityOf(child) + ( cpuct * policyOf(child) * (1 / (1 + child.visits)) * sqrt( sumOfAllSiblingVisitCounts ) );
    }

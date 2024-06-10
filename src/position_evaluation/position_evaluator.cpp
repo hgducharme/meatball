@@ -1,6 +1,6 @@
 #include "position_evaluator.h"
 #include "exceptions.h"
-#include "move_search/neural_network/neural_network.h"
+#include "position_evaluation/neural_network/neural_network.h"
 
 std::unique_ptr<interfaces::PositionEvaluator> createPositionEvaluator(PositionEvaluatorImplementation implementation)
 {

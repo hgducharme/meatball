@@ -1,6 +1,6 @@
 #pragma once
 
-#include "move_search/position_evaluator.h"
+#include "position_evaluation/position_evaluator.h"
 
 class NeuralNetwork : public interfaces::PositionEvaluator
 {
